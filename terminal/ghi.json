@@ -1,0 +1,31 @@
+[
+    {
+        "PrintFormatHeight": 42, 
+        "PrintFormatAngle": 0, 
+        "Code": 3, 
+        "PrintFormatWidth": 56, 
+        "Fields": [
+            {
+                "YPosition": 0, 
+                "X1Position": 0, 
+                "Code": 3, 
+                "Angle": 0, 
+                "CharacterSizex2x4": 0, 
+                "LinkedFileSource": 0, 
+                "LinkedFileNo": 0, 
+                "DeleteFlag": "", 
+                "PrintStatus": 7, 
+                "Height": 0, 
+                "XPosition": 0, 
+                "Width": 0, 
+                "LabelType": 0, 
+                "CentType": 0, 
+                "AutoSizing": 0, 
+                "Thinkness": 0, 
+                "Y1Position": 0, 
+                "FieldCode": 1, 
+                "CharacterSize": 0
+            }
+        ]
+    }
+]

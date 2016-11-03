@@ -1,0 +1,4 @@
+[
+	{ "source_expr": "$(1)", "target_field": "TraceabilityNo"},
+	{ "source_expr": "$(2)", "target_field": "TraceReferenceCode"}
+]

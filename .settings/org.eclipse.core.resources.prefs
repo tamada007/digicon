@@ -1,0 +1,16 @@
+eclipse.preferences.version=1
+encoding//common/common.py=gbk
+encoding//common/converter.py=gbk
+encoding//common/csvreader.py=gbk
+encoding//common/strparser.py=gbk
+encoding//libsm110/const.py=gbk
+encoding//libsm110/easy.py=gbk
+encoding//libsm110/master.py=gbk
+encoding//libsm110/smtws.py=gbk
+encoding//libsm120/const.py=utf-8
+encoding//libsm120/easy.py=gbk
+encoding//libsm120/master.py=gbk
+encoding//libsm120/smftp.py=gbk
+encoding//terminal/term.py=gbk
+encoding/__main__.py=utf-8
+encoding/test.py=utf-8
