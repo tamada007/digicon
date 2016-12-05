@@ -3,6 +3,12 @@
 db_name = "sm110.sqlite"
 
 report_list = {
+	"Scale Data": """
+	{
+		"SQL": "SELECT scale_number_plu,scale_plu_remain FROM Scd",
+		"Tables": "Scd",
+		"Fields": [ "$(1)","$(2)"]
+	}""",
 	"PLU Total": """
 	{
 		"SQL": "SELECT Plt.PLUNo,plt.TOTAL_DAILY_TOTAL_ACTUAL_PRICE,Plu.Commodity FROM Plt inner join Plu on Plu.Pluno=plt.pluno",
@@ -30,9 +36,206 @@ report_list = {
 
 }
 
+#Scale Data
+scd_struct = [
+    {
+        "Name": "scale_data_code",
+		"Key": 1,
+        "Type": "HEX",
+        "Length": 4
+    },
+    {
+        "Name": "scale_data_size",
+        "Type": "HEX",
+		"IsSize": 1,
+        "Length": 2
+    },
+    {
+        "Name": "scale_dept",
+        "Type": "BCD",
+        "Length": 2
+    },
+    {
+        "Name": "scale_rct_shop",
+        "Type": "BCD",
+        "Length": 4
+    },
+    {
+        "Name": "scale_lbl_shop",
+        "Type": "BCD",
+        "Length": 4
+    },
+    {
+        "Name": "scale_preset_key",
+        "Type": "BCD",
+        "Length": 1
+    },
+    {
+        "Name": "scale_code",
+        "Type": "BCD",
+        "Length": 3
+    },
+    {
+        "Name": "scale_i_lbl_format",
+        "Type": "BCD",
+        "Length": 1
+    },
+    {
+        "Name": "scale_t_lbl_format",
+        "Type": "BCD",
+        "Length": 1
+    },
+    {
+        "Name": "scale_i_bar_barcode",
+        "Type": "HEX",
+        "Length": 1
+    },
+    {
+        "Name": "scale_i_bar_r_data",
+        "Type": "HEX",
+        "Length": 1
+    },
+    {
+        "Name": "scale_i_bar_r_price_data",
+        "Type": "HEX",
+        "Length": 1
+    },
+    {
+        "Name": "scale_i_bar_flag",
+        "Type": "BCD",
+        "Length": 1
+    },
+    {
+        "Name": "scale_t_barcode",
+        "Type": "HEX",
+        "Length": 1
+    },
+    {
+        "Name": "scale_t_bar_l_data",
+        "Type": "HEX",
+        "Length": 1
+    },
+    {
+        "Name": "scale_t_bar_fix_l_data",
+        "Type": "BCD",
+        "Length": 5
+    },
+    {
+        "Name": "scale_t_bar_flag",
+        "Type": "BCD",
+        "Length": 1
+    },
+    {
+        "Name": "scale_t_bar_r_data",
+        "Type": "HEX",
+        "Length": 1
+    },
+    {
+        "Name": "scale_t_bar_prt_rct",
+        "Type": "HEX",
+        "Length": 1
+    },
+    {
+        "Name": "scale_prt_bar_f1",
+        "Type": "HEX",
+        "Length": 1
+    },
+    {
+        "Name": "scale_last_act_date",
+        "Type": "BCD",
+        "Length": 8
+    },
+    {
+        "Name": "scale_plu_call_low",
+        "Type": "BCD",
+        "Length": 4
+    },
+    {
+        "Name": "scale_plu_call_upper",
+        "Type": "BCD",
+        "Length": 4
+    },
+    {
+        "Name": "scale_apc_date",
+        "Type": "BCD",
+        "Length": 3
+    },
+    {
+        "Name": "scale_ethernet_addr",
+        "Type": "HEX",
+        "Length": 6
+    },
+    {
+        "Name": "scale_ip_addr",
+        "Type": "HEX",
+        "Length": 4
+    },
+    {
+        "Name": "scale_thermal_hd_usage_ctr",
+        "Type": "BCD",
+        "Length": 4
+    },
+    {
+        "Name": "scale_version_num_main",
+        "Type": "BYTES",
+        "Length": 4
+    },
+    {
+        "Name": "scale_number_plu",
+        "Type": "HEX",
+        "Length": 4
+    },
+    {
+        "Name": "scale_ram_size",
+        "Type": "BCD",
+        "Length": 4
+    },
+    {
+        "Name": "scale_preset_group",
+        "Type": "HEX",
+        "Length": 1
+    },
+    {
+        "Name": "scale_rct_sp_special_message",
+        "Type": "BCD",
+        "Length": 1
+    },
+    {
+        "Name": "scale_program_update_checksum",
+        "Type": "BCD",
+        "Length": 1
+    },
+    {
+        "Name": "scale_mainboard_type",
+        "Type": "BCD",
+        "Length": 1
+    },
+    {
+        "Name": "scale_plu_remain",
+        "Type": "BCD",
+        "Length": 4
+    },
+    {
+        "Name": "scale_data_update_date",
+        "Type": "BCD",
+        "Length": 4
+    },
+    {
+        "Name": "scale_data_update_time",
+        "Type": "BCD",
+        "Length": 4
+    },
+    {
+        "Name": "scale_reserve",
+        "Type": "BCD",
+        "Length": 84
+    }
+]
+
+
+
 #PLACE
-pla_struct = '''
-[
+pla_struct = [
 	{
 		"Name": "Code",
 		"Key": 1,
@@ -60,11 +263,10 @@ pla_struct = '''
 		"Type": "ASCII",
 		"Length": 103
 	}
-]'''
+]
 
 #MG
-mgp_struct = '''
-[
+mgp_struct = [
 	{
 		"Name": "Code",
 		"Key": 1,
@@ -97,11 +299,10 @@ mgp_struct = '''
 		"Type": "BCD",
 		"Length": 1
 	}
-]'''
+]
 
 #Traceability File
-trg_struct = '''
-[
+trg_struct = [
 	{
 		"Name": "Code",
 		"Key": 1,
@@ -240,11 +441,9 @@ trg_struct = '''
 		"Length": 30
 	}
 ]
-'''
 
 #Traceability Barcode File
-trb_struct = '''
-[
+trb_struct = [
 	{
 		"Name": "Code",
 		"Key": 1,
@@ -268,11 +467,9 @@ trb_struct = '''
 		"Length": 1112
 	}
 ]
-'''
 
 #2D Barcode
-tbt_struct = '''
-[
+tbt_struct = [
 	{
 		"Name": "Code",
 		"Key": 1,
@@ -296,11 +493,10 @@ tbt_struct = '''
 		"Length": 10197
 	}
 ]
-'''
+
 
 #Preset Key
-kas_struct = '''
-[
+kas_struct = [
 	{
 		"Name": "Code",
 		"Key": 1,
@@ -339,11 +535,9 @@ kas_struct = '''
 		"Length": 1
 	}
 ]
-'''
 
 #Plu
-plu_struct = '''
-[
+plu_struct = [
     {
         "Name": "PLUNo",
         "Key": 1,
@@ -1378,11 +1572,10 @@ plu_struct = '''
         "Length": 2
     }
 ]
-'''
+
 
 #Label Format
-prf_struct = '''
-[
+prf_struct = [
 	{
 		"Name": "Code",
 		"Key": 1,
@@ -2355,11 +2548,9 @@ prf_struct = '''
 		"Length": 192
 	}
 ]
-'''
 
 #Text
-tex_struct = '''
-[
+tex_struct = [
 	{
 		"Name": "Code",
 		"Key": 1,
@@ -2383,11 +2574,9 @@ tex_struct = '''
         "Length": 206
     }
 ]
-'''
 
 #Flexi-barcode
-flb_struct = '''
-[
+flb_struct = [
 	{
 		"Name": "Code",
 		"Key": 1,
@@ -2460,11 +2649,9 @@ flb_struct = '''
 		"Length": 1
 	}
 ]
-'''
 
 #PLU Transaction Report
-ptr_struct = '''
-[
+ptr_struct = [
 	{
 		"Name": "T_PLU_TRANS_NO",
 		"Type": "BCD",
@@ -2548,11 +2735,9 @@ ptr_struct = '''
 		"Length": 50
 	}
 ]
-'''
 
 #PLU Total
-plt_struct = '''
-[
+plt_struct = [
 	{
 		"Name": "PLUNo",
 		"Type": "BCD",
@@ -2741,11 +2926,9 @@ plt_struct = '''
 		"Length": 4
 	}
 ]
-'''
 
 #Real Time Buffer
-rtb_struct = '''
-[
+rtb_struct = [
 	{
 		"Name": "RecordNo",
 		"Type": "BCD",
@@ -3184,11 +3367,9 @@ rtb_struct = '''
 		"Length": 4
 	}
 ]
-'''
 
 #Real Time Total Buffer
-rtt_struct = '''
-[
+rtt_struct = [
 	{
 		"Name": "ReceiptNo",
 		"Type": "BCD",
@@ -3982,7 +4163,6 @@ rtt_struct = '''
 		"Length": 4
 	}
 ]
-'''
 
 
 multiBarcodeTypeMapper = {

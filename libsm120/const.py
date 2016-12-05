@@ -3,6 +3,11 @@
 db_name = "sm120.sqlite"
 
 report_list = {
+	"Scale Data": """
+	{
+		"Tables": "Scd",
+		"SQL": "SELECT PLU_number,PLU_remain FROM Scd"
+	}""",
 	"PLU Total": """
 	{
 		"Tables": "Plu,Plt",
@@ -26,9 +31,144 @@ report_list = {
 
 }
 
+#Scale Data
+scd_struct = {
+    "Scale_serial_No": {
+        "ColumnIndex": 1,
+		"Key": 1,
+        "Type": "SMInt"
+    },
+    "Flag_for_delete": {
+        "ColumnIndex": 2,
+        "Type": "SMText"
+    },
+    "Boot_version": {
+        "ColumnIndex": 3,
+        "Type": "SMText"
+    },
+    "Main_version": {
+        "ColumnIndex": 4,
+        "Type": "SMText"
+    },
+    "Const_version": {
+        "ColumnIndex": 5,
+        "Type": "SMText"
+    },
+    "Font_version": {
+        "ColumnIndex": 6,
+        "Type": "SMText"
+    },
+    "Bmap_version": {
+        "ColumnIndex": 7,
+        "Type": "SMText"
+    },
+    "Machine_code": {
+        "ColumnIndex": 8,
+        "Type": "SMInt"
+    },
+    "Ethernet_hardware_address": {
+        "ColumnIndex": 9,
+        "Type": "SMText"
+    },
+    "IP_address": {
+        "ColumnIndex": 10,
+        "Type": "SMText"
+    },
+    "Scale_RAM_size": {
+        "ColumnIndex": 11,
+        "Type": "SMInt"
+    },
+    "PLU_number": {
+        "ColumnIndex": 12,
+        "Type": "SMInt"
+    },
+    "PLU_remain": {
+        "ColumnIndex": 13,
+        "Type": "SMInt"
+    },
+    "PLU_unit_price_after_discount": {
+        "ColumnIndex": 14,
+        "Type": "SMInt"
+    },
+    "Scale_RES_Type": {
+        "ColumnIndex": 15,
+        "Type": "SMInt"
+    },
+    "Product_No_Thermal_head": {
+        "ColumnIndex": 16,
+        "Type": "SMText"
+    },
+    "Revision_No_Thermal_head": {
+        "ColumnIndex": 17,
+        "Type": "SMText"
+    },
+    "Lot_No_Thermal_head": {
+        "ColumnIndex": 18,
+        "Type": "SMText"
+    },
+    "Serial_No_Thermal_head": {
+        "ColumnIndex": 19,
+        "Type": "SMText"
+    },
+    "Head_average_resistance_Thermal_head": {
+        "ColumnIndex": 20,
+        "Type": "SMText"
+    },
+    "Thermal_head_usage_Distance": {
+        "ColumnIndex": 21,
+        "Type": "SMInt"
+    },
+    "Thermal_head_usage_Cut_count": {
+        "ColumnIndex": 22,
+        "Type": "SMInt"
+    },
+    "Main_board_print_Distance": {
+        "ColumnIndex": 23,
+        "Type": "SMInt"
+    },
+    "Main_board_print_Cut_count": {
+        "ColumnIndex": 24,
+        "Type": "SMInt"
+    },
+    "Scale_type": {
+        "ColumnIndex": 25,
+        "Type": "SMInt"
+    },
+    "Minimum_Display": {
+        "ColumnIndex": 26,
+        "Type": "SMInt"
+    },
+    "Selection_of_Resolution": {
+        "ColumnIndex": 27,
+        "Type": "SMInt"
+    },
+    "Weight_Single_Interval_or_Multi_Interval": {
+        "ColumnIndex": 28,
+        "Type": "SMInt"
+    },
+    "Decimal_Point_Position_for_Weight": {
+        "ColumnIndex": 29,
+        "Type": "SMInt"
+    },
+    "AD_module_type": {
+        "ColumnIndex": 30,
+        "Type": "SMInt"
+    },
+    "COUNTRY_SET": {
+        "ColumnIndex": 31,
+        "Type": "SMInt"
+    },
+    "COUNTRY_CODE": {
+        "ColumnIndex": 32,
+        "Type": "SMInt"
+    }
+}
+
+
+
+
 #Place
-pla_struct = '''
-{
+pla_struct = {
 	"Code" :
 	{
 		"Key": 1,
@@ -62,12 +202,11 @@ pla_struct = '''
 	} 
 
 }
-'''
+
 
 #Main Group
 ##################################################
-mgp_struct = '''
-{
+mgp_struct = {
 	"Code" :
 	{
 		"Key": 1,
@@ -100,14 +239,14 @@ mgp_struct = '''
 		"MaxLength": 16
 	}
 }
-'''
+
+
 mgp_file = 'mgp'
 ##################################################
 
 #Plu
 ##################################################
-plu_struct = '''
-{ 
+plu_struct = {
 	"PLUNo" : 
 	{ 
 		"Key": 1,
@@ -812,15 +951,15 @@ plu_struct = '''
 		"MaxLength": 4 
 	} 
 }
-'''
+
+
 plu_file = 'plu'
 ##################################################
 
 
 #Dept
 ##################################################
-dep_struct = '''
-{
+dep_struct = {
 	"Code" :
 	{
 		"Key": 1,
@@ -841,14 +980,13 @@ dep_struct = '''
 		"MaxLength": 16
 	}
 }
-'''
+
 dep_file = 'dep'
 ##################################################
 
 #Preset Key
 ##################################################
-kas_struct = '''
-{ 
+kas_struct = { 
     "PageNo" : 
     { 
         "ColumnIndex": 1, 
@@ -886,14 +1024,13 @@ kas_struct = '''
         "MaxLength": 8 
     } 
 }
-'''
+
 kas_file = 'kas'
 ##################################################
 
 #plu total
 ##################################################
-plt_struct = '''
-{ 
+plt_struct = { 
 	"PLUNo":  
 	{ 
 		"ColumnIndex": 1, 
@@ -1117,14 +1254,14 @@ plt_struct = '''
 		"MaxLength": 6 
 	} 
 }
-'''
+
+
 plt_file = 'plt'
 ##################################################
 
 #Plu Transaction File
 ##################################################
-ptr_struct = '''
-{ 
+ptr_struct = { 
 	"Code":  
 	{ 
 		"ColumnIndex": 1, 
@@ -1234,14 +1371,13 @@ ptr_struct = '''
 		"MaxLength": 2 
 	} 
 }
-'''
+
 ptr_file = 'ptr'
 ##################################################
 
 #Real Time Buffer File
 ##################################################
-rtb_struct = '''
-{ 
+rtb_struct = { 
 	"Mode": 
 	{ 
 		"ColumnIndex": 1, 
@@ -1555,205 +1691,203 @@ rtb_struct = '''
 		"MaxLength": 30 
 	} 
 }
-'''
+
 rtb_file = 'rtb'
 ##################################################
 
 
 #Real Time Total 
 ##################################################
-rtt_struct = '''
-{ \
-	\"Mode\": \
-	{ \
-		\"ColumnIndex\": 1, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 1 \
-	}, \
-	\"Node\": \
-	{ \
-		\"ColumnIndex\": 2, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 2 \
-	}, \
-	\"FlagOfOffLine\": \
-	{ \
-		\"ColumnIndex\": 3, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 1 \
-	}, \
-	\"ReceiptNo\": \
-	{ \
-		\"ColumnIndex\": 4, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 7 \
-	}, \
-	\"DeleteFlag\": \
-	{ \
-		\"ColumnIndex\": 5, \
-		\"Type\": \"SMText\", \
-		\"MaxLength\": 1 \
-	}, \
-	\"FileID\": \
-	{ \
-		\"ColumnIndex\": 6, \
-		\"Type\": \"SMText\", \
-		\"MaxLength\": 2 \
-	}, \
-	\"Date\": \
-	{ \
-		\"ColumnIndex\": 7, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 6 \
-	}, \
-	\"Time\": \
-	{ \
-		\"ColumnIndex\": 8, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 4 \
-	}, \
-	\"MachineCode\": \
-	{ \
-		\"ColumnIndex\": 9, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 4 \
-	}, \
-	\"ClerkNo\": \
-	{ \
-		\"ColumnIndex\": 10, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 2 \
-	}, \
-	\"IPaddressTail\": \
-	{ \
-		\"ColumnIndex\": 11, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 3 \
-	}, \
-	\"TransactionNumber\": \
-	{ \
-		\"ColumnIndex\": 12, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 2 \
-	}, \
-	\"TotalAmountOfAddOnTax\": \
-	{ \
-		\"ColumnIndex\": 13, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 11 \
-	}, \
-	\"TotalAmountOfVATTax\": \
-	{ \
-		\"ColumnIndex\": 14, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 11 \
-	}, \
-	\"TotalWeight\": \
-	{ \
-		\"ColumnIndex\": 15, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 11 \
-	}, \
-	\"TotalQuantity\": \
-	{ \
-		\"ColumnIndex\": 16, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 11 \
-	}, \
-	\"TotalAmount\": \
-	{ \
-		\"ColumnIndex\": 17, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 11 \
-	}, \
-	\"TotalFinalAmount\": \
-	{ \
-		\"ColumnIndex\": 18, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 11 \
-	}, \
-	\"TotalRoundingAmount\": \
-	{ \
-		\"ColumnIndex\": 19, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 11 \
-	}, \
-	\"TotalEUROfinalAmount\": \
-	{ \
-		\"ColumnIndex\": 20, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 11 \
-	}, \
-	\"TotalValueOfCash\": \
-	{ \
-		\"ColumnIndex\": 21, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 11 \
-	}, \
-	\"TotalValueOfCredit\": \
-	{ \
-		\"ColumnIndex\": 22, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 11 \
-	}, \
-	\"TotalChangeAmount\": \
-	{ \
-		\"ColumnIndex\": 23, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 11 \
-	}, \
-	\"TotalEUROTender\": \
-	{ \
-		\"ColumnIndex\": 24, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 11 \
-	}, \
-	\"TotalChequeAmount\": \
-	{ \
-		\"ColumnIndex\": 25, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 11 \
-	}, \
-	\"TotalVoucherAmount\": \
-	{ \
-		\"ColumnIndex\": 26, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 11 \
-	}, \
-	\"TotalCardAmount\": \
-	{ \
-		\"ColumnIndex\": 27, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 11 \
-	}, \
-	\"TotalPayoutAmount\": \
-	{ \
-		\"ColumnIndex\": 28, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 11 \
-	}, \
-	\"TotalAmountWithoutChange\": \
-	{ \
-		\"ColumnIndex\": 29, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 11 \
-	}, \
-	\"MemberShipNo\": \
-	{ \
-		\"ColumnIndex\": 30, \
-		\"Type\": \"SMInt\", \
-		\"MaxLength\": 8 \
-	} \
+rtt_struct = { 
+	"Mode": 
+	{ 
+		"ColumnIndex": 1, 
+		"Type": "SMInt", 
+		"MaxLength": 1 
+	}, 
+	"Node": 
+	{ 
+		"ColumnIndex": 2, 
+		"Type": "SMInt", 
+		"MaxLength": 2 
+	}, 
+	"FlagOfOffLine": 
+	{ 
+		"ColumnIndex": 3, 
+		"Type": "SMInt", 
+		"MaxLength": 1 
+	}, 
+	"ReceiptNo": 
+	{ 
+		"ColumnIndex": 4, 
+		"Type": "SMInt", 
+		"MaxLength": 7 
+	}, 
+	"DeleteFlag": 
+	{ 
+		"ColumnIndex": 5, 
+		"Type": "SMText", 
+		"MaxLength": 1 
+	}, 
+	"FileID": 
+	{ 
+		"ColumnIndex": 6, 
+		"Type": "SMText", 
+		"MaxLength": 2 
+	}, 
+	"Date": 
+	{ 
+		"ColumnIndex": 7, 
+		"Type": "SMInt", 
+		"MaxLength": 6 
+	}, 
+	"Time": 
+	{ 
+		"ColumnIndex": 8, 
+		"Type": "SMInt", 
+		"MaxLength": 4 
+	}, 
+	"MachineCode": 
+	{ 
+		"ColumnIndex": 9, 
+		"Type": "SMInt", 
+		"MaxLength": 4 
+	}, 
+	"ClerkNo": 
+	{ 
+		"ColumnIndex": 10, 
+		"Type": "SMInt", 
+		"MaxLength": 2 
+	}, 
+	"IPaddressTail": 
+	{ 
+		"ColumnIndex": 11, 
+		"Type": "SMInt", 
+		"MaxLength": 3 
+	}, 
+	"TransactionNumber": 
+	{ 
+		"ColumnIndex": 12, 
+		"Type": "SMInt", 
+		"MaxLength": 2 
+	}, 
+	"TotalAmountOfAddOnTax": 
+	{ 
+		"ColumnIndex": 13, 
+		"Type": "SMInt", 
+		"MaxLength": 11 
+	}, 
+	"TotalAmountOfVATTax": 
+	{ 
+		"ColumnIndex": 14, 
+		"Type": "SMInt", 
+		"MaxLength": 11 
+	}, 
+	"TotalWeight": 
+	{ 
+		"ColumnIndex": 15, 
+		"Type": "SMInt", 
+		"MaxLength": 11 
+	}, 
+	"TotalQuantity": 
+	{ 
+		"ColumnIndex": 16, 
+		"Type": "SMInt", 
+		"MaxLength": 11 
+	}, 
+	"TotalAmount": 
+	{ 
+		"ColumnIndex": 17, 
+		"Type": "SMInt", 
+		"MaxLength": 11 
+	}, 
+	"TotalFinalAmount": 
+	{ 
+		"ColumnIndex": 18, 
+		"Type": "SMInt", 
+		"MaxLength": 11 
+	}, 
+	"TotalRoundingAmount": 
+	{ 
+		"ColumnIndex": 19, 
+		"Type": "SMInt", 
+		"MaxLength": 11 
+	}, 
+	"TotalEUROfinalAmount": 
+	{ 
+		"ColumnIndex": 20, 
+		"Type": "SMInt", 
+		"MaxLength": 11 
+	}, 
+	"TotalValueOfCash": 
+	{ 
+		"ColumnIndex": 21, 
+		"Type": "SMInt", 
+		"MaxLength": 11 
+	}, 
+	"TotalValueOfCredit": 
+	{ 
+		"ColumnIndex": 22, 
+		"Type": "SMInt", 
+		"MaxLength": 11 
+	}, 
+	"TotalChangeAmount": 
+	{ 
+		"ColumnIndex": 23, 
+		"Type": "SMInt", 
+		"MaxLength": 11 
+	}, 
+	"TotalEUROTender": 
+	{ 
+		"ColumnIndex": 24, 
+		"Type": "SMInt", 
+		"MaxLength": 11 
+	}, 
+	"TotalChequeAmount": 
+	{ 
+		"ColumnIndex": 25, 
+		"Type": "SMInt", 
+		"MaxLength": 11 
+	}, 
+	"TotalVoucherAmount": 
+	{ 
+		"ColumnIndex": 26, 
+		"Type": "SMInt", 
+		"MaxLength": 11 
+	}, 
+	"TotalCardAmount": 
+	{ 
+		"ColumnIndex": 27, 
+		"Type": "SMInt", 
+		"MaxLength": 11 
+	}, 
+	"TotalPayoutAmount": 
+	{ 
+		"ColumnIndex": 28, 
+		"Type": "SMInt", 
+		"MaxLength": 11 
+	}, 
+	"TotalAmountWithoutChange": 
+	{ 
+		"ColumnIndex": 29, 
+		"Type": "SMInt", 
+		"MaxLength": 11 
+	}, 
+	"MemberShipNo": 
+	{ 
+		"ColumnIndex": 30, 
+		"Type": "SMInt", 
+		"MaxLength": 8 
+	} 
 }
-'''
+
 rtt_file = 'rtt' 
 ##################################################
  
  
 #Dept Total
 ##################################################
-dpt_struct = '''
-{ 
+dpt_struct = { 
 	"DeptCode": 
 	{ 
 		"ColumnIndex": 1, 
@@ -1935,15 +2069,14 @@ dpt_struct = '''
 		"MaxLength": 6 
 	} 
 }
-''' 
+
 dpt_file = 'dpt'
 ##################################################
  
  
 #MG Total 
 ##################################################
-mgt_struct = '''
-{ 
+mgt_struct = { 
 	"MGCode": 
 	{ 
 		"ColumnIndex": 1, 
@@ -2095,14 +2228,13 @@ mgt_struct = '''
 		"MaxLength": 6 
 	} 
 }
-''' 
+
 mgt_file = 'mgt' 
 ##################################################
  
 #Traceability Group
 ##################################################
-trg_struct = '''
-{ 
+trg_struct = { 
 	"Code":  
 	{ 
 		"Key": 1,
@@ -2267,14 +2399,13 @@ trg_struct = '''
 		"MaxLength": 6 
 	} 
 }
-'''
+
 trg_file = 'trg'
 ##################################################
 
 #Traceability Barcode File
 ##################################################
-trb_struct = '''
-{ 
+trb_struct = { 
 	"Code":  
 	{ 
 		"Key": 1,
@@ -2295,15 +2426,14 @@ trb_struct = '''
 		"MaxLength": 1111 
 	} 
 }
-'''
+
 trb_file = 'trb'
 ##################################################
 
 
 #Traceability Text File
 ##################################################
-trt_struct = '''
-{ 
+trt_struct = {
 	"Code": 
 	{ 
 		"Key": 1,
@@ -2336,15 +2466,14 @@ trt_struct = '''
 		"MaxLength": 100 
 	} 
 }
-'''
+
 trt_file = 'trt'
 ##################################################
 
 
 #Multi Barcode File
 ##################################################
-mub_struct = '''
-{ 
+mub_struct = { 
 	"Code": 
 	{ 
 		"Key": 1,
@@ -2383,15 +2512,14 @@ mub_struct = '''
 		"MaxLength": 6 
 	} 
 }
-'''
+
 mub_file = 'mub'
 ##################################################
 
 
 #2D Barcode Text File
 ##################################################
-tbt_struct = '''
-{ 
+tbt_struct = { 
 	"Code": 
 	{ 
 		"Key": 1,
@@ -2424,15 +2552,14 @@ tbt_struct = '''
 		"MaxLength": 100 
 	} 
 }
-'''
+
 tbt_file = 'tbt'
 ##################################################
 
 
 #Print Format File
 ##################################################
-prf_struct = '''
-{ 
+prf_struct = { 
 	"Code": 
 	{ 
 		"Key": 1,
@@ -2465,14 +2592,13 @@ prf_struct = '''
 		"MaxLength": 1 
 	} 
 }
-'''
+
 prf_file = 'prf'
 ##################################################
 
 #Print Format Field File
 ##################################################
-pff_struct = '''
-{ 
+pff_struct = { 
 	"Code": 
 	{ 
 		"Key": 1,
@@ -2589,14 +2715,13 @@ pff_struct = '''
 		"MaxLength": 1 
 	} 
 }
-'''
+
 pff_file = 'pff'
 ##################################################
 
 #FlexiBarcode File
 ##################################################
-flb_struct = '''
-{ 
+flb_struct = { 
 	"Code": 
 	{ 
 		"Key": 1,
@@ -2695,7 +2820,7 @@ flb_struct = '''
 		"MaxLength": 1 
 	} 
 }
-'''
+
 flb_file = 'flb'
 ##################################################
 
@@ -2703,8 +2828,7 @@ flb_file = 'flb'
 
 #Special Message
 ##################################################
-spm_struct = '''
-{ 
+spm_struct = { 
 	"Code": 
 	{ 
 		"Key": 1,
@@ -2737,14 +2861,13 @@ spm_struct = '''
 		"MaxLength": 100 
 	} 
 }
-'''
+
 spm_file = 'spm'
 ##################################################
 
 #Ingredient
 ##################################################
-ing_struct = '''
-{ 
+ing_struct = { 
 	"Code": 
 	{ 
 		"Key": 1,
@@ -2777,15 +2900,14 @@ ing_struct = '''
 		"MaxLength": 100 
 	} 
 }
-'''
+
 ing_file = 'ing'
 ##################################################
 
 
 #Text
 ##################################################
-tex_struct = '''
-{ 
+tex_struct = { 
 	"Code": 
 	{ 
 		"Key": 1,
@@ -2818,7 +2940,7 @@ tex_struct = '''
 		"MaxLength": 100 
 	} 
 }
-'''
+
 tex_file = 'tex'
 ##################################################
 

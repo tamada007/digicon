@@ -1783,8 +1783,11 @@ class Master:
 			pass
 	"""
 
-	def __init__(self, name, file_no, text):
-		json_data = common.get_json_from_string(text)
+	def __init__(self, name, file_no, jsonData):
+		if isinstance(jsonData, str):
+			json_data = common.get_json_from_string(jsonData)
+		else:
+			json_data = jsonData
 		self.name = name
 		self.file_no = file_no
 		self.fieldKeys		= []

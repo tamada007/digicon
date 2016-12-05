@@ -17,7 +17,9 @@ class Master:
 			pass
 	"""
 	
-	def __init__(self, name, text):
+	def __init__(self, name, jsonData):
+		if isinstance(jsonData, str):
+			jsonData = common.common.get_json_from_string(jsonData)
 		self.name = name
 		self.scale_file_name = name + "0uall.csv"
 		self.fields_info	= []
@@ -31,7 +33,7 @@ class Master:
 			"SMText": type(""),
 			"SMFloat":type(0.0),
 		}
-		for field_name, dic_field_info in text.items():
+		for field_name, dic_field_info in jsonData.items():
 			#print finfo
 			current_field_info=[]
 			try:

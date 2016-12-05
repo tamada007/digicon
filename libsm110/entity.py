@@ -61,6 +61,9 @@ class RttMaster(Master):
 	def __init__(self):
 		Master.__init__(self, "Rtt", 0x52, const.rtt_struct)
 
+class ScdMaster(Master):
+	def __init__(self):
+		Master.__init__(self, "Scd", 0x4F, const.scd_struct)
 
 
 class MasterFactory:
@@ -88,6 +91,7 @@ class MasterFactory:
 			"Ptr": lambda : PtrMaster(),
 			"Rtb": lambda : RtbMaster(),
 			"Rtt": lambda : RttMaster(),
+			"Scd": lambda : ScdMaster(),
 		}
 		if master_name in master_list:
 			return master_list[master_name]()

@@ -132,7 +132,10 @@ class smtws:
 							received_length += received_data_plus_length
 							received_data += received_data_plus
 						#
-						record_no = int(received_data[:8])
+						try:
+							record_no = int(received_data[:8])
+						except Exception, e:
+							record_no = int(received_data[:8], 16)
 						fp.write(received_data + "\r\n")
 
 		except TwsException, e:

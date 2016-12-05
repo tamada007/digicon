@@ -73,6 +73,8 @@ if __name__ == '__main__':
 	filter_file = ""
 	scale_list = []
 	scale_file = ""
+	
+	dat_file = ""
 
 	get_label = False
 
@@ -86,7 +88,7 @@ if __name__ == '__main__':
 	common.log_init()
 
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "HvPTKLhd:F:g:G:c:t:s:S:m:f:t:R:i:o:", ["help"])
+		opts, args = getopt.getopt(sys.argv[1:], "HvPTKLhd:F:g:G:c:t:s:S:m:f:t:R:i:o:", ["dat=","help"])
 
 		if not opts:
 			print_usage()
@@ -95,6 +97,8 @@ if __name__ == '__main__':
 		for o, v in opts:
 			if o in ("-h", "--help"):
 				print_usage()
+			elif o == "--dat":
+				dat_file = v
 			elif o in ("-c"):
 				json_plu_file = v
 			elif o in ("-t"):
@@ -187,11 +191,11 @@ if __name__ == '__main__':
 #		common.log_err( "Report File not Exist!!!" )
 #		sys.exit(5)
 
-	if len(conflict_check_list) == 0 and not file_list and not delete_file:
+	if len(conflict_check_list) == 0 and not file_list and not delete_file and not dat_file:
 		common.log_err( "No enough Parameters" )
 		sys.exit(2)
 
-	if not scale_list and not scale_file:
+	if not scale_list and not scale_file and not dat_file:
 		common.log_err( "Scale List is EMPTY!" )
 		sys.exit(3)
 
@@ -221,6 +225,30 @@ if __name__ == '__main__':
 				exitCode = 8
 
 
+	#处理直接下发的DAT文件(只支持SM110)
+	if dat_file:
+		try:
+			import re
+			#匹配192.168.68.125.25.DAT这样的格式
+			pat = re.compile("(\d{,3}\.\d{,3}\.\d{,3}\.\d{,3})\.(\d+)\.dat")
+			m = pat.match(dat_file.lower())
+			if m:
+				scale_ip = m.group(1)
+				file_no = int(m.group(2),16)
+				sm110_scale = libsm110.smtws.smtws(scale_ip)
+				if not sm110_scale.upload_file(file_no, dat_file):
+					raise Exception('Error On Sending Data File')
+			else:
+				raise Exception("Incorrect File Name")
+		except Exception, e:
+			common.log_err( e )
+			exitCode = 8
+			#print dir(e)
+		else:
+			common.log_info( "Finished Sending Dat File To Scale!" )
+			
+	
+
 	for index, scale in enumerate(scale_list):
 		scale = scale.strip()
 		if not scale:
@@ -240,29 +268,11 @@ if __name__ == '__main__':
 			#sm120
 			ease = libsm120.easy.Easy(scale)
 			common.clear_all_tables(libsm120.const.db_name)
-
-# 			if general_plu:
-# 				scale_converter = ScaleConverter("sm120", scale)
-# 			elif general_trace:
-# 				scale_converter = ScaleConverter("sm120", scale, converter.TRACE_converter)
-# 			elif general_flb:
-# 				scale_converter = ScaleConverter("sm120", scale, converter.FLEXIBARCODE_converter)
-# 			elif general_kas:
-# 				scale_converter = ScaleConverter("sm120", scale, converter.PRESETKEY_converter)
-
+			
 		else:
 			#sm110
 			ease = libsm110.easy.Easy(scale)
 			common.clear_all_tables(libsm110.const.db_name)
-
-# 			if general_plu:
-# 				scale_converter = ScaleConverter("sm110", scale)
-# 			elif general_trace:
-# 				scale_converter = ScaleConverter("sm110", scale, converter.TRACE_converter)
-# 			elif general_flb:
-# 				scale_converter = ScaleConverter("sm110", scale, converter.FLEXIBARCODE_converter)
-# 			elif general_kas:
-# 				scale_converter = ScaleConverter("sm110", scale, converter.PRESETKEY_converter)
 
 
 		if delete_file:

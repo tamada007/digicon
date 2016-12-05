@@ -11,7 +11,8 @@ class MgpMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			#Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 
 class PlaMaster(Master):
@@ -22,7 +23,7 @@ class PlaMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 
 class PluMaster(Master):
@@ -33,7 +34,7 @@ class PluMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 class DepMaster(Master):
 	def __init__(self):
@@ -43,7 +44,7 @@ class DepMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 class KasMaster(Master):
 	def __init__(self):
@@ -53,7 +54,7 @@ class KasMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 class TrgMaster(Master):
 	def __init__(self):
@@ -63,7 +64,7 @@ class TrgMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 class TrbMaster(Master):
 	def __init__(self):
@@ -73,7 +74,7 @@ class TrbMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 class TrtMaster(Master):
 	def __init__(self):
@@ -83,7 +84,7 @@ class TrtMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 class TbtMaster(Master):
 	def __init__(self):
@@ -93,7 +94,7 @@ class TbtMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 class PrfMaster(Master):
 	def __init__(self):
@@ -103,7 +104,7 @@ class PrfMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 class PffMaster(Master):
 	def __init__(self):
@@ -113,7 +114,7 @@ class PffMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 class FlbMaster(Master):
 	def __init__(self):
@@ -123,7 +124,7 @@ class FlbMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 class MubMaster(Master):
 	def __init__(self):
@@ -133,7 +134,7 @@ class MubMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 class SpmMaster(Master):
 	def __init__(self):
@@ -143,7 +144,7 @@ class SpmMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 class IngMaster(Master):
 	def __init__(self):
@@ -153,7 +154,7 @@ class IngMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 class TexMaster(Master):
 	def __init__(self):
@@ -163,7 +164,7 @@ class TexMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 class PltMaster(Master):
 	def __init__(self):
@@ -173,7 +174,7 @@ class PltMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 class DptMaster(Master):
 	def __init__(self):
@@ -183,7 +184,7 @@ class DptMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 class MgtMaster(Master):
 	def __init__(self):
@@ -193,7 +194,7 @@ class MgtMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 class PtrMaster(Master):
 	def __init__(self):
@@ -203,7 +204,7 @@ class PtrMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 class RtbMaster(Master):
 	def __init__(self):
@@ -213,7 +214,7 @@ class RtbMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
 
 class RttMaster(Master):
 	def __init__(self):
@@ -223,11 +224,23 @@ class RttMaster(Master):
 		if os.path.isfile(scale_file):
 			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
 		else:
-			Master.__init__(self, file_abbr, common.common.get_json_from_string(file_struct))
+			Master.__init__(self, file_abbr, file_struct)
+
+class ScdMaster(Master):
+	def __init__(self):
+		file_struct = const.scd_struct
+		file_abbr = self.__class__.__name__.lower()[:3]
+		scale_file = file_abbr + '.json'
+		if os.path.isfile(scale_file):
+			Master.__init__(self, file_abbr, common.common.get_json_from_file(scale_file))
+		else:
+			Master.__init__(self, file_abbr, file_struct)
+
 
 class MasterFactory:
 	def createMaster(self, master_name):
 		master_list = {
+			"Scd": lambda : ScdMaster(),
 			"Plu": lambda : PluMaster(),
 			"Mgp": lambda : MgpMaster(),
 			"Pla": lambda : PlaMaster(),
