@@ -10,7 +10,7 @@ if os.path.isfile('encode.txt'):
 		current_encoding = fp.readline()
 		
 
-VERSION="3.1"
+VERSION="3.3"
 
 sys.getdefaultencoding()
 reload(sys)
@@ -215,11 +215,11 @@ if __name__ == '__main__':
 			if general_plu:
 				scales_converter = ScalesConverter()
 			elif general_trace:
-				scales_converter = ScalesConverter(converter.TRACE_converter)
+				scales_converter = ScalesConverter(converter.ConverterDesc_TRACE)
 			elif general_flb:
-				scales_converter = ScalesConverter(converter.FLEXIBARCODE_converter)
+				scales_converter = ScalesConverter(converter.ConvertDesc_FLEXIBARCODE)
 			elif general_kas:
-				scales_converter = ScalesConverter(converter.PRESETKEY_converter)
+				scales_converter = ScalesConverter(converter.ConvertDesc_PRESETKEY)
 			
 			if not scales_converter.easyImportMaster(scale_list, in_csv_file, template_file):
 				exitCode = 8
