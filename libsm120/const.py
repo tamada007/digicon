@@ -3,31 +3,32 @@
 db_name = "sm120.sqlite"
 
 report_list = {
-	"Scale Data": """
+	"Scale Data": 
 	{
 		"Tables": "Scd",
-		"SQL": "SELECT PLU_number,PLU_remain FROM Scd"
-	}""",
-	"PLU Total": """
+		"SQL": "SELECT IP_address,PLU_number,PLU_remain FROM Scd",
+		"Fields": ["substr($(1),0,3).substr($(1),3,3).substr($(1),6,3).substr($(1),9,3)", "$(2)", "$(3)"]
+	},
+	"PLU Total": 
 	{
 		"Tables": "Plu,Plt",
 		"SQL": "SELECT plt.*,plu.CommodityName1 FROM plt LEFT JOIN plu ON plt.pluno=plu.pluno"
-	}""",
-	"PLU Transaction": """
+	},
+	"PLU Transaction": 
 	{
 		"Tables": "Ptr",
 		"SQL": "SELECT * FROM ptr"
-	}""",
-	"Real Time Total Buffer": """
+	},
+	"Real Time Total Buffer": 
 	{
 		"Tables": "Rtt",
 		"SQL": "SELECT * FROM rtt"
-	}""",
-	"Real Time Buffer": """
+	},
+	"Real Time Buffer": 
 	{
 		"Tables": "Rtb,Plu",
 		"SQL": "SELECT rtb.*,plu.CommodityName1 FROM rtb LEFT JOIN plu on plu.pluno=rtb.pluno"
-	}""",
+	},
 
 }
 

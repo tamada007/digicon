@@ -933,10 +933,15 @@ class Easy:
 		if export_template_file:
 			json_data = common.common.get_json_from_file(export_template_file)
 		elif export_template_info:
-			json_data = common.common.get_json_from_string(export_template_info)
+			if isinstance(export_template_info, str):
+				json_data = common.common.get_json_from_string(export_template_info)
+			else:
+				json_data = export_template_info
 
-		sql = json_data.get("SQL", "")
-		tableNames = json_data.get("Tables", "")
+		sql				= json_data.get("SQL", "")
+		tableNames		= json_data.get("Tables", "")
+		targetFields	= json_data.get("Fields", [])
+		
 
 		table_list = tableNames.split(",")
 
@@ -963,12 +968,23 @@ class Easy:
 			open_mode = "wb"
 		with open(export_csv_file, open_mode) as fp:
 			if title:
-				#fp.write(",".join(field_names) + "\n");
-				fp.write(",".join(field_names).decode('utf8').encode(encoding) + "\r\n")
+				# 如果导出文件已经存在，且是append模式，就不加标题行了
+				if append and os.path.isfile(export_csv_file) and os.path.getsize(export_csv_file) > 0:
+					pass
+				else:
+					#fp.write(",".join(field_names) + "\n");
+					fp.write(",".join(field_names).decode('utf8').encode(encoding) + "\r\n")
+					
 			for row in cursor:
-				#print row
 				cells = [ unicode(cell).encode(encoding) for cell in row ]
-				fp.write(",".join(cells) + "\n")
+				if targetFields:
+					target_cells = []
+					for target_field in targetFields:
+						strpar = common.strparser.StrParser(target_field, cells)
+						target_cells.append( strpar.eval(0) )
+					fp.write(",".join(target_cells) + "\r\n")
+				else:
+					fp.write(",".join(cells) + "\n")
 
 		common.common.log_info( "Exporting From %s To %s Successfully..." % (self.ip, export_csv_file) )
 		return True

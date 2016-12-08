@@ -3,36 +3,36 @@
 db_name = "sm110.sqlite"
 
 report_list = {
-	"Scale Data": """
+	"Scale Data": 
 	{
-		"SQL": "SELECT scale_number_plu,scale_plu_remain FROM Scd",
+		"SQL": "SELECT scale_ip_addr,scale_number_plu,scale_plu_remain FROM Scd",
 		"Tables": "Scd",
-		"Fields": [ "$(1)","$(2)"]
-	}""",
-	"PLU Total": """
+		"Fields": [ "hex2int(substr(lfill(int2hex($(1)),8),0,2)).hex2int(substr(lfill(int2hex($(1)),8),2,2)).hex2int(substr(lfill(int2hex($(1)),8),4,2)).hex2int(substr(lfill(int2hex($(1)),8),6,2))","$(2)","$(3)"]
+	},
+	"PLU Total": 
 	{
 		"SQL": "SELECT Plt.PLUNo,plt.TOTAL_DAILY_TOTAL_ACTUAL_PRICE,Plu.Commodity FROM Plt inner join Plu on Plu.Pluno=plt.pluno",
 		"Tables": "Plt, Plu",
 		"Fields": [ "$(1)", "csvindex(2, $(3))", "div($(2), 100)"]
-	}""",
-	"PLU Transaction": """
+	},
+	"PLU Transaction": 
 	{
 		"SQL": "SELECT T_PLU_TRANS_NO, T_PLU_TRANS_PLUNO, T_PLU_TRANS_TP, ITEM_NAME From Ptr",
 		"Tables": "Ptr",
 		"Fields": [ "$(1)", "$(2)", "$(3)", "csvindex(2,$(4))" ]
-	}""",
-	"Real Time Total Buffer": """
+	},
+	"Real Time Total Buffer": 
 	{
 		"SQL": "select receiptno,TOTAL_WEIGHT,TOTAL_PRICE_WITH_TAX from rtt",
 		"Tables": "Rtt",
 		"Fields": [ "$(1)", "$(2)", "$(3)" ]
-	}""",
-	"Real Time Buffer": """
+	},
+	"Real Time Buffer": 
 	{
 		"SQL": "select rtb.RecordNo 记录号,rtb.pluno 商品号,rtb.weight 重量,rtb.actual_price 金额,plu.commodity 品名,plu.specialmessage 特殊信息,plu.ingredient 成份,rtb.traceability_reference_code 追溯信息,rtb.jin_recbuf_weight_for_tw 日期,rtb.jin_recbuf_status_for_tw 时间 from Rtb left join Plu on Plu.Pluno = rtb.pluno",
 		"Tables": "Rtb,Plu",
 		"Fields": [ "$(1)", "$(2)", "$(3)", "$(4)", "csvindex(2,$(5))", "csvindex(2,rtnindex(1,$(6)))", "csvindex(2,rtnindex(1,$(7)))", "$(8)", "$(9)","$(10)"]
-	}""",
+	},
 
 }
 

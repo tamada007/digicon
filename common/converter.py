@@ -588,7 +588,7 @@ ConvertDesc_FLEXIBARCODE = {
 	]
 }
 
-ConverterDesc_TRACE = {
+ConvertDesc_TRACE = {
 	"sm110": [
 		{ "source": "$(TraceabilityNo)",                 "target": "Trg.Code" },
 		{ "source": "$(TraceReferenceCode)",             "target": "Trg.ReferenceCode" },

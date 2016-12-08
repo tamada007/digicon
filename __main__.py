@@ -59,7 +59,7 @@ Options:
 
 if __name__ == '__main__':
 
-	exitCode = 0
+	iExitCode = 0
 
 	json_plu_file = ""
 	json_label_file = ""
@@ -78,10 +78,10 @@ if __name__ == '__main__':
 
 	get_label = False
 
-	general_plu = False
-	general_trace = False
-	general_flb = False
-	general_kas = False
+	bImportForPlu = False
+	bImportForTrace = False
+	bImportFlexibarcode = False
+	bImportPresetKey = False
 	titling = False
 
 	#init log module
@@ -126,13 +126,13 @@ if __name__ == '__main__':
 			elif o == "-H":
 				titling = True
 			elif o == "-P":
-				general_plu = True
+				bImportForPlu = True
 			elif o == '-K':
-				general_kas = True
+				bImportPresetKey = True
 			elif o == "-L":
-				general_flb = True
+				bImportFlexibarcode = True
 			elif o == "-T":
-				general_trace = True
+				bImportForTrace = True
 			elif o == "-G":
 				json_label_file = v
 				get_label = True
@@ -211,18 +211,18 @@ if __name__ == '__main__':
 
 
 	if template_file and in_csv_file:
-		if general_plu or general_trace or general_flb or general_kas:
-			if general_plu:
+		if bImportForPlu or bImportForTrace or bImportFlexibarcode or bImportPresetKey:
+			if bImportForPlu:
 				scales_converter = ScalesConverter()
-			elif general_trace:
-				scales_converter = ScalesConverter(converter.ConverterDesc_TRACE)
-			elif general_flb:
+			elif bImportForTrace:
+				scales_converter = ScalesConverter(converter.ConvertDesc_TRACE)
+			elif bImportFlexibarcode:
 				scales_converter = ScalesConverter(converter.ConvertDesc_FLEXIBARCODE)
-			elif general_kas:
+			elif bImportPresetKey:
 				scales_converter = ScalesConverter(converter.ConvertDesc_PRESETKEY)
 			
 			if not scales_converter.easyImportMaster(scale_list, in_csv_file, template_file):
-				exitCode = 8
+				iExitCode = 8
 
 
 	#处理直接下发的DAT文件(只支持SM110)
@@ -242,7 +242,7 @@ if __name__ == '__main__':
 				raise Exception("Incorrect File Name")
 		except Exception, e:
 			common.log_err( e )
-			exitCode = 8
+			iExitCode = 8
 			#print dir(e)
 		else:
 			common.log_info( "Finished Sending Dat File To Scale!" )
@@ -304,7 +304,7 @@ if __name__ == '__main__':
 					title = True)
 			elif in_csv_file:
 				#import
-				if general_plu or general_trace or general_flb or general_kas:
+				if bImportForPlu or bImportForTrace or bImportFlexibarcode or bImportPresetKey:
 					#scale_converter.easyImportMaster(in_csv_file, template_file)
 					pass
 				else:
@@ -327,7 +327,7 @@ if __name__ == '__main__':
 					export_csv_file = out_csv_file,
 					title = True)
 
-	sys.exit(exitCode)
+	sys.exit(iExitCode)
 
 #	m = KageTest()
 #	m.test()
@@ -340,26 +340,6 @@ if __name__ == '__main__':
 	#m.to_json("m.json")
 
 	#m.to_csv('koko.csv', True)
-
-	'''
-	with open('m.csv', 'r') as fp:
-		cr = csv.reader(fp)
-		header = cr.next()
-		#print header
-		rows_list = []
-		for cur_row in cr:
-			row_dic = []
-			#print cur_row
-			for i,col in enumerate(header):
-				#print '%d, %s' % (i, col)
-				row_dic.append( { col: cur_row[i] } )
-			#m.add_row(cur_row)
-			#print rows
-			#m.add_row(row_dic);
-			rows_list.append(row_dic);
-		m.add_rows(rows_list)
-
-	'''
 
 	#scale = digiscale.DigiSm120('S0501')
 	#scale.send(m)

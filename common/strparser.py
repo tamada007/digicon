@@ -77,6 +77,10 @@ def eval_isnotnull(expr, vlist, mlist, glist):
 def eval_hex(expr, vlist, mlist, glist):
 	return str(int(expr, 16))
 
+def eval_int(expr, vlist, mlist, glist):
+	return hex(int(expr))[2:].upper()
+
+
 def eval_join(expr, vlist, mlist, glist):
 	col_list = csv.reader(StringIO.StringIO(expr)).next()
 	#for col in col_list: print col
@@ -418,7 +422,8 @@ funcList = {
 	"dec":          eval_dec,
 	"mul":          eval_mul,
 	"trunc":        eval_trunc,
-	"hex":          eval_hex,
+	"hex2int":      eval_hex,
+	"int2hex":		eval_int,
 	"isempty":      eval_isempty,
 	"isnotempty":   eval_isnotempty,
 	"isnull":       eval_isnull,
@@ -549,7 +554,8 @@ if __name__ == '__main__':
 	data = "中b国人567777"
 	#print len(data)
 	
-	print StrParser('add(1.2,3)',[],{},{}).eval(0)
+	#print StrParser('add(1.2,3)',[],{},{}).eval(0)
+	print StrParser('hex2int(substr(lfill(int2hex(3232253053),8),0,2))',[],{},{}).eval(0)
 
  	#StrParser("csv2tws(12345中国国国国国国国国国国国国国国国国国国国国,21)", [], {}, {}).eval(0)
 					
