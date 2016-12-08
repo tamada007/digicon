@@ -42,6 +42,8 @@ class StatementConvert:
 		cbSetValueList(tableNamePLU, "UnitPriceOverrideFlag", csv_values.get("PriceOverride") or "0")
 		# ItemCode
 		cbSetValueList(tableNamePLU, "ItemCode", csv_values.get("ItemCode") or "0000000000")
+		#条码右侧数据X
+		cbSetValueList(tableNamePLU, "RightSideDataOfEanData", csv_values.get("BarcodeX") or "0")
 		
 		# 产地
 		tmp_placecode = csv_values.get("PlaCode")
@@ -203,13 +205,13 @@ class StatementConvert:
 		for index in xrange(10):
 			if csv_values.get("Text%d" % (index+1)):
 				cbSetValueList(tableNamePLU, "TextNo%d" % (index+1),	csv_values.get("TexCode%d" % (index+1)) or str(cur_line_no))
-				cbSetValueList(tableNameTEX, "Code",		line_no = -1, value = csv_values.get("TexCode%d" % (index+1)) or str(cur_line_no))
-				cbSetValueList(tableNameTEX, "LineNo",		line_no = -1, value = "1")
-				cbSetValueList(tableNameTEX, "DeleteFlag",	line_no = -1, value = "2")
-				cbSetValueList(tableNameTEX, "Code",		line_no = 1, value = csv_values.get("TexCode%d" % (index+1)) or str(cur_line_no))
-				cbSetValueList(tableNameTEX, "LineNo",		line_no = 1, value = "1")
-				cbSetValueList(tableNameTEX, "Flag",		line_no = 1, value = csv_values.get("Text%dFont" % (index+1)) or "0")
-				cbSetValueList(tableNameTEX, "Data",		line_no = 1, value = csv_values.get("Text%d" % (index+1)).replace('"','""'))
+				cbSetValueList(tableNameTEX, "Code",		line_no = -(index+1), value = csv_values.get("TexCode%d" % (index+1)) or str(cur_line_no))
+				cbSetValueList(tableNameTEX, "LineNo",		line_no = -(index+1), value = "1")
+				cbSetValueList(tableNameTEX, "DeleteFlag",	line_no = -(index+1), value = "2")
+				cbSetValueList(tableNameTEX, "Code",		line_no = index+1, value = csv_values.get("TexCode%d" % (index+1)) or str(cur_line_no))
+				cbSetValueList(tableNameTEX, "LineNo",		line_no = index+1, value = "1")
+				cbSetValueList(tableNameTEX, "Flag",		line_no = index+1, value = csv_values.get("Text%dFont" % (index+1)) or "0")
+				cbSetValueList(tableNameTEX, "Data",		line_no = index+1, value = csv_values.get("Text%d" % (index+1)).replace('"','""'))
 			
 		# MultiBarcode 1
 		if csv_values.get("Multibarcode1"):
@@ -246,7 +248,9 @@ class StatementConvert:
 					pass
 				
 		# Extra Processing
-		execfile("plugin.py")
+		try:
+			execfile("plugin.py")
+		except: pass
 	
 	@staticmethod
 	def convertInfoForSm110(cur_line_no, csv_values, cbSetValueList):
@@ -454,7 +458,9 @@ class StatementConvert:
 			cbSetValueList(tableNamePLU, "Ingredient", "\n".join(ing_array_data))
 
 		# Extra Processing
-		execfile("plugin.py")
+		try:
+			execfile("plugin.py")
+		except: pass
 		
 
 	@staticmethod
