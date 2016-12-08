@@ -243,7 +243,7 @@ class StatementConvert:
 					for mul2_index, mul2_data in enumerate(mul2_data_list[:10]):
 						cbSetValueList(tableNameTBT, "Code",		line_no = mul2_index+1, value = csv_values.get("TbtCode") or str(cur_line_no))
 						cbSetValueList(tableNameTBT, "LineNo",		line_no = mul2_index+1, value = str(mul2_index+1))
-						cbSetValueList(tableNameTBT, "Data",		line_no = mul2_index+1, value = mul2_data)
+						cbSetValueList(tableNameTBT, "Data",		line_no = mul2_index+1, value = mul2_data.decode(sys.getdefaultencoding()))
 				except Exception:
 					pass
 				
