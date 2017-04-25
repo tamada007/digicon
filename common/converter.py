@@ -663,6 +663,24 @@ ConvertDesc_FLEXIBARCODE = {
     ]
 }
 
+ConvertDesc_PAS = {
+    "sm110": [
+        {"source": "$(PasswordCode)", "target": "Pas.Code"},
+        {"source": "trim($(XModePwd))", "target": "Pas.XModePwd"},
+        {"source": "trim($(SModePwd))", "target": "Pas.SModePwd"},
+        {"source": "trim($(ZModePwd))", "target": "Pas.ZModePwd"},
+        {"source": "trim($(PModePwd))", "target": "Pas.PModePwd"}
+    ],
+    "sm120": [
+        {"source": "$(PasswordCode)", "target": "Pas.Code"},
+        {"source": "trim($(XModePwd))", "target": "Pas.XModePwd"},
+        {"source": "trim($(SModePwd))", "target": "Pas.SModePwd"},
+        {"source": "trim($(ZModePwd))", "target": "Pas.ZModePwd"},
+        {"source": "trim($(PModePwd))", "target": "Pas.PModePwd"}
+
+    ]
+}
+
 ConvertDesc_TRACE = {
     "sm110": [
         {"source": "$(TraceabilityNo)", "target": "Trg.Code"},
@@ -1478,6 +1496,8 @@ class ScalesConverter():
             "sm110": libsm110.entity.MasterFactory(),
             "sm120": libsm120.entity.MasterFactory(),
         }
+        self.lst_sm120 = []
+        self.lst_sm110 = []
 
     def easyImportMaster(
             self,

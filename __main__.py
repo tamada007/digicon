@@ -84,13 +84,14 @@ if __name__ == '__main__':
     bImportForTrace = False
     bImportFlexibarcode = False
     bImportPresetKey = False
+    bImportPassword = False
     titling = False
 
     # init log module
     common.log_init()
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "HvPTKLhd:F:g:G:c:t:s:S:m:f:t:R:i:o:", ["dat=", "help"])
+        opts, args = getopt.getopt(sys.argv[1:], "HvPTKLAhd:F:g:G:c:t:s:S:m:f:t:R:i:o:", ["dat=", "help"])
 
         if not opts:
             print_usage()
@@ -129,6 +130,8 @@ if __name__ == '__main__':
                 titling = True
             elif o == "-P":
                 bImportForPlu = True
+            elif o == "-A":
+                bImportPassword = True
             elif o == '-K':
                 bImportPresetKey = True
             elif o == "-L":
@@ -140,6 +143,7 @@ if __name__ == '__main__':
                 get_label = True
             elif o == '-v':
                 print "version: " + VERSION
+                print "Shanghai Teraoka Co,. Ltd"
                 sys.exit(0)
             else:
                 sys.exit(1)
@@ -210,7 +214,11 @@ if __name__ == '__main__':
         os.remove(out_csv_file)
 
     if template_file and in_csv_file:
-        if bImportForPlu or bImportForTrace or bImportFlexibarcode or bImportPresetKey:
+        if bImportForPlu or \
+                bImportForTrace or \
+                bImportFlexibarcode or \
+                bImportPresetKey or \
+                bImportPassword:
             if bImportForPlu:
                 scales_converter = ScalesConverter()
             elif bImportForTrace:
@@ -219,6 +227,8 @@ if __name__ == '__main__':
                 scales_converter = ScalesConverter(converter.ConvertDesc_FLEXIBARCODE)
             elif bImportPresetKey:
                 scales_converter = ScalesConverter(converter.ConvertDesc_PRESETKEY)
+            elif bImportPassword:
+                scales_converter = ScalesConverter(converter.ConvertDesc_PAS)
 
             if not scales_converter.easyImportMaster(scale_list, in_csv_file, template_file):
                 iExitCode = 8
@@ -300,7 +310,7 @@ if __name__ == '__main__':
                     title=True)
             elif in_csv_file:
                 # import
-                if bImportForPlu or bImportForTrace or bImportFlexibarcode or bImportPresetKey:
+                if bImportForPlu or bImportForTrace or bImportFlexibarcode or bImportPresetKey or bImportPassword:
                     # scale_converter.easyImportMaster(in_csv_file, template_file)
                     pass
                 else:

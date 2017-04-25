@@ -2,21 +2,22 @@
 import sys, json, const, traceback
 import common.csvreader
 import common.common
+from common import scale_enc_conv as scale_encoding_converter
 
 
 # import time
 
-class Master:
+class Master(object):
     # DBConnection = common.common.open_sqlite_db(const.db_name)
 
     """	
-	def __del__(self):
-		try:
-			if self.conn:
-				self.conn.close()
-		except:
-			pass
-	"""
+    def __del__(self):
+        try:
+            if self.conn:
+                self.conn.close()
+        except:
+            pass
+    """
 
     def __init__(self, name, jsonData):
         if isinstance(jsonData, str):
@@ -76,7 +77,6 @@ class Master:
     # 		if self.fieldKeys and len(self.fieldKeys) > 0:
     # 			cursor.execute("CREATE INDEX %s ON %s (%s)" % ("indx_" + self.name, self.name, ",".join(self.fieldKeys)))
 
-
     def __keyValue(self, f):
         # if type(f) is types.IntType or type(f) is types.FloatType:
         fk, fv = f.items()[0]
@@ -110,7 +110,8 @@ class Master:
             # filteredFieldList = [ {k: v[0]} for k, v in field_dic.items() if type(k) is int ]
             filteredFieldList = [{k: v[0]} for k, v in field_dic.items() if isinstance(k, int)]
 
-        fieldList = [self.__keyValue(f) for f in filteredFieldList]
+        # fieldList = [self.__keyValue(f) for f in filteredFieldList]
+        fieldList = [scale_encoding_converter.conv_scale_to_pc(self.__keyValue(f)) for f in filteredFieldList]
         fieldName = [self.__keyName(f) for f in filteredFieldList]
         cursor = self.conn.cursor()
         sql = "INSERT INTO %s %s VALUES( %s )" % (
@@ -125,7 +126,8 @@ class Master:
         cursor = self.conn.cursor()
         for row_list in rows_list:
             # print row_list
-            fieldList = [self.__keyValue(f) for f in row_list]
+            # fieldList = [self.__keyValue(f) for f in row_list]
+            fieldList = [scale_encoding_converter.conv_scale_to_pc(self.__keyValue(f)) for f in row_list]
             fieldName = [self.__keyName(f) for f in row_list]
             sql = "INSERT INTO %s %s VALUES( %s )" % (
                 self.name,
@@ -165,10 +167,11 @@ class Master:
                 fp.write(",".join(field_names) + "\r\n")
             for row in cursor:
                 # for cell in row: print cell
-                cells = [unicode(cell).encode(encoding) for cell in row]
+                # cells = [unicode(cell).encode(encoding) for cell in row]
+                cells = [scale_encoding_converter.conv_pc_to_scale(unicode(cell).encode(encoding)) for cell in row]
                 fp.write(",".join(cells) + "\r\n")
 
-            # 		print "2 elipsed:", time.time() - beg #testonly
+                # 		print "2 elipsed:", time.time() - beg #testonly
 
     def to_json(self, file_path, encoding=sys.getdefaultencoding()):
         cursor = self.conn.cursor()

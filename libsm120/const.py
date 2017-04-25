@@ -32,6 +32,44 @@ report_list = {
 
 }
 
+# Password
+pas_struct = {
+    "Code": {
+        "ColumnIndex": 1,
+        "Key": 1,
+        "Type": "SMInt"
+    },
+    "Flag_for_delete": {
+        "ColumnIndex": 2,
+        "Type": "SMText"
+    },
+    "XModePwd": {
+        "ColumnIndex": 3,
+        "Type": "SMInt"
+    },
+    "SModePwd": {
+        "ColumnIndex": 4,
+        "Type": "SMInt"
+    },
+    "ZModePwd": {
+        "ColumnIndex": 5,
+        "Type": "SMInt"
+    },
+    "PModePwd": {
+        "ColumnIndex": 6,
+        "Type": "SMInt"
+    },
+    "UModePwd": {
+        "ColumnIndex": 7,
+        "Type": "SMInt"
+    },
+    "RModePwd": {
+        "ColumnIndex": 8,
+        "Type": "SMInt"
+    },
+
+}
+
 # Scale Data
 scd_struct = {
     "Scale_serial_No": {
@@ -153,7 +191,7 @@ scd_struct = {
     },
     "AD_module_type": {
         "ColumnIndex": 30,
-		"Type": "SMInt"
+        "Type": "SMInt"
     },
     "COUNTRY_SET": {
         "ColumnIndex": 31,
@@ -178,7 +216,7 @@ pla_struct = {
         {
             "ColumnIndex": 2,
             "Type": "SMInt",
-			"MaxLength": 2
+            "MaxLength": 2
         },
     "DeleteFlag":
         {
@@ -763,7 +801,7 @@ plu_struct = {
     "FlagForTuesday":
         {
             "ColumnIndex": 87,
-			"Type": "SMText",
+            "Type": "SMText",
             "MaxLength": 1
         },
     "FlagForWednesday":
@@ -931,7 +969,7 @@ plu_struct = {
     "DiscountPriceImage1":
         {
             "ColumnIndex": 115,
-			"Type": "SMInt",
+            "Type": "SMInt",
             "MaxLength": 2
         },
     "DiscountPriceImage2":
@@ -1016,7 +1054,7 @@ kas_struct = {
         {
             "ColumnIndex": 6,
             "Type": "SMInt",
-			"MaxLength": 8
+            "MaxLength": 8
         }
 }
 
@@ -1225,8 +1263,8 @@ plt_struct = {
             "MaxLength": 11
         },
     "TotalDiscountTermActuralPrice":
-		{
-			"ColumnIndex": 34,
+        {
+            "ColumnIndex": 34,
             "Type": "SMInt",
             "MaxLength": 11
         },
@@ -1358,8 +1396,8 @@ ptr_struct = {
             "Type": "SMText",
             "MaxLength": 20
         },
-	"ClerkNo":
-		{
+    "ClerkNo":
+        {
             "ColumnIndex": 18,
             "Type": "SMInt",
             "MaxLength": 2
@@ -1496,8 +1534,8 @@ rtb_struct = {
         {
             "ColumnIndex": 21,
             "Type": "SMInt",
-			"MaxLength": 1
-		},
+            "MaxLength": 1
+        },
     "FlagOfRefundItem":
         {
             "ColumnIndex": 22,
@@ -1611,7 +1649,7 @@ rtb_struct = {
             "ColumnIndex": 40,
             "Type": "SMInt",
             "MaxLength": 4
-		},
+        },
     "CuttingHallNo":
         {
             "ColumnIndex": 41,
@@ -1734,9 +1772,9 @@ rtt_struct = {
             "ColumnIndex": 7,
             "Type": "SMInt",
             "MaxLength": 6
-		},
-	"Time":
-		{
+        },
+    "Time":
+        {
             "ColumnIndex": 8,
             "Type": "SMInt",
             "MaxLength": 4
@@ -1756,7 +1794,7 @@ rtt_struct = {
     "IPaddressTail":
         {
             "ColumnIndex": 11,
-			"Type": "SMInt",
+            "Type": "SMInt",
             "MaxLength": 3
         },
     "TransactionNumber":
@@ -1782,8 +1820,8 @@ rtt_struct = {
             "ColumnIndex": 15,
             "Type": "SMInt",
             "MaxLength": 11
-		},
-	"TotalQuantity":
+        },
+    "TotalQuantity":
         {
             "ColumnIndex": 16,
             "Type": "SMInt",
@@ -1812,8 +1850,8 @@ rtt_struct = {
             "ColumnIndex": 20,
             "Type": "SMInt",
             "MaxLength": 11
-		},
-	"TotalValueOfCash":
+        },
+    "TotalValueOfCash":
         {
             "ColumnIndex": 21,
             "Type": "SMInt",
@@ -1839,7 +1877,7 @@ rtt_struct = {
         },
     "TotalChequeAmount":
         {
-			"ColumnIndex": 25,
+            "ColumnIndex": 25,
             "Type": "SMInt",
             "MaxLength": 11
         },
@@ -1865,8 +1903,8 @@ rtt_struct = {
         {
             "ColumnIndex": 29,
             "Type": "SMInt",
-			"MaxLength": 11
-		},
+            "MaxLength": 11
+        },
     "MemberShipNo":
         {
             "ColumnIndex": 30,
@@ -1950,7 +1988,7 @@ dpt_struct = {
         },
     "TotalMonthlyCustomer":
         {
-			"ColumnIndex": 12,
+            "ColumnIndex": 12,
             "Type": "SMInt",
             "MaxLength": 11
         },
@@ -2023,7 +2061,7 @@ dpt_struct = {
     "TotalLastMonthCustomer":
         {
             "ColumnIndex": 24,
-			"Type": "SMInt",
+            "Type": "SMInt",
             "MaxLength": 11
         },
     "TotalLastMonthQuantity":
@@ -2047,7 +2085,7 @@ dpt_struct = {
     "TotalLastMonthPlannedPrice":
         {
             "ColumnIndex": 28,
-			"Type": "SMInt",
+            "Type": "SMInt",
             "MaxLength": 11
         },
     "TotalLastMonthProfit":
@@ -2075,7 +2113,7 @@ mgt_struct = {
         {
             "ColumnIndex": 1,
             "Type": "SMInt",
-			"MaxLength": 6
+            "MaxLength": 6
         },
     "DeleteFlag":
         {

@@ -240,7 +240,7 @@ pla_struct = [
     {
         "Name": "Code",
         "Key": 1,
-		"Type": "BCD",
+        "Type": "BCD",
         "Length": 4
     },
     {
@@ -369,8 +369,8 @@ trg_struct = [
     {
         "Name": "Dummy",
         "Type": "BYTES",
-		"Length": 1
-	},
+        "Length": 1
+    },
     {
         "Name": "TraceLink",
         "Type": "BYTES",
@@ -388,7 +388,7 @@ trg_struct = [
     },
     {
         "Name": "Category",
-		"Type": "BCD",
+        "Type": "BCD",
         "Length": 2
     },
     {
@@ -405,7 +405,7 @@ trg_struct = [
         "Name": "ContactRef",
         "Type": "BYTES",
         "Length": 10
-	},
+    },
     {
         "Name": "EatDate",
         "Type": "BCD",
@@ -440,6 +440,42 @@ trg_struct = [
         "Name": "SupplierAddr2",
         "Type": "BYTES",
         "Length": 30
+    }
+]
+
+# Password
+pas_struct = [
+    {
+        "Name": "Code",
+        "Key": 1,
+        "Type": "BCD",
+        "Length": 4
+    },
+    {
+        "Name": "RecordSize",
+        "Type": "HEX",
+        "Length": 2,
+        "IsSize": 1
+    },
+    {
+        "Name": "XModePwd",
+        "Type": "BCD",
+        "Length": 3
+    },
+    {
+        "Name": "SModePwd",
+        "Type": "BCD",
+        "Length": 3
+    },
+    {
+        "Name": "ZModePwd",
+        "Type": "BCD",
+        "Length": 3
+    },
+    {
+        "Name": "PModePwd",
+        "Type": "BCD",
+        "Length": 3
     }
 ]
 
