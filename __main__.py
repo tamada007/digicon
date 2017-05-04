@@ -3,13 +3,13 @@
 import os, sys
 import getopt
 
-VERSION = "3.4"
+VERSION = "3.5"
 
 # 默认为gbk,在encode.txt可设置编码
 current_encoding = 'gbk'
 if os.path.isfile('encode.txt'):
     with open('encode.txt') as fp:
-        current_encoding = fp.readline()
+        current_encoding = fp.readline().strip()
 
 sys.getdefaultencoding()
 reload(sys)
@@ -40,9 +40,11 @@ def print_usage():
 Options:
     -h                       This Help
     -d                       Delete Master On Scale (Plu,Mgp...)
-    -P                       Import Plu generally (Both sm110 and sm120)
-    -T                       Import Trace generally (Both sm110 and sm120)
-    -L                       Import Flexibarcode generally (Both sm110 and sm120)
+    -P                       Import Plu (Both sm110 and sm120)
+    -T                       Import Trace (Both sm110 and sm120)
+    -L                       Import Flexibarcode (Both sm110 and sm120)
+    -A                       Import Password (Both sm110 and sm120)
+    -E                       Import Text (Both sm110 and sm120)
     -H                       Title Line In CSV
     -c Json File             Send Commodity information by Json
     -t Json File             Send Traceability information by Json
@@ -85,13 +87,14 @@ if __name__ == '__main__':
     bImportFlexibarcode = False
     bImportPresetKey = False
     bImportPassword = False
+    bImportText = False
     titling = False
 
     # init log module
     common.log_init()
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "HvPTKLAhd:F:g:G:c:t:s:S:m:f:t:R:i:o:", ["dat=", "help"])
+        opts, args = getopt.getopt(sys.argv[1:], "HvEPTKLAhvd:F:g:G:c:t:s:S:m:f:t:R:i:o:", ["dat=", "help"])
 
         if not opts:
             print_usage()
@@ -138,6 +141,8 @@ if __name__ == '__main__':
                 bImportFlexibarcode = True
             elif o == "-T":
                 bImportForTrace = True
+            elif o == "-E":
+                bImportText = True
             elif o == "-G":
                 json_label_file = v
                 get_label = True
@@ -218,7 +223,8 @@ if __name__ == '__main__':
                 bImportForTrace or \
                 bImportFlexibarcode or \
                 bImportPresetKey or \
-                bImportPassword:
+                bImportPassword or \
+                bImportText:
             if bImportForPlu:
                 scales_converter = ScalesConverter()
             elif bImportForTrace:
@@ -229,6 +235,8 @@ if __name__ == '__main__':
                 scales_converter = ScalesConverter(converter.ConvertDesc_PRESETKEY)
             elif bImportPassword:
                 scales_converter = ScalesConverter(converter.ConvertDesc_PAS)
+            elif bImportText:
+                scales_converter = ScalesConverter(converter.ConvertDesc_TEXT)
 
             if not scales_converter.easyImportMaster(scale_list, in_csv_file, template_file):
                 iExitCode = 8
@@ -310,7 +318,12 @@ if __name__ == '__main__':
                     title=True)
             elif in_csv_file:
                 # import
-                if bImportForPlu or bImportForTrace or bImportFlexibarcode or bImportPresetKey or bImportPassword:
+                if bImportForPlu or \
+                        bImportForTrace or \
+                        bImportFlexibarcode or \
+                        bImportPresetKey or \
+                        bImportPassword or \
+                        bImportText:
                     # scale_converter.easyImportMaster(in_csv_file, template_file)
                     pass
                 else:

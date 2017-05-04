@@ -681,6 +681,22 @@ ConvertDesc_PAS = {
     ]
 }
 
+ConvertDesc_TEXT = {
+    "sm110": [
+        {"source": "$(TextCode)", "target": "Tex.Code"},
+        {"source": 'twsascii($(TextFont),"""csvformat4($(Text))""")', "target": "Tex.Name"}
+    ],
+    "sm120": [
+        {"source": "$(TextCode)",                       "target": "Tex.Code.-1"},
+        {"source": "1",                                 "target": "Tex.LineNo.-1"},
+        {"source": "2",                                 "target": "Tex.DeleteFlag.-1"},
+        {"source": "$(TextCode)",                       "target": "Tex.Code.1"},
+        {"source": "1",                                 "target": "Tex.LineNo.1"},
+        {"source": '"csvformat($(Text))"',              "target": "Tex.Data.1"},
+        {"source": "isnull($(TextFont),0)",             "target": "Tex.Flag.1"}
+    ]
+}
+
 ConvertDesc_TRACE = {
     "sm110": [
         {"source": "$(TraceabilityNo)", "target": "Trg.Code"},
