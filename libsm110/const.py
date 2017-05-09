@@ -373,7 +373,8 @@ trg_struct = [
     },
     {
         "Name": "TraceLink",
-        "Type": "BYTES",
+        # "Type": "BYTES",
+        "Type": "BCD",
         "Length": 2
     },
     {

@@ -702,6 +702,7 @@ ConvertDesc_TRACE = {
         {"source": "$(TraceabilityNo)", "target": "Trg.Code"},
         {"source": "$(TraceReferenceCode)", "target": "Trg.ReferenceCode"},
         {"source": "1", "target": "Trg.ReferenceType"},
+        {"source": "$(TraceID)", "target": "Trg.TraceLink"},
         {
             "condition": "isnotempty($(TrbCode))",
             "statements": [
@@ -716,6 +717,7 @@ ConvertDesc_TRACE = {
         {"source": "$(TraceabilityNo)", "target": "Trg.Code"},
         {"source": "$(TraceReferenceCode)", "target": "Trg.ReferenceCode"},
         {"source": "1", "target": "Trg.ReferenceType"},
+        {"source": "$(TraceID)", "target": "Trg.TraceLink"},
         {
             "condition": "isnotempty($(TrbCode))",
             "statements": [

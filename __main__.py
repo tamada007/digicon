@@ -3,7 +3,7 @@
 import os, sys
 import getopt
 
-VERSION = "3.5"
+VERSION = "3.6"
 
 # 默认为gbk,在encode.txt可设置编码
 current_encoding = 'gbk'
