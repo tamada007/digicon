@@ -154,7 +154,7 @@ class smtws:
 
     def upload_file(self, file_no, file_name):
         request_data = ReqData().create_request_data(ReqData.Write_File, file_no, 0)
-        tmpline = ""
+        # tmpline = ""
         try:
             conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             conn.connect((self.hostaddr, self.port))

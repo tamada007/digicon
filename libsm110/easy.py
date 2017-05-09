@@ -88,11 +88,44 @@ class Easy:
         for master_name in master_list:
             master = entity.MasterFactory().createMaster(master_name)
             if master:
-                if not sm110.delete_master(master): return False
+                if not sm110.delete_master(master):
+                    return False
             else:
                 fileNo = int(master_name, 16)
-                if not sm110.delete_file(fileNo): return False
+                if not sm110.delete_file(fileNo):
+                    return False
         return True
+
+    def easyReceiveFile(self, mas_name, out_file_name):
+        master_list = mas_name.split(',')
+        sm110 = smtws.smtws(self.ip)
+        for master_name in master_list:
+            master = entity.MasterFactory().createMaster(master_name)
+            if master:
+                out_temp_file = sm110.download_file(master.file_no)
+                if out_temp_file:
+                    # print "rename", out_temp_file, "to", out_file_name
+                    if os.path.exists(out_file_name):
+                        os.remove(out_file_name)
+                    os.rename(out_temp_file, out_file_name)
+                else:
+                    return False
+            else:
+                return False
+        return True
+
+    def easySendFile(self, mas_name, in_file_name):
+        master_list = mas_name.split(',')
+        sm110 = smtws.smtws(self.ip)
+        result = True
+        for master_name in master_list:
+            master = entity.MasterFactory().createMaster(master_name)
+            if master:
+                result = result and sm110.upload_file(master.file_no, in_file_name)
+            else:
+                result = False
+        return result
+
 
     def easyRecvPrintFormat(self, json_file_path):
         prfmt = entity.PrfMaster()

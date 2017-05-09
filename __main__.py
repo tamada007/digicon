@@ -90,11 +90,18 @@ if __name__ == '__main__':
     bImportText = False
     titling = False
 
+    file_write = None
+    file_read = None
+    access_file_name = ""
+
     # init log module
     common.log_init()
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "HvEPTKLAhvd:F:g:G:c:t:s:S:m:f:t:R:i:o:", ["dat=", "help"])
+        opts, args = getopt.getopt(
+            sys.argv[1:],
+            "HvEPTKLAhvd:F:g:G:c:t:s:S:m:f:t:R:i:o:",
+            ["dat=", "read=", "write=", "access_file_name=", "help"])
 
         if not opts:
             print_usage()
@@ -105,13 +112,19 @@ if __name__ == '__main__':
                 print_usage()
             elif o == "--dat":
                 dat_file = v
-            elif o in ("-c"):
+            elif o == "--write":
+                file_write = v
+            elif o == "--read":
+                file_read = v
+            elif o == "--access_file_name":
+                access_file_name = v
+            elif o == "-c":
                 json_plu_file = v
-            elif o in ("-t"):
+            elif o == "-t":
                 json_trace_file = v
-            elif o in ("-f"):
+            elif o == "-f":
                 json_label_file = v
-            elif o in ("-s"):
+            elif o == "-s":
                 scale_list = v.split(",")
             elif o == "-S":
                 scale_file = v
@@ -201,7 +214,16 @@ if __name__ == '__main__':
     #		common.log_err( "Report File not Exist!!!" )
     #		sys.exit(5)
 
-    if len(conflict_check_list) == 0 and not file_list and not delete_file and not dat_file:
+    if len(conflict_check_list) == 0 and \
+            not file_list and \
+            not delete_file and \
+            not dat_file and \
+            not file_write and \
+            not file_read:
+        common.log_err("No enough Parameters")
+        sys.exit(2)
+
+    if (file_write or file_read) and not access_file_name:
         common.log_err("No enough Parameters")
         sys.exit(2)
 
@@ -294,6 +316,18 @@ if __name__ == '__main__':
                 common.log_info("Delete Master %s Successfully!" % delete_file)
             else:
                 common.log_err("Delete Master Failed!")
+
+        if file_read:
+            if ease.easyReceiveFile(file_read, access_file_name):
+                common.log_info("Receive Master %s to %s Successfully!" % (file_read, access_file_name))
+            else:
+                common.log_err("Receive Master Failed!")
+
+        if file_write:
+            if ease.easySendFile(file_write, access_file_name):
+                common.log_info("Send Master %s to %s Successfully!" % (file_write, access_file_name))
+            else:
+                common.log_err("Send Master Failed!")
 
         if json_plu_file:
             ease.easySendPlu(json_plu_file)

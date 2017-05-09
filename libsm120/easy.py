@@ -1036,6 +1036,34 @@ class Easy:
             if not sm120.dele(master): return False
         return True
 
+    def easyReceiveFile(self, mas_name, out_file_name):
+        master_list = mas_name.split(',')
+        sm120 = digiscale.DigiSm120(self.ip, self.port, self.usr, self.pwd)
+        sm120.connect()
+        if not sm120.connected:
+            return False
+        for master_name in master_list:
+            master = entity.MasterFactory().createMaster(master_name)
+            out_temp_file = sm120.recv_file(master)
+            if out_temp_file:
+                if os.path.exists(out_file_name):
+                    os.remove(out_file_name)
+                os.rename(out_temp_file, out_file_name)
+        return True
+
+    def easySendFile(self, mas_name, in_file_name):
+        master_list = mas_name.split(',')
+        sm120 = digiscale.DigiSm120(self.ip, self.port, self.usr, self.pwd)
+        sm120.connect()
+        if not sm120.connected:
+            return False
+        result = True
+        for master_name in master_list:
+            master = entity.MasterFactory().createMaster(master_name)
+            result = result and sm120.send_file(master, in_file_name)
+        return result
+
+
     def easyImportMaster(
             self,
             csv_file_path,
