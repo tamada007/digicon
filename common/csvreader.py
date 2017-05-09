@@ -2,7 +2,6 @@
 import sys, csv
 import codecs, StringIO
 
-
 class SmCsvReader:
     def read_line_by_line(
             self,

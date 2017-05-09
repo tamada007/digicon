@@ -30,14 +30,18 @@ except AttributeError:
 class Ui_dialog(object):
 
     def on_btn_texttool(self):
-        self.Dialog = MyDialog()
+        self.Dialog = MyDialog(self.main_dialog)
         ui = TextTool.Ui_TextToolDialog()
+        # self.Dialog.setModal(True)
+        # self.Dialog.show()
         ui.setupUi(self.Dialog)
         self.Dialog.show()
 
     def on_btn_copytool(self):
-        self.Dialog = MyDialog()
+        self.Dialog = MyDialog(self.main_dialog)
         ui = CopyTool.Ui_CopyToolDialog()
+        # self.Dialog.show()
+        # self.Dialog.setModal(True)
         ui.setupUi(self.Dialog)
         self.Dialog.show()
 
@@ -57,6 +61,8 @@ class Ui_dialog(object):
 
         self.btn_texttool.clicked.connect(self.on_btn_texttool)
         self.btn_copytool.clicked.connect(self.on_btn_copytool)
+
+        self.main_dialog = dialog
 
     def retranslateUi(self, dialog):
         dialog.setWindowTitle(_translate("dialog", "寺冈秤工具主菜单", None))

@@ -49,7 +49,15 @@
 	{ "source_expr": "$(29)",                               "target_field": "PriceOverride" },
 	{ "source_expr": "$(1)",                                "target_field": "MubCode1" },
 	{ "source_expr": "公斤",                                "target_field": "PlaceName" },
-	{ "source_expr": "1",                                "target_field": "PlaCode" },
-	{ "source_expr": "20",                                "target_field": "PlaceFont" },
+	{ "source_expr": "1",                                 "target_field": "PlaCode" },
+	{ "source_expr": "21",                                "target_field": "PlaceFont" },
+	{ "source_expr": "AAAAA公AAAAA公AAAAA公AAAAA公AAAAA公AAAAA公AAAAA公AAAAA公司司司司司司司司AAAAA公司",                         "target_field": "SpecialMessage" },
+	{ "source_expr": "20",                                "target_field": "SpecialMessageFont" },
+	{ "source_expr": "23",                                "target_field": "SpecialMessageMaxLength" },
+	{ "source_expr": "中华人民共和国中华人民共和国中国人aaaaaaaaaaaaaaaaaaaaaaaa中国",                     "target_field": "Ingredient" },
+	{ "source_expr": "20",                                "target_field": "IngredientFont" },
+	{ "source_expr": "6",                                 "target_field": "IngredientMaxLength" },
+	{ "source_expr": "3",                                 "target_field": "IngredientMaxLine" },
+	{ "source_expr": "1",                                 "target_field": "TextCode1" },
 	{ "source_expr": "add($(1),100000)",                    "target_field": "MubCode2" }
 ]

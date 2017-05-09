@@ -1,8 +1,8 @@
-import sys
+# -*- coding: utf-8 -*-
 
-reload(sys)
-sys.setdefaultencoding('gbk')
+# Form implementation generated from reading ui file 'test.py'
+#
+# Created by: PyQt4 UI code generator 4.11.4
+#
+# WARNING! All changes made in this file will be lost!
 
-from common.converter import ScalesConverter
-
-ScalesConverter().easyImportMaster('192.168.68.125:sm110', 'plu_import.csv', 'plu_template.json')

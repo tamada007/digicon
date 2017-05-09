@@ -27,7 +27,7 @@ sys.setdefaultencoding(current_encoding)  # @UndefinedVariable
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qt import *
-from Ip4 import Ip4Edit
+from Ip4 import Ip4Edit, MyDialog
 
 from common.converter import ScalesConverter
 from common import common, converter
@@ -87,7 +87,7 @@ class ScaleItemString(object):
 class ToolsView(QtGui.QTableView):
     def __init__(self, parent=None):
         super(ToolsView, self).__init__(parent)
-        self.setSortingEnabled(True)
+        # self.setSortingEnabled(True)
         # self.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         self.horizontalHeader().setStretchLastSection(True)
         self.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
@@ -769,7 +769,7 @@ class Ui_TextToolDialog(object):
 if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
-    Dialog = QtGui.QDialog()
+    Dialog = MyDialog()
     ui = Ui_TextToolDialog()
     ui.setupUi(Dialog)
     Dialog.show()

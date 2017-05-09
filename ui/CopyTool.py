@@ -12,7 +12,7 @@ import sys
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qt import *
-from Ip4 import Ip4Edit
+from Ip4 import Ip4Edit, MyDialog
 
 sys.path.append('.')
 sys.path.append('..')
@@ -32,6 +32,29 @@ try:
 except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
+
+
+class MyListView(QtGui.QListView):
+    def __init__(self, parent):
+        super(MyListView, self).__init__(parent)
+        # self.setContextMenuPolicy(Qt.ActionsContextMenu)
+
+    def _remove(self):
+        model = self.model()
+        # print self.selectedIndexes()
+        selected_row = self.selectedIndexes()[0]
+        # print "row:", selected_row.row()
+        if selected_row.row() != model.rowCount()-1:
+            model.removeRow(selected_row.row())
+
+    def contextMenuEvent(self, event):
+        self.menu = QtGui.QMenu()
+        index = self.indexAt(event.pos())
+        # print index.row()
+        removeAction = QtGui.QAction(u'删除', self)
+        removeAction.triggered.connect(self._remove)
+        self.menu.addAction(removeAction)
+        self.menu.popup(QtGui.QCursor.pos())
 
 
 class ScaleIPDelegate(QItemDelegate):
@@ -190,6 +213,8 @@ class Ui_CopyToolDialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
         Dialog.resize(678, 391)
+        Dialog.setWindowModality(QtCore.Qt.WindowModal)
+
         self.groupBox = QtGui.QGroupBox(Dialog)
         self.groupBox.setGeometry(QtCore.QRect(210, 15, 421, 106))
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
@@ -224,7 +249,8 @@ class Ui_CopyToolDialog(object):
         self.edt_target_file = QtGui.QLineEdit(self.groupBox_2)
         self.edt_target_file.setGeometry(QtCore.QRect(90, 30, 256, 20))
         self.edt_target_file.setObjectName(_fromUtf8("edt_target_file"))
-        self.lv_target_scale = QtGui.QListView(self.groupBox_2)
+        # self.lv_target_scale = QtGui.QListView(self.groupBox_2)
+        self.lv_target_scale = MyListView(self.groupBox_2)
         # self.lv_target_scale = QtGui.QListWidget(self.groupBox_2)
         self.lv_target_scale.setGeometry(QtCore.QRect(90, 60, 256, 106))
         self.lv_target_scale.setObjectName(_fromUtf8("lv_target_scale"))
@@ -296,8 +322,7 @@ class Ui_CopyToolDialog(object):
 if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
-    Dialog = QtGui.QDialog()
-    # Dialog = MyDialog()
+    Dialog = MyDialog()
     ui = Ui_CopyToolDialog()
     ui.setupUi(Dialog)
     Dialog.show()
