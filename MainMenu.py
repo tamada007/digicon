@@ -6,11 +6,17 @@
 #
 # WARNING! All changes made in this file will be lost!
 
+import os
+
 from PyQt4 import QtCore, QtGui
+from PyQt4 import *
+
+from PyQt4.Qt import QPluginLoader
+
 
 from ui import TextTool
 from ui import CopyTool
-from ui.Ip4 import MyDialog
+from ui.Ip4 import MyDialog, MyFont, resource_path
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -46,18 +52,35 @@ class Ui_dialog(object):
         self.Dialog.show()
 
     def setupUi(self, dialog):
+        # QPlugin = QPluginLoader("qico4.dll")
+        # print QPlugin
+        # base_path = os.path.abspath(".")
+        # icon_file_path = os.path.join(base_path, "bi.ico")
+        # print icon_file_path
+        # icon = QtGui.QIcon(resource_path("as.ico"))
+        # icon = QtGui.QIcon("as.ico")
+        icon_file_path = resource_path("as.png")
+        icon = QtGui.QIcon(icon_file_path)
+        # icon.addPixmap(QtGui.QPixmap(_fromUtf8(resource_path("as.ico"))), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        # icon.addPixmap(QtGui.QPixmap(_fromUtf8("as.ico")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        # icon.addFile(_fromUtf8(icon_file_path))
+        dialog.setWindowIcon(icon)
+        # print QtCore.QLocale().system().name()
+
         dialog.setObjectName(_fromUtf8("dialog"))
         dialog.resize(356, 243)
+
         self.btn_texttool = QtGui.QPushButton(dialog)
         self.btn_texttool.setGeometry(QtCore.QRect(75, 45, 196, 46))
         self.btn_texttool.setObjectName(_fromUtf8("btn_texttool"))
+        self.btn_texttool.setFont(MyFont())
         self.btn_copytool = QtGui.QPushButton(dialog)
         self.btn_copytool.setGeometry(QtCore.QRect(75, 120, 196, 46))
         self.btn_copytool.setObjectName(_fromUtf8("btn_copytool"))
+        self.btn_copytool.setFont(MyFont())
 
         self.retranslateUi(dialog)
         QtCore.QMetaObject.connectSlotsByName(dialog)
-
 
         self.btn_texttool.clicked.connect(self.on_btn_texttool)
         self.btn_copytool.clicked.connect(self.on_btn_copytool)
@@ -72,6 +95,9 @@ class Ui_dialog(object):
 
 if __name__ == "__main__":
     import sys
+    # import ui.icon_rc
+    # ui.icon_rc.qInitResources()
+
     app = QtGui.QApplication(sys.argv)
     dialog = QtGui.QDialog()
     ui = Ui_dialog()

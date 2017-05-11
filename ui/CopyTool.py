@@ -12,7 +12,7 @@ import sys
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qt import *
-from Ip4 import Ip4Edit, MyDialog
+from Ip4 import Ip4Edit, MyDialog, MyFont, resource_path
 
 sys.path.append('.')
 sys.path.append('..')
@@ -106,7 +106,13 @@ class ScaleIPDelegate(QItemDelegate):
                 it = QtGui.QListWidgetItem('')
                 it.setFlags(it.flags() | Qt.ItemIsEditable)
                 # self.parent.addItem(it)
-                model.appendRow(QStandardItem(''))
+                item = QStandardItem('')
+                font = QtGui.QFont()
+                font.setFamily(_fromUtf8("Arial"))
+                font.setPointSize(14)
+                item.setFont(font)
+                # model.appendRow(QStandardItem(''))
+                model.appendRow(item)
         elif editor.text():
             QtGui.QMessageBox.critical(
                 None,
@@ -126,14 +132,17 @@ class Ui_CopyToolDialog(object):
 
     def start_do_copy(self):
         file_data = ""
-        map_table = {
-            u"标签格式": "Prf",
-            u"商品信息": "Plu",
-            u"文本信息": "Tex",
-        }
+        # map_table = {
+        #     u"标签格式": "Prf",
+        #     u"商品信息": "Plu",
+        #     u"文本信息": "Tex",
+        # }
 
-        cur_item_text = unicode(self.lv_scalefile.currentItem().text())
-        scale_file = map_table.get(cur_item_text, "Prf")
+        scale_file = unicode(self.lv_scalefile.currentItem().data(1).toString())
+        cur_item_text = unicode(self.lv_scalefile.currentItem().data(0).toString())
+
+        # cur_item_text = unicode(self.lv_scalefile.currentItem().text())
+        # scale_file = map_table.get(cur_item_text, "Prf")
 
         if self.rb_source_fromfile.isChecked():
             file_path = unicode(self.edt_source_file.text())
@@ -215,14 +224,23 @@ class Ui_CopyToolDialog(object):
         Dialog.resize(678, 391)
         Dialog.setWindowModality(QtCore.Qt.WindowModal)
 
+        icon_file_path = resource_path("as.png")
+        icon = QtGui.QIcon(icon_file_path)
+        # icon.addPixmap(QtGui.QPixmap(_fromUtf8(resource_path("as.ico"))), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        Dialog.setWindowIcon(icon)
+
+
         self.groupBox = QtGui.QGroupBox(Dialog)
+        self.groupBox.setFont(MyFont(10))
         self.groupBox.setGeometry(QtCore.QRect(210, 15, 421, 106))
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
         self.rb_source_fromfile = QtGui.QRadioButton(self.groupBox)
+        self.rb_source_fromfile.setFont(MyFont(10))
         self.rb_source_fromfile.setGeometry(QtCore.QRect(15, 30, 70, 16))
         self.rb_source_fromfile.setChecked(True)
         self.rb_source_fromfile.setObjectName(_fromUtf8("rb_source_fromfile"))
         self.rb_source_fromscale = QtGui.QRadioButton(self.groupBox)
+        self.rb_source_fromscale.setFont(MyFont(10))
         self.rb_source_fromscale.setGeometry(QtCore.QRect(15, 60, 89, 16))
         self.rb_source_fromscale.setChecked(False)
         self.rb_source_fromscale.setObjectName(_fromUtf8("rb_source_fromscale"))
@@ -237,13 +255,16 @@ class Ui_CopyToolDialog(object):
         self.btn_select_source_file.setGeometry(QtCore.QRect(360, 30, 46, 20))
         self.btn_select_source_file.setObjectName(_fromUtf8("btn_select_source_file"))
         self.groupBox_2 = QtGui.QGroupBox(Dialog)
+        self.groupBox_2.setFont(MyFont(10))
         self.groupBox_2.setGeometry(QtCore.QRect(210, 150, 421, 196))
         self.groupBox_2.setObjectName(_fromUtf8("groupBox_2"))
         self.rb_target_fromfile = QtGui.QRadioButton(self.groupBox_2)
+        self.rb_target_fromfile.setFont(MyFont(10))
         self.rb_target_fromfile.setGeometry(QtCore.QRect(15, 30, 70, 16))
         self.rb_target_fromfile.setChecked(True)
         self.rb_target_fromfile.setObjectName(_fromUtf8("rb_source_fromfile_2"))
         self.rb_target_fromscale = QtGui.QRadioButton(self.groupBox_2)
+        self.rb_target_fromscale.setFont(MyFont(10))
         self.rb_target_fromscale.setGeometry(QtCore.QRect(15, 60, 89, 16))
         self.rb_target_fromscale.setObjectName(_fromUtf8("rb_source_fromscale_2"))
         self.edt_target_file = QtGui.QLineEdit(self.groupBox_2)
@@ -261,14 +282,22 @@ class Ui_CopyToolDialog(object):
         self.lv_scalefile.setGeometry(QtCore.QRect(15, 45, 166, 256))
         self.lv_scalefile.setObjectName(_fromUtf8("lv_scalefile"))
         self.label = QtGui.QLabel(Dialog)
+        self.label.setFont(MyFont(10))
         self.label.setGeometry(QtCore.QRect(15, 15, 61, 16))
         self.label.setObjectName(_fromUtf8("label"))
         self.btn_start = QtGui.QPushButton(Dialog)
+        self.btn_start.setFont(MyFont(10))
         self.btn_start.setGeometry(QtCore.QRect(15, 315, 166, 31))
         self.btn_start.setObjectName(_fromUtf8("btn_start"))
 
         model = QStandardItemModel(self.lv_target_scale)
         item = QStandardItem('')
+        font = QtGui.QFont()
+        font.setFamily(_fromUtf8("Arial"))
+        font.setPointSize(14)
+        item.setFont(font)
+
+
         # item.setCheckable(True)
         model.appendRow(item)
         self.lv_target_scale.setModel(model)
@@ -312,15 +341,33 @@ class Ui_CopyToolDialog(object):
         self.label.setText(_translate("Dialog", "【秤文件】", None))
         self.btn_start.setText(_translate("Dialog", "开始", None))
 
-        self.lv_scalefile.addItem(u'标签格式')
-        self.lv_scalefile.addItem(u'商品信息')
-        self.lv_scalefile.addItem(u'文本信息')
+        # self.lv_scalefile.addItem(u'标签格式')
+        # self.lv_scalefile.addItem(u'商品信息')
+        # self.lv_scalefile.addItem(u'文本信息')
+        item1 = QListWidgetItem(u'标签格式')
+        item1.setData(1, 'Prf')
+        self.lv_scalefile.addItem(item1)
+        item1 = QListWidgetItem(u'商品信息')
+        item1.setData(1, 'Plu')
+        self.lv_scalefile.addItem(item1)
+        item1 = QListWidgetItem(u'文本信息')
+        item1.setData(1, 'Tex')
+        self.lv_scalefile.addItem(item1)
+        item1 = QListWidgetItem(u'自定义条码')
+        item1.setData(1, 'Flb')
+        self.lv_scalefile.addItem(item1)
+        item1 = QListWidgetItem(u'预置键')
+        item1.setData(1, 'Kas')
+        self.lv_scalefile.addItem(item1)
+
 
         self.lv_scalefile.setCurrentRow(0)
 
 
 if __name__ == "__main__":
     import sys
+    # import icon_rc
+    # icon_rc.qInitResources()
     app = QtGui.QApplication(sys.argv)
     Dialog = MyDialog()
     ui = Ui_CopyToolDialog()

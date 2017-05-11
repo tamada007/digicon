@@ -27,7 +27,7 @@ sys.setdefaultencoding(current_encoding)  # @UndefinedVariable
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qt import *
-from Ip4 import Ip4Edit, MyDialog
+from Ip4 import Ip4Edit, MyDialog, MyFont, resource_path
 
 from common.converter import ScalesConverter
 from common import common, converter
@@ -93,7 +93,8 @@ class ToolsView(QtGui.QTableView):
         self.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
 
     def clear(self):
-        for row in range(self.model().rowCount()):
+        # for row in range(self.model().rowCount()):
+        for row in reversed(range(self.model().rowCount())):
             self.model().removeRow(row)
 
         self.model().appendRow('')
@@ -101,7 +102,7 @@ class ToolsView(QtGui.QTableView):
     def remove(self):
         # print self.model().data(self.model().index(0, 0)).toString()
         rows = self.selectionModel().selectedRows(0)
-        for r in rows:
+        for r in reversed(rows):
             # print r.row()
             if self.model().data(self.model().index(r.row(), 0)).toString():
                 self.model().removeRow(r.row())
@@ -156,8 +157,8 @@ class ScaleIPDelegate(QItemDelegate):
         # model.setData(index, value, Qt.EditRole)
         pat = re.compile("(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})")
         m = pat.match(editor.text())
-        model.setData(index, editor.text())
         if m:
+            model.setData(index, editor.text())
             scale_no = m.group(4)
             # self.edt_scaleno.setText(scale_no)
             model.setData(model.index(index.row(), 1), QVariant(scale_no))
@@ -414,9 +415,12 @@ class Ui_TextToolDialog(object):
         Dialog.setObjectName(_fromUtf8("Dialog"))
         Dialog.setWindowModality(QtCore.Qt.WindowModal)
         Dialog.resize(639, 438)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8("as.ico")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+
+        icon_file_path = resource_path("as.png")
+        icon = QtGui.QIcon(icon_file_path)
+        # icon.addPixmap(QtGui.QPixmap(_fromUtf8(resource_path("as.ico"))), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         Dialog.setWindowIcon(icon)
+
         self.label = QtGui.QLabel(Dialog)
         self.label.setGeometry(QtCore.QRect(15, 15, 63, 24))
         font = QtGui.QFont()
@@ -425,6 +429,7 @@ class Ui_TextToolDialog(object):
         self.label.setFont(font)
         self.label.setObjectName(_fromUtf8("label"))
         self.btn_send = QtGui.QPushButton(Dialog)
+        self.btn_send.setFont(MyFont(10))
         self.btn_send.setGeometry(QtCore.QRect(495, 345, 111, 41))
         self.btn_send.setObjectName(_fromUtf8("btn_send"))
         self.horizontalLayoutWidget = QtGui.QWidget(Dialog)
@@ -768,6 +773,8 @@ class Ui_TextToolDialog(object):
 
 if __name__ == "__main__":
     import sys
+    # import icon_rc
+    # icon_rc.qInitResources()
     app = QtGui.QApplication(sys.argv)
     Dialog = MyDialog()
     ui = Ui_TextToolDialog()
