@@ -4,7 +4,14 @@
 import sys
 import threading
 
-import comtypes
+import platform
+
+def if_this_is_windows():
+	return platform.system() == "Windows"
+
+if if_this_is_windows():
+	import comtypes
+	from comtypes.client import CreateObject
 
 glob_converter = None
 
@@ -39,12 +46,16 @@ class SaudiArabicConverter(BaseEncConverter):
 
     @staticmethod
     def get_comdll():
-        threading_dll = threading.local()
-        if not hasattr(threading_dll, 'ArabicDll'):
-            from comtypes.client import CreateObject
-            comtypes.CoInitialize()
-            threading_dll.ArabicDll = CreateObject("ArbCharacterConvert.ArabicCharConvert")
-        return threading_dll.ArabicDll
+        if if_this_is_windows():
+            threading_dll = threading.local()
+            if not hasattr(threading_dll, 'ArabicDll'):
+                comtypes.CoInitialize()
+                threading_dll.ArabicDll = CreateObject("ArbCharacterConvert.ArabicCharConvert")
+            return threading_dll.ArabicDll
+        else:
+            return None
+		#return None
+
 
     def pc_to_scale(self, pc_data):
         # import comtypes.client as cli

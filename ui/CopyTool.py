@@ -19,6 +19,14 @@ sys.path.append('..')
 
 import libsm110.easy
 
+g_scale_file_table = {
+    'Prf': u'标签格式',
+    'Plu': u'商品信息',
+    'Tex': u'文本信息',
+    'Flb': u'自定义条码',
+    'Kas': u'预置键',
+}
+
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -132,17 +140,16 @@ class Ui_CopyToolDialog(object):
 
     def start_do_copy(self):
         file_data = ""
-        # map_table = {
-        #     u"标签格式": "Prf",
-        #     u"商品信息": "Plu",
-        #     u"文本信息": "Tex",
-        # }
+        file_list = []
 
-        scale_file = unicode(self.lv_scalefile.currentItem().data(1).toString())
-        cur_item_text = unicode(self.lv_scalefile.currentItem().data(0).toString())
+        # scale_file = unicode(self.lv_scalefile.currentItem().data(1).toString())
+        # cur_item_text = unicode(self.lv_scalefile.currentItem().data(0).toString())
 
         # cur_item_text = unicode(self.lv_scalefile.currentItem().text())
         # scale_file = map_table.get(cur_item_text, "Prf")
+
+        cur_item_text = ""
+        cur_item_list = []
 
         if self.rb_source_fromfile.isChecked():
             file_path = unicode(self.edt_source_file.text())
@@ -155,13 +162,33 @@ class Ui_CopyToolDialog(object):
 
             # ease.easyReceiveFile(self.lv_scalefile.currentItem().)
             # print self.lv_scalefile.currentItem().text()
-            temp_file_name = "temp1_" + cur_scale + "_" + scale_file + "_.dat"
-            result = ease.easyReceiveFile(scale_file, temp_file_name)
-            if result:
-                with open(temp_file_name, 'r') as fp:
-                    file_data = fp.read()
-                os.remove(temp_file_name)
-            # print result, file_data
+
+            for selected_item in self.lv_scalefile.selectedItems():
+                selected_scale_file = unicode(selected_item.data(1).toString())
+                cur_item_list.append(g_scale_file_table.get(selected_scale_file))
+
+                # cur_item_text = unicode(selected_item.data(0).toString())
+                temp_file_name = "temp1_" + cur_scale + "_" + selected_scale_file + "_.dat"
+                result = ease.easyReceiveFile(selected_scale_file, temp_file_name)
+                if result:
+                    temp_file_data = ""
+                    with open(temp_file_name, 'r') as fp:
+                        temp_file_data = fp.read()
+                    os.remove(temp_file_name)
+
+                    for line_data in temp_file_data.split("\n"):
+                        if line_data.strip(' \r'):
+                            file_list.append(selected_scale_file + ":" + line_data.rstrip(" \r"))
+
+            # temp_file_name = "temp1_" + cur_scale + "_" + scale_file + "_.dat"
+            # result = ease.easyReceiveFile(scale_file, temp_file_name)
+            # if result:
+            #     with open(temp_file_name, 'r') as fp:
+            #         file_data = fp.read()
+            #     os.remove(temp_file_name)
+            file_data = "\n".join(file_list)
+
+        cur_item_text = ",".join(cur_item_list)
 
         if file_data:
             if self.rb_target_fromfile.isChecked() and self.edt_target_file.text():
@@ -173,6 +200,16 @@ class Ui_CopyToolDialog(object):
             elif self.rb_target_fromscale.isChecked():
                 lst_scale = []
                 # for i in range(self.lv_target_scale.count()):
+                dict_data = {}
+                for line_data in file_data.split("\n"):
+                    line_data = line_data.rstrip(" \r")
+                    pat = re.compile("(\w+):(.+)")
+                    m = pat.match(line_data)
+                    if m:
+                        if not m.group(1) in dict_data:
+                            dict_data[m.group(1)] = ""
+                        dict_data[m.group(1)] += m.group(2) + "\n"
+
                 for i in range(self.lv_target_scale.model().rowCount()):
                     # lst_scale.append(unicode(self.lv_target_scale.item(i).text()))
                     # cur_scale = unicode(self.lv_target_scale.item(i).text())
@@ -180,23 +217,43 @@ class Ui_CopyToolDialog(object):
                     if not cur_scale:
                         continue
                     ease = libsm110.easy.Easy(cur_scale)
-                    # temp_file_name = "temp2_" + scale_file + ".dat"
-                    temp_file_name = "temp2_" + cur_scale + "_" + scale_file + "_" + ".dat"
+                    cur_item_list_succeed = []
+                    cur_item_list_failed = []
+                    for scale_file, scale_file_data in dict_data.items():
 
-                    with open(temp_file_name, 'w') as fp2:
-                        fp2.write(file_data)
-                    if ease.easySendFile(scale_file, temp_file_name):
+                        temp_file_name = "temp2_" + cur_scale + "_" + scale_file + "_" + ".dat"
+
+                        cur_item_text = g_scale_file_table.get(scale_file)
+
+                        with open(temp_file_name, 'w') as fp2:
+                            fp2.write(scale_file_data)
+                        if ease.easySendFile(scale_file, temp_file_name):
+                            cur_item_list_succeed.append(cur_item_text)
+                            # QtGui.QMessageBox.information(
+                            #     None,
+                            #     _fromUtf8("成功"),
+                            #     _fromUtf8(u"发送%s到%s成功" % (cur_item_text, cur_scale)))
+                        else:
+                            cur_item_list_failed.append(cur_item_text)
+                            # QtGui.QMessageBox.critical(
+                            #     None,
+                            #     _fromUtf8("失败"),
+                            #     _fromUtf8(u"发送%s到%s失败" % (cur_item_text, cur_scale)))
+
+                        os.remove(temp_file_name)
+
+                    if len(cur_item_list_succeed) > 0:
                         QtGui.QMessageBox.information(
                             None,
                             _fromUtf8("成功"),
-                            _fromUtf8(u"发送%s到%s成功" % (cur_item_text, cur_scale)))
-                    else:
+                            _fromUtf8(u"发送%s到%s成功" % (",".join(cur_item_list_succeed), cur_scale)))
+
+                    if len(cur_item_list_failed) > 0:
                         QtGui.QMessageBox.critical(
                             None,
                             _fromUtf8("失败"),
-                            _fromUtf8(u"发送%s到%s失败" % (cur_item_text, cur_scale)))
+                            _fromUtf8(u"发送%s到%s失败" % (",".join(cur_item_list_failed), cur_scale)))
 
-                    os.remove(temp_file_name)
         else:
             QtGui.QMessageBox.critical(None, _fromUtf8("失败"), _fromUtf8("来源是不正确的数据"))
 
@@ -205,10 +262,12 @@ class Ui_CopyToolDialog(object):
             self.edt_source_file.setEnabled(True)
             self.edt_source_scale.setEnabled(False)
             self.btn_select_source_file.setEnabled(True)
+            self.lv_scalefile.setEnabled(False)
         else:
             self.btn_select_source_file.setEnabled(False)
             self.edt_source_file.setEnabled(False)
             self.edt_source_scale.setEnabled(True)
+            self.lv_scalefile.setEnabled(True)
 
         if self.rb_target_fromfile.isChecked():
             self.edt_target_file.setEnabled(True)
@@ -281,9 +340,10 @@ class Ui_CopyToolDialog(object):
         self.lv_scalefile = QtGui.QListWidget(Dialog)
         self.lv_scalefile.setGeometry(QtCore.QRect(15, 45, 166, 256))
         self.lv_scalefile.setObjectName(_fromUtf8("lv_scalefile"))
+        self.lv_scalefile.setSelectionMode(QtGui.QAbstractItemView.MultiSelection)
         self.label = QtGui.QLabel(Dialog)
         self.label.setFont(MyFont(10))
-        self.label.setGeometry(QtCore.QRect(15, 15, 61, 16))
+        self.label.setGeometry(QtCore.QRect(15, 15, 101, 16))
         self.label.setObjectName(_fromUtf8("label"))
         self.btn_start = QtGui.QPushButton(Dialog)
         self.btn_start.setFont(MyFont(10))
@@ -338,30 +398,34 @@ class Ui_CopyToolDialog(object):
         self.rb_target_fromfile.setText(_translate("Dialog", "数据文件", None))
         self.rb_target_fromscale.setText(_translate("Dialog", "秤", None))
         self.btn_select_target_file.setText(_translate("Dialog", "...", None))
-        self.label.setText(_translate("Dialog", "【秤文件】", None))
+        self.label.setText(_translate("Dialog", "【来源秤文件】", None))
         self.btn_start.setText(_translate("Dialog", "开始", None))
 
         # self.lv_scalefile.addItem(u'标签格式')
         # self.lv_scalefile.addItem(u'商品信息')
         # self.lv_scalefile.addItem(u'文本信息')
-        item1 = QListWidgetItem(u'标签格式')
-        item1.setData(1, 'Prf')
-        self.lv_scalefile.addItem(item1)
-        item1 = QListWidgetItem(u'商品信息')
-        item1.setData(1, 'Plu')
-        self.lv_scalefile.addItem(item1)
-        item1 = QListWidgetItem(u'文本信息')
-        item1.setData(1, 'Tex')
-        self.lv_scalefile.addItem(item1)
-        item1 = QListWidgetItem(u'自定义条码')
-        item1.setData(1, 'Flb')
-        self.lv_scalefile.addItem(item1)
-        item1 = QListWidgetItem(u'预置键')
-        item1.setData(1, 'Kas')
-        self.lv_scalefile.addItem(item1)
+        # item1 = QListWidgetItem(u'标签格式')
+        # item1.setData(1, 'Prf')
+        # self.lv_scalefile.addItem(item1)
+        # item1 = QListWidgetItem(u'商品信息')
+        # item1.setData(1, 'Plu')
+        # self.lv_scalefile.addItem(item1)
+        # item1 = QListWidgetItem(u'文本信息')
+        # item1.setData(1, 'Tex')
+        # self.lv_scalefile.addItem(item1)
+        # item1 = QListWidgetItem(u'自定义条码')
+        # item1.setData(1, 'Flb')
+        # self.lv_scalefile.addItem(item1)
+        # item1 = QListWidgetItem(u'预置键')
+        # item1.setData(1, 'Kas')
+        # self.lv_scalefile.addItem(item1)
 
+        for k, v in g_scale_file_table.items():
+            item1 = QListWidgetItem(v)
+            item1.setData(1, k)
+            self.lv_scalefile.addItem(item1)
 
-        self.lv_scalefile.setCurrentRow(0)
+        # self.lv_scalefile.setCurrentRow(0)
 
 
 if __name__ == "__main__":
