@@ -313,6 +313,8 @@ if __name__ == '__main__':
     ##########################################
 
     arr_check_connection = []
+    list_success_scale_connection = []
+    list_failed_scale_connection = []
 
     for index, scale in enumerate(scale_list):
         scale = scale.strip()
@@ -343,8 +345,10 @@ if __name__ == '__main__':
         if delete_file:
             if ease.easyDeleteFile(delete_file):
                 common.log_info("Delete Master %s Successfully!" % delete_file)
+                list_success_scale_connection.append(scale)
             else:
                 common.log_err("Delete Master Failed!")
+                list_failed_scale_connection.append(scale)
 
         if file_read:
             if ease.easyReceiveFile(file_read, access_file_name):
@@ -431,8 +435,6 @@ if __name__ == '__main__':
             arr_check_connection.append((thd_check, scale, result))
             thd_check.start()
 
-    list_success_scale_connection = []
-    list_failed_scale_connection = []
     for entry_check_connection in arr_check_connection:
         entry_check_connection[0].join()
         scale_ip = entry_check_connection[1]
@@ -445,13 +447,14 @@ if __name__ == '__main__':
             common.log_info("%s Connecting Failed..." % scale_ip)
             common.log2_info("%s Connecting Failed..." % scale_ip)
 
-    try:
-        with open('digicon_failed_scale.log', 'w') as fp1:
-            fp1.write('\r\n'.join(list_failed_scale_connection))
-        with open('digicon_succeeded_scale.log', 'w') as fp2:
-            fp2.write('\r\n'.join(list_success_scale_connection))
-    except Exception, e:
-        common.log_err(e)
+    if len(list_success_scale_connection) > 0 or len(list_failed_scale_connection) > 0:
+        try:
+            with open('digicon_failed_scale.log', 'w') as fp1:
+                fp1.write('\r\n'.join(list_failed_scale_connection))
+            with open('digicon_succeeded_scale.log', 'w') as fp2:
+                fp2.write('\r\n'.join(list_success_scale_connection))
+        except Exception, e:
+            common.log_err(e)
 
     # 处理直接下发的单个DAT文件(仅支持SM110)
     if dat_file:
