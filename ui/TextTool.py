@@ -730,7 +730,7 @@ class Ui_TextToolDialog(object):
         self.tbl_scale.setItemDelegateForColumn(0, ScaleIPDelegate(self))
 
         self.edt_scaleno.setEnabled(False)
-        self.comboBox.setEnabled(False)
+        # self.comboBox.setEnabled(False)
 
         common.log_init()
 
@@ -758,7 +758,7 @@ class Ui_TextToolDialog(object):
         self.label_8.setText(_translate("Dialog", "文本3(店名)", None))
         self.label_9.setText(_translate("Dialog", "文本4(其它)", None))
 
-        self.edt_storeno.setText(_translate("Dialog", "1234", None))
+        #self.edt_storeno.setText(_translate("Dialog", "1234", None))
         self.edt_storename.setText(_translate("Dialog", "店1", None))
 
         self.setFontComboBox(self.comboBox)

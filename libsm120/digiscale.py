@@ -2,8 +2,9 @@ import time, traceback
 
 from common import common
 from smftp import smftp
-import master
+# import master
 
+import socket
 
 class DigiSm120(object):
     def __init__(self, ip, port=21, usr='admin', pwd='admin'):
@@ -27,6 +28,16 @@ class DigiSm120(object):
             pass
 
         self.connected = False
+
+    def check_connection(self):
+        try:
+            socket.setdefaulttimeout(10)
+            conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            conn.connect((self.ip, 21))
+            conn.close()
+            return True
+        except socket.error, e:
+            return False
 
     def connect(self):
         self.connected = self.ftp.login()

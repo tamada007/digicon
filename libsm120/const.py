@@ -239,6 +239,66 @@ pla_struct = {
 
 }
 
+# Date Time
+dat_struct = {
+    "Code":
+        {
+            "Key": 1,
+            "ColumnIndex": 1,
+            "Type": "SMInt",
+            "MaxLength": 3
+        },
+    "DeleteFlag":
+        {
+            "ColumnIndex": 2,
+            "Type": "SMText",
+            "MaxLength": 1
+        },
+    "Year":
+        {
+            "ColumnIndex": 3,
+            "Type": "SMInt",
+            "MaxLength": 2
+        },
+    "Month":
+        {
+            "ColumnIndex": 4,
+            "Type": "SMInt",
+            "MaxLength": 2
+        },
+    "Day":
+        {
+            "ColumnIndex": 5,
+            "Type": "SMInt",
+            "MaxLength": 2
+        },
+    "Hour":
+        {
+            "ColumnIndex": 6,
+            "Type": "SMInt",
+            "MaxLength": 2
+        },
+    "Minute":
+        {
+            "ColumnIndex": 7,
+            "Type": "SMInt",
+            "MaxLength": 2
+        },
+    "FlagOfChangeValue":
+        {
+            "ColumnIndex": 8,
+            "Type": "SMText",
+            "MaxLength": 1
+        },
+    "ChangeValue":
+        {
+            "ColumnIndex": 9,
+            "Type": "SMInt",
+            "MaxLength": 8
+        }
+
+}
+
 # Main Group
 ##################################################
 mgp_struct = {

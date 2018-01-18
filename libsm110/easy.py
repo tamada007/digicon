@@ -19,6 +19,23 @@ class Easy:
     def __init__(self, ip):
         self.ip = ip
 
+    def deleteFromCSV(
+            self,
+            report_file_name,
+            in_csv_file):
+        with open(in_csv_file) as fp1:
+            key_lines = [x.rstrip("\n") for x in fp1.readlines()]
+            trans_table = {
+                "PLU Transaction": "Ptr",
+                "Real Time Total Buffer": "Rtt",
+                "Real Time Buffer": "Rtb"
+            }
+            if report_file_name not in trans_table:
+                return False
+            rep_master = entity.MasterFactory().createMaster(trans_table[report_file_name])
+            sm110 = smtws.smtws(self.ip)
+            return sm110.delete_records(rep_master.file_no, key_lines)
+
     def exportCSV(
             self,
             export_template_file="",
@@ -865,65 +882,65 @@ class Easy:
             for newLineKey, newLine in newLines.items():
                 template_infos["Master"].import_line(newLine)
 
-    def easyImportMaster(
-            self,
-            csv_file_path,
-            json_fmt_file_path,
-            json_scale_group_file="",
-            json_filter_file=""):
-
-        sm110 = smtws.smtws(self.ip)
-
-        json_data = common.common.get_json_from_file(json_fmt_file_path)
-        self.createMasterList = {}
-
-        # 分组
-        strMgNo = ""
-        if json_scale_group_file:
-            dGrp = common.scalegroup.DigiGroup()
-            dGrp.read_from_config_file(json_scale_group_file)
-            strMgNo = str(dGrp.get_mgno_from_scale(self.ip))
-
-        # 过滤
-        self.dataFilter = common.datafilter.DataFilter()
-        globalVals = {"ScaleGroupNo": strMgNo}
-        self.dataFilter.set_glob_vars(globalVals)
-
-        for fmt in json_data:
-            source_expr = fmt["source_expr"]
-            target_field = fmt["target_field"]
-            line_no_field = fmt.get("line_no_field", "LineNo")
-            sp_data = target_field.split(".")
-            clsName = sp_data[0]
-            fieldName = sp_data[1]
-            if len(sp_data) > 2:
-                lineNo = int(sp_data[2])
-            else:
-                lineNo = 0
-            # lineNo = int(sp_data[2] if len(sp_data) > 2 else '0')
-
-            if not self.createMasterList.has_key(clsName):
-                self.createMasterList[clsName] = {}
-                self.createMasterList[clsName]["infos"] = []
-                self.createMasterList[clsName]["Master"] = entity.MasterFactory().createMaster(clsName)
-
-            self.createMasterList[clsName]["infos"].append(
-                {
-                    "source_expression": source_expr,
-                    "field_name": fieldName,
-                    "line_no_field": line_no_field,
-                    "line_no": lineNo,
-                }
-            )
-
-        common.csvreader.SmCsvReader().read_line_by_line(
-            csv_file_path,
-            self.process_line)
-
-        for clsName, template_infos in self.createMasterList.items():
-            if not sm110.upload_master(template_infos["Master"]):
-                common.common.log_err("Downloading To Scale Failed...")
-                return False
-
-        common.common.log_info("Downloading To %s Successfully..." % self.ip)
-        return True
+    # def easyImportMaster(
+    #         self,
+    #         csv_file_path,
+    #         json_fmt_file_path,
+    #         json_scale_group_file="",
+    #         json_filter_file=""):
+    #
+    #     sm110 = smtws.smtws(self.ip)
+    #
+    #     json_data = common.common.get_json_from_file(json_fmt_file_path)
+    #     self.createMasterList = {}
+    #
+    #     # 分组
+    #     strMgNo = ""
+    #     if json_scale_group_file:
+    #         dGrp = common.scalegroup.DigiGroup()
+    #         dGrp.read_from_config_file(json_scale_group_file)
+    #         strMgNo = str(dGrp.get_mgno_from_scale(self.ip))
+    #
+    #     # 过滤
+    #     self.dataFilter = common.datafilter.DataFilter()
+    #     globalVals = {"ScaleGroupNo": strMgNo}
+    #     self.dataFilter.set_glob_vars(globalVals)
+    #
+    #     for fmt in json_data:
+    #         source_expr = fmt["source_expr"]
+    #         target_field = fmt["target_field"]
+    #         line_no_field = fmt.get("line_no_field", "LineNo")
+    #         sp_data = target_field.split(".")
+    #         clsName = sp_data[0]
+    #         fieldName = sp_data[1]
+    #         if len(sp_data) > 2:
+    #             lineNo = int(sp_data[2])
+    #         else:
+    #             lineNo = 0
+    #         # lineNo = int(sp_data[2] if len(sp_data) > 2 else '0')
+    #
+    #         if not self.createMasterList.has_key(clsName):
+    #             self.createMasterList[clsName] = {}
+    #             self.createMasterList[clsName]["infos"] = []
+    #             self.createMasterList[clsName]["Master"] = entity.MasterFactory().createMaster(clsName)
+    #
+    #         self.createMasterList[clsName]["infos"].append(
+    #             {
+    #                 "source_expression": source_expr,
+    #                 "field_name": fieldName,
+    #                 "line_no_field": line_no_field,
+    #                 "line_no": lineNo,
+    #             }
+    #         )
+    #
+    #     common.csvreader.SmCsvReader().read_line_by_line(
+    #         csv_file_path,
+    #         self.process_line)
+    #
+    #     for clsName, template_infos in self.createMasterList.items():
+    #         if not sm110.upload_master(template_infos["Master"]):
+    #             common.common.log_err("Downloading To Scale Failed...")
+    #             return False
+    #
+    #     common.common.log_info("Downloading To %s Successfully..." % self.ip)
+    #     return True

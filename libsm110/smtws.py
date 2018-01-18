@@ -48,9 +48,20 @@ class smtws:
             return 2000 + int(m.group(4))
         raise TwsException("Port Error")
 
+    def check_connection(self):
+        try:
+            socket.setdefaulttimeout(10)
+            conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            conn.connect((self.hostaddr, self.port))
+            conn.close()
+            return True
+        except socket.error, e:
+            return False
+
     def delete_file(self, file_no):
         request_data = ReqData().create_request_data(ReqData.Del_File, file_no, 0).decode("hex")
         try:
+            socket.setdefaulttimeout(10)
             conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             conn.connect((self.hostaddr, self.port))
             conn.send(request_data)
@@ -73,6 +84,7 @@ class smtws:
 
     def delete_records(self, file_no, records_no):
         try:
+            socket.setdefaulttimeout(10)
             conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             conn.connect((self.hostaddr, self.port))
             for record_no in records_no:
@@ -103,6 +115,7 @@ class smtws:
     def download_file(self, file_no):
         file_name = "%s.%02x.dat" % (self.hostname, file_no)
         try:
+            socket.setdefaulttimeout(10)
             conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             conn.connect((self.hostaddr, self.port))
             record_no = 0
@@ -156,6 +169,7 @@ class smtws:
         request_data = ReqData().create_request_data(ReqData.Write_File, file_no, 0)
         # tmpline = ""
         try:
+            socket.setdefaulttimeout(10)
             conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             conn.connect((self.hostaddr, self.port))
             with open(file_name, "r") as fp:

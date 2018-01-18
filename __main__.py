@@ -2,8 +2,9 @@
 
 import os, sys
 import getopt
+from threading import Thread
 
-VERSION = "3.6"
+VERSION = "3.9"
 
 # 默认为gbk,在encode.txt可设置编码
 current_encoding = 'gbk'
@@ -16,9 +17,7 @@ reload(sys)
 # sys.setdefaultencoding("utf-8")
 sys.setdefaultencoding(current_encoding)  # @UndefinedVariable
 
-# import common.common
 from common import common
-# from common.converter import ScaleConverter
 from common.converter import ScalesConverter
 from common import converter
 
@@ -30,7 +29,6 @@ import libsm110.const
 
 
 # import argparse
-
 # from smftp import smftp
 # import master,entity
 
@@ -40,14 +38,13 @@ def print_usage():
 Options:
     -h                       This Help
     -d                       Delete Master On Scale (Plu,Mgp...)
-    -P                       Import Plu (Both sm110 and sm120)
-    -T                       Import Trace (Both sm110 and sm120)
-    -L                       Import Flexibarcode (Both sm110 and sm120)
-    -A                       Import Password (Both sm110 and sm120)
-    -E                       Import Text (Both sm110 and sm120)
+    -P                       Import Plu (work with sm80/sm110/sm120)
+    -M                       Import DateTime (work with sm80/sm110/sm120)
+    -T                       Import Trace (work with sm80/sm110/sm120)
+    -L                       Import Flexi-barcode (work with sm80/sm110/sm120)
+    -A                       Import Password (work with sm80/sm110/sm120)
+    -E                       Import Text (work with sm80/sm110/sm120)
     -H                       Title Line In CSV
-    -c Json File             Send Commodity information by Json
-    -t Json File             Send Traceability information by Json
     -f Json File             Send Label Format information by Json
     -G Json File             Receive Label Format information by Json
     -F Json File             Csv Filter File
@@ -58,6 +55,8 @@ Options:
     -g Scale Group List      Scale Group list File
     -i Csv File              Import Csv File
     -o Csv File              Export Csv File
+    
+    --check_connection       Check Connection to the Scales
 """ % sys.argv[0]
 
 
@@ -65,14 +64,15 @@ if __name__ == '__main__':
 
     iExitCode = 0
 
-    json_plu_file = ""
+    # json_plu_file = ""
+    # json_trace_file = ""
     json_label_file = ""
-    json_trace_file = ""
     out_csv_file = ""
     in_csv_file = ""
     template_file = ""
     delete_file = ""
     report_file = ""
+    delete_report_file = ""
     group_file = ""
     filter_file = ""
     scale_list = []
@@ -82,13 +82,15 @@ if __name__ == '__main__':
 
     get_label = False
 
-    bImportForPlu = False
-    bImportForTrace = False
-    bImportFlexibarcode = False
-    bImportPresetKey = False
-    bImportPassword = False
-    bImportText = False
-    titling = False
+    optImportForPlu = False
+    optImportForTrace = False
+    optImportForFlexibarcode = False
+    optImportForPresetKey = False
+    optImportForPassword = False
+    optImportForText = False
+    optImportForDateTime = False
+    optTitling = False
+    optCheckConnection = False    # 检测秤是否连接
 
     file_write = None
     file_read = None
@@ -100,8 +102,8 @@ if __name__ == '__main__':
     try:
         opts, args = getopt.getopt(
             sys.argv[1:],
-            "HvEPTKLAhvd:F:g:G:c:t:s:S:m:f:t:R:i:o:",
-            ["dat=", "read=", "write=", "access_file_name=", "help"])
+            "HvEPMTKLAhvd:F:g:G:c:t:s:S:m:f:t:R:i:o:D:",
+            ["dat=", "read=", "write=", "access_file_name=", "check_connection", "help"])
 
         if not opts:
             print_usage()
@@ -118,10 +120,12 @@ if __name__ == '__main__':
                 file_read = v
             elif o == "--access_file_name":
                 access_file_name = v
-            elif o == "-c":
-                json_plu_file = v
-            elif o == "-t":
-                json_trace_file = v
+            elif o == "--check_connection":
+                optCheckConnection = True
+            # elif o == "-c":
+            #     json_plu_file = v
+            # elif o == "-t":
+            #     json_trace_file = v
             elif o == "-f":
                 json_label_file = v
             elif o == "-s":
@@ -140,22 +144,26 @@ if __name__ == '__main__':
                 template_file = v
             elif o == "-R":
                 report_file = v
+            elif o == "-D":
+                delete_report_file = v
             elif o == "-g":
                 group_file = v
             elif o == "-H":
-                titling = True
+                optTitling = True
             elif o == "-P":
-                bImportForPlu = True
+                optImportForPlu = True
+            elif o == "-M":
+                optImportForDateTime = True
             elif o == "-A":
-                bImportPassword = True
+                optImportForPassword = True
             elif o == '-K':
-                bImportPresetKey = True
+                optImportForPresetKey = True
             elif o == "-L":
-                bImportFlexibarcode = True
+                optImportForFlexibarcode = True
             elif o == "-T":
-                bImportForTrace = True
+                optImportForTrace = True
             elif o == "-E":
-                bImportText = True
+                optImportForText = True
             elif o == "-G":
                 json_label_file = v
                 get_label = True
@@ -171,22 +179,51 @@ if __name__ == '__main__':
 
     file_list = []
 
-    common.set_title_onoff(titling)
+    common.set_title_onoff(optTitling)
 
     # Checking Confliction
-    conflict_check_list = []
+    conflict_check_list_file = []
+
+    conflict_check_list_import = []
+
+    if optImportForPlu:
+        conflict_check_list_import.append(optImportForPlu)
+    if optImportForDateTime:
+        conflict_check_list_import.append(optImportForDateTime)
+    if optImportForTrace:
+        conflict_check_list_import.append(optImportForTrace)
+    if optImportForFlexibarcode:
+        conflict_check_list_import.append(optImportForFlexibarcode)
+    if optImportForPresetKey:
+        conflict_check_list_import.append(optImportForPresetKey)
+    if optImportForPassword:
+        conflict_check_list_import.append(optImportForPassword)
+    if optImportForText:
+        conflict_check_list_import.append(optImportForText)
+    if optCheckConnection:
+        conflict_check_list_import.append(optCheckConnection)
+
+    if len(conflict_check_list_import) >= 2:
+        common.log_err("Multiple Import Options!!!")
+        sys.exit(6)
 
     # Template File conflict with Report File
     if template_file:
-        conflict_check_list.append(template_file)
+        conflict_check_list_file.append(template_file)
     if report_file:
-        conflict_check_list.append(report_file)
-    if len(conflict_check_list) == 2:
+        conflict_check_list_file.append(report_file)
+    if delete_report_file:
+        conflict_check_list_file.append(delete_report_file)
+    if len(conflict_check_list_file) >= 2:
         common.log_err("Template File and Report File conflict!!!")
         sys.exit(6)
 
     if report_file and not out_csv_file:
         common.log_err("No enough Parameters For exporting Files")
+        sys.exit(4)
+
+    if delete_report_file and not in_csv_file:
+        common.log_err("No enough Parameters For importing Files")
         sys.exit(4)
 
     if template_file and not in_csv_file and not out_csv_file:
@@ -201,11 +238,11 @@ if __name__ == '__main__':
         common.log_err("-i and -o cannot be Process Together!!!")
         sys.exit(4)
 
-    if os.path.exists(json_plu_file):
-        file_list.append(json_plu_file)
-
-    if os.path.exists(json_trace_file):
-        file_list.append(json_trace_file)
+    # if os.path.exists(json_plu_file):
+    #     file_list.append(json_plu_file)
+    #
+    # if os.path.exists(json_trace_file):
+    #     file_list.append(json_trace_file)
 
     if get_label or os.path.exists(json_label_file):
         file_list.append(json_label_file)
@@ -214,7 +251,8 @@ if __name__ == '__main__':
     #		common.log_err( "Report File not Exist!!!" )
     #		sys.exit(5)
 
-    if len(conflict_check_list) == 0 and \
+    if len(conflict_check_list_file) == 0 and \
+            not optCheckConnection and \
             not file_list and \
             not delete_file and \
             not dat_file and \
@@ -240,51 +278,41 @@ if __name__ == '__main__':
     if out_csv_file and os.path.isfile(out_csv_file):
         os.remove(out_csv_file)
 
+    ##########################################
+    # 基本导入下发功能
+    ##########################################
     if template_file and in_csv_file:
-        if bImportForPlu or \
-                bImportForTrace or \
-                bImportFlexibarcode or \
-                bImportPresetKey or \
-                bImportPassword or \
-                bImportText:
-            if bImportForPlu:
+        if optImportForPlu or \
+                optImportForTrace or \
+                optImportForFlexibarcode or \
+                optImportForPresetKey or \
+                optImportForPassword or \
+                optImportForDateTime or \
+                optImportForText:
+            if optImportForPlu:
                 scales_converter = ScalesConverter()
-            elif bImportForTrace:
+            elif optImportForTrace:
                 scales_converter = ScalesConverter(converter.ConvertDesc_TRACE)
-            elif bImportFlexibarcode:
+            elif optImportForFlexibarcode:
                 scales_converter = ScalesConverter(converter.ConvertDesc_FLEXIBARCODE)
-            elif bImportPresetKey:
+            elif optImportForPresetKey:
                 scales_converter = ScalesConverter(converter.ConvertDesc_PRESETKEY)
-            elif bImportPassword:
+            elif optImportForPassword:
                 scales_converter = ScalesConverter(converter.ConvertDesc_PAS)
-            elif bImportText:
+            elif optImportForText:
                 scales_converter = ScalesConverter(converter.ConvertDesc_TEXT)
+            elif optImportForDateTime:
+                scales_converter = ScalesConverter(converter.ConvertDesc_DAT)
 
+            # 集成下发功能
             if not scales_converter.easyImportMaster(scale_list, in_csv_file, template_file):
                 iExitCode = 8
 
-    # 处理直接下发的DAT文件(只支持SM110)
-    if dat_file:
-        try:
-            import re
+    ##########################################
+    # 其它处理
+    ##########################################
 
-            # 匹配192.168.68.125.25.DAT这样的格式
-            pat = re.compile("(\d{,3}\.\d{,3}\.\d{,3}\.\d{,3})\.(\d+)\.dat")
-            m = pat.match(dat_file.lower())
-            if m:
-                scale_ip = m.group(1)
-                file_no = int(m.group(2), 16)
-                sm110_scale = libsm110.smtws.smtws(scale_ip)
-                if not sm110_scale.upload_file(file_no, dat_file):
-                    raise Exception('Error On Sending Data File')
-            else:
-                raise Exception("Incorrect File Name")
-        except Exception, e:
-            common.log_err(e)
-            iExitCode = 8
-        # print dir(e)
-        else:
-            common.log_info("Finished Sending Dat File To Scale!")
+    arr_check_connection = []
 
     for index, scale in enumerate(scale_list):
         scale = scale.strip()
@@ -301,6 +329,7 @@ if __name__ == '__main__':
 
         # import common.common
 
+        # 清除内存表中数据，以防与下次下发冲突
         if scale_type.lower() == "sm120":
             # sm120
             ease = libsm120.easy.Easy(scale)
@@ -329,10 +358,10 @@ if __name__ == '__main__':
             else:
                 common.log_err("Send Master Failed!")
 
-        if json_plu_file:
-            ease.easySendPlu(json_plu_file)
-        if json_trace_file:
-            ease.easySendTrace(json_trace_file)
+        # if json_plu_file:
+        #     ease.easySendPlu(json_plu_file)
+        # if json_trace_file:
+        #     ease.easySendTrace(json_trace_file)
         if json_label_file:
             try:
                 if get_label:
@@ -343,29 +372,32 @@ if __name__ == '__main__':
                 common.log_err("Label Format Error:", e)
 
         # common.clear_all_tables(libsm120.const.db_name)
-        if template_file:
-            if out_csv_file:
-                ease.exportCSV(
-                    export_template_file=template_file,
-                    export_template_info="",
-                    export_csv_file=out_csv_file,
-                    title=True)
-            elif in_csv_file:
-                # import
-                if bImportForPlu or \
-                        bImportForTrace or \
-                        bImportFlexibarcode or \
-                        bImportPresetKey or \
-                        bImportPassword or \
-                        bImportText:
-                    # scale_converter.easyImportMaster(in_csv_file, template_file)
-                    pass
-                else:
-                    ease.easyImportMaster(
-                        in_csv_file,
-                        template_file,
-                        json_scale_group_file=group_file,
-                        json_filter_file=filter_file)
+        # if template_file:
+        #     if out_csv_file:
+        if template_file and out_csv_file:
+            ease.exportCSV(
+                export_template_file=template_file,
+                export_template_info="",
+                export_csv_file=out_csv_file,
+                title=True)
+
+            # elif in_csv_file:
+            #     # import
+            #     if optImportForPlu or \
+            #             optImportForTrace or \
+            #             optImportFlexibarcode or \
+            #             optImportPresetKey or \
+            #             optImportPassword or \
+            #             optImportForText:
+            #         # scale_converter.easyImportMaster(in_csv_file, template_file)
+            #         pass
+            #     else:
+            #         ease.easyImportMaster(
+            #             in_csv_file,
+            #             template_file,
+            #             json_scale_group_file=group_file,
+            #             json_filter_file=filter_file)
+
         if report_file:
             if scale_type.lower() == "sm120":
                 ease.exportCSV(
@@ -379,6 +411,70 @@ if __name__ == '__main__':
                     export_template_info=libsm110.const.report_list[report_file],
                     export_csv_file=out_csv_file,
                     title=True)
+
+        if delete_report_file:
+            if not ease.deleteFromCSV(delete_report_file, in_csv_file):
+                iExitCode = 9
+
+        def check_conn(p_scale_ip, p_scale_type, p_result):
+            if p_scale_type.lower() == "sm120":
+                o_scale = libsm120.digiscale.DigiSm120(p_scale_ip)
+            else:
+                o_scale = libsm110.smtws.smtws(p_scale_ip)
+
+            if isinstance(p_result, list) and len(p_result) > 0:
+                p_result[0] = 0 if o_scale.check_connection() else -1
+
+        if optCheckConnection:
+            result = [-1]
+            thd_check = Thread(target=check_conn, args=(scale, scale_type, result))
+            arr_check_connection.append((thd_check, scale, result))
+            thd_check.start()
+
+    list_success_scale_connection = []
+    list_failed_scale_connection = []
+    for entry_check_connection in arr_check_connection:
+        entry_check_connection[0].join()
+        scale_ip = entry_check_connection[1]
+        if entry_check_connection[2][0] == 0:  # connection OK
+            list_success_scale_connection.append(scale_ip)
+            common.log_info("%s Connection OK..." % scale_ip)
+            common.log2_info("%s Connection OK..." % scale_ip)
+        else:
+            list_failed_scale_connection.append(scale_ip)
+            common.log_info("%s Connecting Failed..." % scale_ip)
+            common.log2_info("%s Connecting Failed..." % scale_ip)
+
+    try:
+        with open('digicon_failed_scale.log', 'w') as fp1:
+            fp1.write('\r\n'.join(list_failed_scale_connection))
+        with open('digicon_succeeded_scale.log', 'w') as fp2:
+            fp2.write('\r\n'.join(list_success_scale_connection))
+    except Exception, e:
+        common.log_err(e)
+
+    # 处理直接下发的单个DAT文件(仅支持SM110)
+    if dat_file:
+        try:
+            import re
+
+            # 匹配192.168.68.125.25.DAT这样的格式
+            pat = re.compile("(\d{,3}\.\d{,3}\.\d{,3}\.\d{,3})\.(\d+)\.dat")
+            m = pat.match(dat_file.lower())
+            if m:
+                scale_ip = m.group(1)
+                file_no = int(m.group(2), 16)
+                sm110_scale = libsm110.smtws.smtws(scale_ip)
+                if not sm110_scale.upload_file(file_no, dat_file):
+                    raise Exception('Error On Sending Data File')
+            else:
+                raise Exception("Incorrect File Name")
+        except Exception, e:
+            common.log_err(e)
+            iExitCode = 8
+        # print dir(e)
+        else:
+            common.log_info("Finished Sending Dat File To Scale!")
 
     sys.exit(iExitCode)
 

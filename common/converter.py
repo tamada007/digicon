@@ -249,7 +249,8 @@ class StatementConvert:
             cbSetValueList(tableNamePLU, "Multibarcode1No", csv_values.get("MubCode1") or str(cur_line_no))
             cbSetValueList(tableNameMUB, "Code", line_no=1, value=csv_values.get("MubCode1") or str(cur_line_no))
             cbSetValueList(tableNameMUB, "MultiBarcodeType", line_no=1, value="2")
-            cbSetValueList(tableNameMUB, "BarcodeType", line_no=1, value="1")
+            # cbSetValueList(tableNameMUB, "BarcodeType", line_no=1, value="1")
+            cbSetValueList(tableNameMUB, "BarcodeType", line_no=1, value=csv_values.get("Barcode1Type") or "1")
             cbSetValueList(tableNameMUB, "Data", line_no=1, value=csv_values.get("Multibarcode1"))
 
         # MultiBarcode 2
@@ -279,6 +280,7 @@ class StatementConvert:
                         cbSetValueList(tableNameTBT, "LineNo", line_no=mul2_index + 1, value=str(mul2_index + 1))
                         cbSetValueList(tableNameTBT, "Data", line_no=mul2_index + 1,
                                        value=mul2_data.decode(sys.getdefaultencoding()))
+                        cbSetValueList(tableNameTBT, "TextFlag", line_no=mul2_index + 1, value=str(99))
                 except Exception:
                     pass
 
@@ -341,7 +343,8 @@ class StatementConvert:
 
         # MultiBarcode 1
         if csv_values.get("Multibarcode1"):
-            cbSetValueList(tableNamePLU, "MultiBarcode1", "1,%s,2" % csv_values.get("Multibarcode1"))
+            # cbSetValueList(tableNamePLU, "MultiBarcode1", "1,%s,2" % csv_values.get("Multibarcode1"))
+            cbSetValueList(tableNamePLU, "MultiBarcode1", "%s,%s,2" % (csv_values.get("Barcode1Type") or "1", csv_values.get("Multibarcode1")))
 
         # MultiBarcode 2
         if csv_values.get("Multibarcode2"):
@@ -352,7 +355,7 @@ class StatementConvert:
                 # 2D Barcode
                 cbSetValueList(tableNameTBT, "Code", csv_values.get("MubCode2") or str(cur_line_no))
                 try:
-                    cbSetValueList(tableNameTBT, "Data", "\n".join(['21,"%s"' % ent.replace('"', '""') for ent in
+                    cbSetValueList(tableNameTBT, "Data", "\n".join(['99,"%s"' % ent.replace('"', '""') for ent in
                                                                     csv.reader(StringIO.StringIO(
                                                                         csv_values.get("Multibarcode2"))).next()]))
                 except:
@@ -678,6 +681,26 @@ ConvertDesc_PAS = {
         {"source": "trim($(ZModePwd))", "target": "Pas.ZModePwd"},
         {"source": "trim($(PModePwd))", "target": "Pas.PModePwd"}
 
+    ]
+}
+
+
+ConvertDesc_DAT = {
+    "sm110": [
+        {"source": "$(DateTimeCode)", "target": "Dat.Code"},
+        {"source": "$(Year)", "target": "Dat.Year"},
+        {"source": "$(Month)", "target": "Dat.Month"},
+        {"source": "$(Day)", "target": "Dat.Day"},
+        {"source": "$(Hour)", "target": "Dat.Hour"},
+        {"source": "$(Minute)", "target": "Dat.Minute"}
+    ],
+    "sm120": [
+        {"source": "$(DateTimeCode)", "target": "Dat.Code"},
+        {"source": "$(Year)", "target": "Dat.Year"},
+        {"source": "$(Month)", "target": "Dat.Month"},
+        {"source": "$(Day)", "target": "Dat.Day"},
+        {"source": "$(Hour)", "target": "Dat.Hour"},
+        {"source": "$(Minute)", "target": "Dat.Minute"}
     ]
 }
 

@@ -10,6 +10,11 @@ class MgpMaster(Master):
         super(MgpMaster, self).__init__("Mgp", 0x23, const.mgp_struct)
 
 
+class DatMaster(Master):
+    def __init__(self):
+        super(DatMaster, self).__init__("Dat", 0x4E, const.dat_struct)
+
+
 class PlaMaster(Master):
     def __init__(self):
         # Master.__init__(self, "Pla", 0x39, const.pla_struct)
@@ -107,6 +112,7 @@ class MasterFactory:
     def createMaster(self, master_name):
         master_list = {
             "Plu": lambda: PluMaster(),
+            "Dat": lambda: DatMaster(),
             "Mgp": lambda: MgpMaster(),
             "Pla": lambda: PlaMaster(),
             # 			"Dep": lambda : DepMaster(),

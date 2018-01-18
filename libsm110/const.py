@@ -266,6 +266,57 @@ pla_struct = [
 	}
 ]
 
+# Date Time
+dat_struct = [
+    {
+        "Name": "Code",
+        "Key": 1,
+        "Type": "HEX",
+        "Length": 4
+    },
+    {
+        "Name": "RecordSize",
+        "Type": "HEX",
+        "Length": 2,
+        "IsSize": 1
+    },
+    {
+        "Name": "Dummy1",
+        "Type": "BCD",
+        "Length": 1
+    },
+    {
+        "Name": "Day",
+        "Type": "BCD",
+        "Length": 1
+    },
+    {
+        "Name": "Month",
+        "Type": "BCD",
+        "Length": 1
+    },
+    {
+        "Name": "Year",
+        "Type": "BCD",
+        "Length": 1
+    },
+    {
+        "Name": "Dummy2",
+        "Type": "BCD",
+        "Length": 2
+    },
+    {
+        "Name": "Hour",
+        "Type": "BCD",
+        "Length": 1
+    },
+    {
+        "Name": "Minute",
+        "Type": "BCD",
+        "Length": 1
+    }
+]
+
 # MG
 mgp_struct = [
     {

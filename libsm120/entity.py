@@ -16,6 +16,17 @@ class MgpMaster(Master):
             super(MgpMaster, self).__init__(file_abbr, file_struct)
 
 
+class DatMaster(Master):
+    def __init__(self):
+        file_struct = const.dat_struct
+        file_abbr = self.__class__.__name__.lower()[:3]
+        scale_file = file_abbr + '.json'
+        if os.path.isfile(scale_file):
+            super(DatMaster, self).__init__(file_abbr, common.common.get_json_from_file(scale_file))
+        else:
+            super(DatMaster, self).__init__(file_abbr, file_struct)
+
+
 class PlaMaster(Master):
     def __init__(self):
         file_struct = const.pla_struct
@@ -279,6 +290,7 @@ class MasterFactory:
             "Scd": lambda: ScdMaster(),
             "Plu": lambda: PluMaster(),
             "Mgp": lambda: MgpMaster(),
+            "Dat": lambda: DatMaster(),
             "Pla": lambda: PlaMaster(),
             "Dep": lambda: DepMaster(),
             "Kas": lambda: KasMaster(),
@@ -307,4 +319,5 @@ class MasterFactory:
 
 
 if __name__ == '__main__':
-    print type(MgpMaster().get_free_value_of_key())
+    pass
+    # print type(MgpMaster().get_free_value_of_key())
