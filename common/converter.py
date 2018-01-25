@@ -44,6 +44,9 @@ class StatementConvert:
         cbSetValueList(tableNamePLU, "ItemCode", csv_values.get("ItemCode") or "0000000000")
         # 条码右侧数据X
         cbSetValueList(tableNamePLU, "RightSideDataOfEanData", csv_values.get("BarcodeX") or "0")
+        # 单位
+        cbSetValueList(tableNamePLU, "PriceBasedPerUnitFlag", csv_values.get("PriceBasedPerUnitFlag") or "0")
+
 
         # 产地
         tmp_placecode = csv_values.get("PlaCode")
@@ -302,8 +305,12 @@ class StatementConvert:
         cbSetValueList(tableNamePLU, "PLUNo", csv_values.get("PLUNo") or '')
 
         # Status1
-        cbSetValueList(tableNamePLU, "PLUStatus1", "0000000%s 000%s0000" % (
-        csv_values.get("WeightingFlag") or '0', csv_values.get("PriceOverride") or '0'))
+        cbSetValueList(
+            tableNamePLU,
+            "PLUStatus1", "0000000%s 000%s00%s0" % (
+                csv_values.get("WeightingFlag") or '0',
+                csv_values.get("PriceOverride") or '0',
+                csv_values.get("PriceBasedPerUnitFlag") or '0'))
         # EAN Data
         cbSetValueList(tableNamePLU, "EANData", "%s,%s,%s" % (
             csv_values.get("ItemCode") or '0000000000',

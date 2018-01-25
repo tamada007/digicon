@@ -4,7 +4,7 @@ import os, sys
 import getopt
 from threading import Thread
 
-VERSION = "3.9"
+VERSION = "4.0"
 
 # 默认为gbk,在encode.txt可设置编码
 current_encoding = 'gbk'
@@ -282,29 +282,38 @@ if __name__ == '__main__':
     # 基本导入下发功能
     ##########################################
     if template_file and in_csv_file:
-        if optImportForPlu or \
-                optImportForTrace or \
-                optImportForFlexibarcode or \
-                optImportForPresetKey or \
-                optImportForPassword or \
-                optImportForDateTime or \
-                optImportForText:
-            if optImportForPlu:
-                scales_converter = ScalesConverter()
-            elif optImportForTrace:
-                scales_converter = ScalesConverter(converter.ConvertDesc_TRACE)
-            elif optImportForFlexibarcode:
-                scales_converter = ScalesConverter(converter.ConvertDesc_FLEXIBARCODE)
-            elif optImportForPresetKey:
-                scales_converter = ScalesConverter(converter.ConvertDesc_PRESETKEY)
-            elif optImportForPassword:
-                scales_converter = ScalesConverter(converter.ConvertDesc_PAS)
-            elif optImportForText:
-                scales_converter = ScalesConverter(converter.ConvertDesc_TEXT)
-            elif optImportForDateTime:
-                scales_converter = ScalesConverter(converter.ConvertDesc_DAT)
+        b_import_flg = False
+        # if optImportForPlu or \
+        #         optImportForTrace or \
+        #         optImportForFlexibarcode or \
+        #         optImportForPresetKey or \
+        #         optImportForPassword or \
+        #         optImportForDateTime or \
+        #         optImportForText:
+        if optImportForPlu:
+            scales_converter = ScalesConverter()
+            b_import_flg = True
+        elif optImportForTrace:
+            scales_converter = ScalesConverter(converter.ConvertDesc_TRACE)
+            b_import_flg = True
+        elif optImportForFlexibarcode:
+            scales_converter = ScalesConverter(converter.ConvertDesc_FLEXIBARCODE)
+            b_import_flg = True
+        elif optImportForPresetKey:
+            scales_converter = ScalesConverter(converter.ConvertDesc_PRESETKEY)
+            b_import_flg = True
+        elif optImportForPassword:
+            scales_converter = ScalesConverter(converter.ConvertDesc_PAS)
+            b_import_flg = True
+        elif optImportForText:
+            scales_converter = ScalesConverter(converter.ConvertDesc_TEXT)
+            b_import_flg = True
+        elif optImportForDateTime:
+            scales_converter = ScalesConverter(converter.ConvertDesc_DAT)
+            b_import_flg = True
 
-            # 集成下发功能
+        # 集成下发功能
+        if b_import_flg:
             if not scales_converter.easyImportMaster(scale_list, in_csv_file, template_file):
                 iExitCode = 8
 
@@ -449,6 +458,10 @@ if __name__ == '__main__':
 
     if len(list_success_scale_connection) > 0 or len(list_failed_scale_connection) > 0:
         try:
+            if len(list_failed_scale_connection) > 0:
+                iExitCode = 10
+            else:
+                iExitCode = 0
             with open('digicon_failed_scale.log', 'w') as fp1:
                 fp1.write('\r\n'.join(list_failed_scale_connection))
             with open('digicon_succeeded_scale.log', 'w') as fp2:

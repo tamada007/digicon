@@ -1,5 +1,0 @@
-[
-	{ "source_expr": "$(1)", "target_field": "PluCode"},
-	{ "source_expr": "$(2)", "target_field": "KasCode"},
-	{ "source_expr": "isnull($(3),0)", "target_field": "PageNo"}
-]

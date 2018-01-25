@@ -21,7 +21,7 @@ import common.common
 import time
 count = 700000
 while count > 0:
-	print ScalesConverter().easyImportMaster("192.168.68.125:sm110", "plu_import.csv", "plu_template.json")
+	print ScalesConverter().easyImportMaster("192.168.68.125:sm110", "plu_import.csv", "plu_template_1.json")
 	#print ScalesConverter().easyImportMaster("192.168.175.1:sm110", "plu_import.csv", "plu_template.json")
  	#print ScalesConverter().easyImportMaster("192.168.175.1", "plu_import.csv", "plu_template.json")
 	#print ScalesConverter().easyImportMaster("192.168.68.194", "plu_import.csv", "plu_template.json")
