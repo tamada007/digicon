@@ -4,7 +4,7 @@ import os, sys
 import getopt
 from threading import Thread
 
-VERSION = "4.0"
+VERSION = "4.1"
 
 # 默认为gbk,在encode.txt可设置编码
 current_encoding = 'gbk'

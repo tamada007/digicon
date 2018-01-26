@@ -47,6 +47,9 @@ class StatementConvert:
         # 单位
         cbSetValueList(tableNamePLU, "PriceBasedPerUnitFlag", csv_values.get("PriceBasedPerUnitFlag") or "0")
 
+        # Plu Tare
+        cbSetValueList(tableNamePLU, "PLUTare", csv_values.get("PLUTare") or "0")
+
 
         # 产地
         tmp_placecode = csv_values.get("PlaCode")
@@ -315,8 +318,11 @@ class StatementConvert:
         cbSetValueList(tableNamePLU, "EANData", "%s,%s,%s" % (
             csv_values.get("ItemCode") or '0000000000',
             csv_values.get("BarcodeType") or 'EAN',
-            csv_values.get("BarcodeX") or '0')
-                       )
+            csv_values.get("BarcodeX") or '0'))
+
+        #PLU Tare
+        cbSetValueList(tableNamePLU, "PLUTare", csv_values.get("PLUTare") or "0000")
+
         # 产地
         tmp_placecode = csv_values.get("PlaCode")
         if tmp_placecode:
