@@ -1,7 +1,8 @@
 # encoding=gbk
 import re
 import socket
-import traceback
+# import traceback
+import time
 
 from common import common
 
@@ -135,11 +136,16 @@ class smtws:
 
                     else:
                         received_data = received_data.encode("hex").upper()
+                        if not received_data:
+                            common.log_err("Received data is Empty")
+                            break
                         # 计算长度
                         real_size = int(received_data[8:12], 16)
                         while real_size > received_length:
-                            if received_length % 1460 == 0:
-                                conn.send('\x06')
+                            # for STE48 3.00+
+                            # if received_length % 1460 == 0:
+                            conn.send('\x06')
+                            #
 
                             received_data_plus = conn.recv(1460)
                             if not received_data_plus: break
