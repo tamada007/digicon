@@ -39,6 +39,37 @@ report_list = {
 
 }
 
+# Spec
+spe_struct = [
+    {
+        "Name": "Code",
+        "Key": 1,
+        "Type": "BCD",
+        "Length": 4
+    },
+    {
+        "Name": "RecordSize",
+        "Type": "HEX",
+        "Length": 2,
+        "IsSize": 1
+    },
+    {
+        "Name": "Dummy",
+        "Type": "BYTES",
+        "Length": 2
+    },
+    {
+        "Name": "Spec141Data",
+        "Type": "BYTES",
+        "Length": 700
+    },
+    {
+        "Name": "Spec142Data",
+        "Type": "BYTES",
+        "Length": 300
+    }
+]
+
 # Scale Data
 scd_struct = [
     {

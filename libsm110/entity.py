@@ -105,6 +105,11 @@ class ScdMaster(Master):
         super(ScdMaster, self).__init__("Scd", 0x4F, const.scd_struct)
 
 
+class SpeMaster(Master):
+    def __init__(self):
+        super(SpeMaster, self).__init__("Spe", 0x2D, const.spe_struct)
+
+
 class MasterFactory:
     def __init__(self):
         pass
@@ -113,6 +118,7 @@ class MasterFactory:
         master_list = {
             "Plu": lambda: PluMaster(),
             "Dat": lambda: DatMaster(),
+            "Spe": lambda: SpeMaster(),
             "Mgp": lambda: MgpMaster(),
             "Pla": lambda: PlaMaster(),
             # 			"Dep": lambda : DepMaster(),

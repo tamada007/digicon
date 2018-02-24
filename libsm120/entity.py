@@ -281,6 +281,18 @@ class PasMaster(Master):
             super(PasMaster, self).__init__(file_abbr, file_struct)
 
 
+class SpeMaster(Master):
+    def __init__(self):
+        file_struct = const.spe_struct
+        file_abbr = self.__class__.__name__.lower()[:3]
+        scale_file = file_abbr + '.json'
+        if os.path.isfile(scale_file):
+            super(SpeMaster, self).__init__(file_abbr, common.common.get_json_from_file(scale_file))
+        else:
+            super(SpeMaster, self).__init__(file_abbr, file_struct)
+
+
+
 class MasterFactory:
     def __init__(self):
         pass
@@ -289,6 +301,7 @@ class MasterFactory:
         master_list = {
             "Scd": lambda: ScdMaster(),
             "Plu": lambda: PluMaster(),
+            "Spe": lambda: SpeMaster(),
             "Mgp": lambda: MgpMaster(),
             "Dat": lambda: DatMaster(),
             "Pla": lambda: PlaMaster(),

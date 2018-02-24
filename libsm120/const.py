@@ -32,6 +32,23 @@ report_list = {
 
 }
 
+# Spec
+spe_struct = {
+    "Code": {
+        "ColumnIndex": 1,
+        "Key": 1,
+        "Type": "SMInt"
+    },
+    "Flag_for_delete": {
+        "ColumnIndex": 2,
+        "Type": "SMText"
+    },
+    "Value": {
+        "ColumnIndex": 3,
+        "Type": "SMText"
+    }
+}
+
 # Password
 pas_struct = {
     "Code": {
