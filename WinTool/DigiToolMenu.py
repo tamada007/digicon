@@ -6,17 +6,17 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-import os
+import sys
 
+# import os
+# from PyQt4 import *
+# from PyQt4.Qt import QPluginLoader
 from PyQt4 import QtCore, QtGui
-from PyQt4 import *
-
-from PyQt4.Qt import QPluginLoader
 
 
-from ui import TextTool
-from ui import CopyTool
-from ui.Ip4 import MyDialog, MyFont, resource_path
+import TextTool
+import CopyTool
+from Ip4 import MyDialog, MyFont, resource_path
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -33,25 +33,30 @@ except AttributeError:
         return QtGui.QApplication.translate(context, text, disambig)
 
 
-class Ui_dialog(object):
+class Ui_DigiToolDialog(object):
 
     def on_btn_texttool(self):
         self.Dialog = MyDialog(self.main_dialog)
-        ui = TextTool.Ui_TextToolDialog()
+        self.Dialog.setParams(self.main_dialog.getParams())
+        global ui1
+        ui1 = TextTool.Ui_TextToolDialog()
         # self.Dialog.setModal(True)
         # self.Dialog.show()
-        ui.setupUi(self.Dialog)
+        ui1.setupUi(self.Dialog)
         self.Dialog.show()
 
     def on_btn_copytool(self):
         self.Dialog = MyDialog(self.main_dialog)
-        ui = CopyTool.Ui_CopyToolDialog()
+        self.Dialog.setParams(self.main_dialog.getParams())
+        global ui1
+        ui1 = CopyTool.Ui_CopyToolDialog()
         # self.Dialog.show()
         # self.Dialog.setModal(True)
-        ui.setupUi(self.Dialog)
+        ui1.setupUi(self.Dialog)
         self.Dialog.show()
 
     def setupUi(self, dialog):
+
         # QPlugin = QPluginLoader("qico4.dll")
         # print QPlugin
         # base_path = os.path.abspath(".")
@@ -87,6 +92,12 @@ class Ui_dialog(object):
 
         self.main_dialog = dialog
 
+        from TimerMessageBox import TimerMessageBox
+        messagebox = TimerMessageBox(2, dialog, userMessage="当前秤型号为: " + dialog.getParams()["scaleType"])
+        messagebox.exec_()
+
+
+
     def retranslateUi(self, dialog):
         dialog.setWindowTitle(_translate("dialog", "寺冈秤工具主菜单", None))
         self.btn_texttool.setText(_translate("dialog", "文本下发特定工具", None))
@@ -94,13 +105,12 @@ class Ui_dialog(object):
 
 
 if __name__ == "__main__":
-    import sys
     # import ui.icon_rc
     # ui.icon_rc.qInitResources()
 
     app = QtGui.QApplication(sys.argv)
     dialog = QtGui.QDialog()
-    ui = Ui_dialog()
+    ui = Ui_DigiToolDialog()
     ui.setupUi(dialog)
     dialog.show()
     sys.exit(app.exec_())

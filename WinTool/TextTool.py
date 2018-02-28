@@ -6,7 +6,6 @@
 #
 # WARNING! All changes made in this file will be lost!
 import re
-
 import os
 import sys
 
@@ -351,7 +350,10 @@ class Ui_TextToolDialog(object):
             csv_file = self.create_text(cur_scale_info)
 
             # print cur_scale_item.scale_ip
-            result = scales_converter.easyImportMaster(cur_scale_info.scale_ip+":sm110", csv_file, json_file)
+            if self.main_dialog.getParams()["scaleType"] == "sm110":
+                result = scales_converter.easyImportMaster(cur_scale_info.scale_ip+":sm110", csv_file, json_file)
+            else:
+                result = scales_converter.easyImportMaster(cur_scale_info.scale_ip, csv_file, json_file)
 
             if result:
                 scale_success_list.append(cur_scale_info.scale_ip)
@@ -412,6 +414,15 @@ class Ui_TextToolDialog(object):
     #         self.edt_scaleno.setText(scale_no)
 
     def setupUi(self, Dialog):
+
+        # print Dialog.params["scaleType"]
+        self.main_dialog = Dialog
+
+        from TimerMessageBox import TimerMessageBox
+        messagebox = TimerMessageBox(1, Dialog, userMessage="当前秤型号为: " + Dialog.getParams()["scaleType"])
+        messagebox.exec_()
+
+
         Dialog.setObjectName(_fromUtf8("Dialog"))
         Dialog.setWindowModality(QtCore.Qt.WindowModal)
         Dialog.resize(639, 438)
@@ -749,7 +760,7 @@ class Ui_TextToolDialog(object):
         combo_box.setItemText(11, _translate("Dialog", "G6", None))
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "寺冈秤文本下发工具", None))
+        Dialog.setWindowTitle(_translate("Dialog", "寺冈秤文本下发工具 - " + self.main_dialog.getParams()["scaleType"], None))
         self.label.setText(_translate("Dialog", "秤列表", None))
         self.btn_send.setText(_translate("Dialog", "发送", None))
         self.label_2.setText(_translate("Dialog", "默认选项", None))

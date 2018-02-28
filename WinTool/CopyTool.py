@@ -18,14 +18,28 @@ sys.path.append('.')
 sys.path.append('..')
 
 import libsm110.easy
+import libsm120.easy
 
-g_scale_file_table = {
+g_scale_file_table_sm110 = {
     'Prf': u'标签格式',
     'Plu': u'商品信息',
     'Tex': u'文本信息',
     'Flb': u'自定义条码',
     'Kas': u'预置键',
 }
+
+g_scale_file_table_sm120 = {
+    'Prf': u'标签格式头',
+    'Pff': u'标签格式明细',
+    'Plu': u'商品信息',
+    'Spm': u'特殊信息',
+    'Ing': u'成份',
+    'Tex': u'文本信息',
+    'Flb': u'自定义条码',
+    'Kas': u'预置键',
+}
+
+g_scale_file_table = {}
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -139,6 +153,9 @@ class Ui_CopyToolDialog(object):
         return fname
 
     def start_do_copy(self):
+
+        global g_scale_file_table
+
         file_data = ""
         file_list = []
 
@@ -158,7 +175,10 @@ class Ui_CopyToolDialog(object):
                     file_data = fp1.read()
         elif self.rb_source_fromscale.isChecked():
             cur_scale = unicode(self.edt_source_scale.text())
-            ease = libsm110.easy.Easy(cur_scale)
+            if self.main_dialog.getParams()["scaleType"] == "sm110":
+                ease = libsm110.easy.Easy(cur_scale)
+            else:
+                ease = libsm120.easy.Easy(cur_scale)
 
             # ease.easyReceiveFile(self.lv_scalefile.currentItem().)
             # print self.lv_scalefile.currentItem().text()
@@ -216,7 +236,10 @@ class Ui_CopyToolDialog(object):
                     cur_scale = unicode(self.lv_target_scale.model().item(i).text())
                     if not cur_scale:
                         continue
-                    ease = libsm110.easy.Easy(cur_scale)
+                    if self.main_dialog.getParams()["scaleType"] == "sm110":
+                        ease = libsm110.easy.Easy(cur_scale)
+                    else:
+                        ease = libsm120.easy.Easy(cur_scale)
                     cur_item_list_succeed = []
                     cur_item_list_failed = []
                     for scale_file, scale_file_data in dict_data.items():
@@ -282,6 +305,14 @@ class Ui_CopyToolDialog(object):
         Dialog.setObjectName(_fromUtf8("Dialog"))
         Dialog.resize(678, 391)
         Dialog.setWindowModality(QtCore.Qt.WindowModal)
+
+        self.main_dialog = Dialog
+        global g_scale_file_table
+
+        g_scale_file_table = \
+            g_scale_file_table_sm110 \
+                if self.main_dialog.getParams()["scaleType"] == "sm110" \
+                else g_scale_file_table_sm120
 
         icon_file_path = resource_path("as.png")
         icon = QtGui.QIcon(icon_file_path)
@@ -388,8 +419,16 @@ class Ui_CopyToolDialog(object):
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
+        from TimerMessageBox import TimerMessageBox
+        messagebox = TimerMessageBox(1, Dialog, userMessage="当前秤型号为: " + Dialog.getParams()["scaleType"])
+        messagebox.exec_()
+
+
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(_translate("Dialog", "寺冈秤复制工具", None))
+        # Dialog.setWindowTitle(_translate("Dialog", "寺冈秤复制工具", None))
+        Dialog.setWindowTitle(_translate("Dialog", "寺冈秤复制工具 - " + self.main_dialog.getParams()["scaleType"], None))
+
+
         self.groupBox.setTitle(_translate("Dialog", "来源", None))
         self.rb_source_fromfile.setText(_translate("Dialog", "数据文件", None))
         self.rb_source_fromscale.setText(_translate("Dialog", "秤", None))
@@ -420,6 +459,7 @@ class Ui_CopyToolDialog(object):
         # item1.setData(1, 'Kas')
         # self.lv_scalefile.addItem(item1)
 
+        global g_scale_file_table
         for k, v in g_scale_file_table.items():
             item1 = QListWidgetItem(v)
             item1.setData(1, k)

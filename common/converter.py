@@ -112,6 +112,8 @@ class StatementConvert:
         cbSetValueList(tableNamePLU, "BarcodeFormat", csv_values.get("BarcodeFormat") or '0')
         # 标签格式
         cbSetValueList(tableNamePLU, "LabelFormat1", csv_values.get("LabelFormat1") or '17')
+        cbSetValueList(tableNamePLU, "LabelFormat2", csv_values.get("LabelFormat2") or '')
+
 
         # 保质期
         if csv_values.get("UsedByDate"):
@@ -341,6 +343,8 @@ class StatementConvert:
         cbSetValueList(tableNamePLU, "BarcodeFormat", csv_values.get("BarcodeFormat") or "0")
         # LabelFormat1
         cbSetValueList(tableNamePLU, "LabelFormat1", csv_values.get("LabelFormat1") or "17")
+        # LabelFormat2
+        cbSetValueList(tableNamePLU, "LabelFormat2", csv_values.get("LabelFormat2") or "")
         # 保质期
         cbSetValueList(tableNamePLU, "UsedByDate", csv_values.get("UsedByDate") or "")
         # 销售日期

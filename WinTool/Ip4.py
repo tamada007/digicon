@@ -25,6 +25,10 @@ class MyFont(QFont):
 
 
 class MyDialog(QDialog):
+    def setParams(self, params):
+        self.params = params
+    def getParams(self):
+        return self.params
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:
             pass
