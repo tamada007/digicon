@@ -1,5 +1,5 @@
 # encoding=gbk
-import sys, csv
+import os, sys, csv
 import codecs, StringIO
 
 class SmCsvReader:
@@ -21,10 +21,12 @@ class SmCsvReader:
             dat = fp.read().replace('\x00', '')  # 去掉所有\x00
             cr = csv.reader(StringIO.StringIO(dat))
             # all_data = [  [ cur_cell for cur_cell in cur_row ] for cur_row in cr ]
-            if head: cr.next()
+            if head:
+                cr.next()
 
             for i, cur_row in enumerate(cr):
-                if callback is not None: callback(i, cur_row)
+                if callback is not None:
+                    callback(i, cur_row)
 
     def read_all_lines(self, file_path, callback, encoding=sys.getdefaultencoding()):
         rows_list = []

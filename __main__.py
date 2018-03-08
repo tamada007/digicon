@@ -2,9 +2,10 @@
 
 import os, sys
 import getopt
+import datetime
 from threading import Thread
 
-VERSION = "4.3"
+VERSION = "4.4"
 
 # 默认为gbk,在encode.txt可设置编码
 current_encoding = 'gbk'
@@ -91,6 +92,7 @@ if __name__ == '__main__':
     optImportForDateTime = False
     optTitling = False
     optCheckConnection = False    # 检测秤是否连接
+    optSyncDate = False     #同步本机时间到秤
 
     file_write = None
     file_read = None
@@ -103,7 +105,14 @@ if __name__ == '__main__':
         opts, args = getopt.getopt(
             sys.argv[1:],
             "HvEPMTKLAhvd:F:g:G:c:t:s:S:m:f:t:R:i:o:D:",
-            ["dat=", "read=", "write=", "access_file_name=", "check_connection", "help"])
+            [
+                "dat=",
+                "read=",
+                "write=",
+                "access_file_name=",
+                "check_connection",
+                "syncdate",
+                "help"])
 
         if not opts:
             print_usage()
@@ -122,6 +131,8 @@ if __name__ == '__main__':
                 access_file_name = v
             elif o == "--check_connection":
                 optCheckConnection = True
+            elif o == "--syncdate":
+                optSyncDate = True
             # elif o == "-c":
             #     json_plu_file = v
             # elif o == "-t":
@@ -202,6 +213,8 @@ if __name__ == '__main__':
         conflict_check_list_import.append(optImportForText)
     if optCheckConnection:
         conflict_check_list_import.append(optCheckConnection)
+    if optSyncDate:
+        conflict_check_list_import.append(optSyncDate)
 
     if len(conflict_check_list_import) >= 2:
         common.log_err("Multiple Import Options!!!")
@@ -253,6 +266,7 @@ if __name__ == '__main__':
 
     if len(conflict_check_list_file) == 0 and \
             not optCheckConnection and \
+            not optSyncDate and \
             not file_list and \
             not delete_file and \
             not dat_file and \
@@ -320,6 +334,33 @@ if __name__ == '__main__':
     ##########################################
     # 其它处理
     ##########################################
+
+    if optSyncDate:
+        # 生成同步时间用json
+        json_sync_date = """[
+            { "source_expr": "255", "target_field": "DateTimeCode"},
+            { "source_expr": "$(1)", "target_field": "Year"},
+            { "source_expr": "$(2)", "target_field": "Month"},
+            { "source_expr": "$(3)", "target_field": "Day"},
+            { "source_expr": "$(4)", "target_field": "Hour"},
+            { "source_expr": "$(5)", "target_field": "Minute"}
+        ]"""
+
+        dat_json_file = "temp_dat_template.json"
+        open(dat_json_file, "w").write(json_sync_date)
+
+        # 生成同步用csv
+        dat_csv_file = "temp_dat_import.csv"
+        nowtime = datetime.datetime.now()
+        strtime = "%s,%02d,%02d,%02d,%02d" % (str(nowtime.year)[2:], nowtime.month, nowtime.day, nowtime.hour, nowtime.minute)
+        open(dat_csv_file, "w").write(strtime)
+
+        scales_converter = ScalesConverter(converter.ConvertDesc_DAT)
+        if not scales_converter.easyImportMaster(scale_list, dat_csv_file, dat_json_file):
+            iExitCode = 8
+
+        os.remove(dat_json_file)
+        os.remove(dat_csv_file)
 
     arr_check_connection = []
     list_success_scale_connection = []
