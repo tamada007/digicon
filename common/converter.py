@@ -1700,23 +1700,62 @@ class ScalesConverter():
 
         def send_to_scale_sm110(scale, result):
             has_error = False
-            for clsName, template_infos in self.createMasterList["sm110"].items():
-                if not scale.upload_master(template_infos["Master"]):
-                    common.log_err("Downloading %s To %s Failed..." % (clsName, scale.hostname))
-                    common.log2_err("Downloading %s To %s Failed..." % (clsName, scale.hostname))
-                    has_error = True
 
-            if isinstance(result, list) and len(result) > 0:
-                if not has_error:
-                    result[0] = 0
+            #################################################################
+            # 检查是否是SM110
+            #################################################################
+            # scd = libsm110.entity.MasterFactory().createMaster('Scd')
+            # 多线程取秤的类型时，会有冲突，最后决定分别放各自的内存数据库中处理
+            mst_scd = libsm110.entity.ScdMaster(scale.hostname+'.sqlite')
+            if scale.download_master(mst_scd):
+                all_rows = mst_scd.get_all_data()
+                # scd.clear()
+                if len(all_rows) > 0:
+                    main_board_type = all_rows[0]["scale_mainboard_type"][0]
+                    if int(main_board_type) == 11:
+                        result['scale_type'] = 'sm110'
                 else:
-                    result[0] = 1
+                    has_error = True
+            else:
+                has_error = True
+
+            if has_error:
+                common.log_err("Checking Scale Type of %s Failed..." % scale.hostname)
+                common.log2_err("Checking Scale Type of %s Failed..." % scale.hostname)
+            #################################################################
+            #################################################################
+            #################################################################
+
+            if not has_error:
+                for clsName, template_infos in self.createMasterList["sm110"].items():
+                    # 如果不是Sm110则不发二维码
+                    if result.get('scale_type') != 'sm110' and clsName == 'Tbt':
+                        continue
+                    if not scale.upload_master(template_infos["Master"]):
+                        common.log_err("Downloading %s To %s Failed..." % (clsName, scale.hostname))
+                        common.log2_err("Downloading %s To %s Failed..." % (clsName, scale.hostname))
+                        has_error = True
+                    else:
+                        result['sent_list'].append(template_infos["Master"].name)
+
+            # if isinstance(result, list) and len(result) > 0:
+            if not has_error:
+                # result[0] = 0
+                result['send_result'] = True
+            else:
+                # result[0] = 1
+                result['send_result'] = False
 
         sm110_results = []
         for scale_ip in self.lst_sm110:
             scale = libsm110.smtws.smtws(scale_ip)
 
-            result = [-1]
+            # result = [-1]
+            result = {
+                'send_result': False,
+                'scale_type': '',
+                'sent_list': []
+            }
             scl_thd = Thread(target=send_to_scale_sm110, args=(scale, result))
             sm110_results.append((scl_thd, scale_ip, result))
             scl_thd.start()
@@ -1724,8 +1763,10 @@ class ScalesConverter():
         for sm110_entry in sm110_results:
             sm110_entry[0].join()
             scale_ip = sm110_entry[1]
-            if sm110_entry[2][0] == 0:  # send is ok
-                allMasters = ",".join([clsName for clsName in self.createMasterList["sm110"]])
+            # if sm110_entry[2][0] == 0:  # send is ok
+            if sm110_entry[2].get('send_result'):  # send is ok
+                # allMasters = ",".join([clsName for clsName in self.createMasterList["sm110"]])
+                allMasters = ",".join(sm110_entry[2].get('sent_list'))
                 common.log_info("Downloading %s To %s Successfully..." % (allMasters, scale_ip))
                 common.log2_info("Downloading %s To %s Successfully..." % (allMasters, scale_ip))
                 success_scale_list.append(scale_ip)

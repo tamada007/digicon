@@ -100,9 +100,9 @@ class RttMaster(Master):
 
 
 class ScdMaster(Master):
-    def __init__(self):
+    def __init__(self, dbName = None):
         # Master.__init__(self, "Scd", 0x4F, const.scd_struct)
-        super(ScdMaster, self).__init__("Scd", 0x4F, const.scd_struct)
+        super(ScdMaster, self).__init__("Scd", 0x4F, const.scd_struct, dbName)
 
 
 class SpeMaster(Master):

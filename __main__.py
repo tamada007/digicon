@@ -5,7 +5,7 @@ import getopt
 import datetime
 from threading import Thread
 
-VERSION = "4.4"
+VERSION = "4.5"
 
 # 默认为gbk,在encode.txt可设置编码
 current_encoding = 'gbk'
@@ -111,6 +111,7 @@ if __name__ == '__main__':
                 "write=",
                 "access_file_name=",
                 "check_connection",
+                "check_type",
                 "syncdate",
                 "help"])
 
@@ -131,6 +132,8 @@ if __name__ == '__main__':
                 access_file_name = v
             elif o == "--check_connection":
                 optCheckConnection = True
+            # elif o =="--check_type":
+            #     common.set_check_scale_type_sm110(True)
             elif o == "--syncdate":
                 optSyncDate = True
             # elif o == "-c":

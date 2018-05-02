@@ -1843,7 +1843,7 @@ class Master(object):
 			pass
 	"""
 
-    def __init__(self, name, file_no, jsonData):
+    def __init__(self, name, file_no, jsonData, dbName = None):
         if isinstance(jsonData, str):
             json_data = common.get_json_from_string(jsonData)
         else:
@@ -1951,15 +1951,18 @@ class Master(object):
 
         # self.conn = common.open_sqlite_db(const.db_name)
         # self.conn = Master.DBConnection
-        self.conn = common.open_sqlite_db(const.db_name)
+        if not dbName:
+            dbName = const.db_name
+        # self.conn = common.open_sqlite_db(const.db_name)
+        self.conn = common.open_sqlite_db(dbName)
         # cursor = self.conn.cursor()
 
         # field_text = [ f["text"] for f in self.fields_info ]
         self.conn.execute("DROP TABLE IF EXISTS %s" % self.name)  # does not work when multiple call
         self.conn.execute("CREATE TABLE IF NOT EXISTS %s ( %s )" % (
-            self.name, ",".join(field_text_arr)
+                self.name, ",".join(field_text_arr)
+            )
         )
-                          )
 
     def create_row(self):
         dic_list = {}
@@ -2187,7 +2190,7 @@ class Master(object):
         rows = []
         for row in cursor:
             cells = [cell for cell in row]
-            dic1 = {};
+            dic1 = {}
             dic2 = {}
             for name in names:
                 val = [row[name[0]]]
