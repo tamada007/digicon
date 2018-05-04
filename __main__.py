@@ -5,7 +5,7 @@ import getopt
 import datetime
 from threading import Thread
 
-VERSION = "4.5"
+VERSION = "4.7"
 
 # 默认为gbk,在encode.txt可设置编码
 current_encoding = 'gbk'
@@ -519,7 +519,7 @@ if __name__ == '__main__':
             import re
 
             # 匹配192.168.68.125.25.DAT这样的格式
-            pat = re.compile("(\d{,3}\.\d{,3}\.\d{,3}\.\d{,3})\.(\d+)\.dat")
+            pat = re.compile("(\d{,3}\.\d{,3}\.\d{,3}\.\d{,3})\.(\w+)\.dat")
             m = pat.match(dat_file.lower())
             if m:
                 scale_ip = m.group(1)
