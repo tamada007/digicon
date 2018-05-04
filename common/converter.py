@@ -1597,10 +1597,16 @@ class ScalesConverter():
             common.log_err(traceback.format_exc())
             return False
 
-        self.createMasterList = {}
-
-        self.createMasterList["sm110"] = {}
-        self.createMasterList["sm120"] = {}
+        # self.converterInfoList = {}
+        # self.converterInfoList["sm110"] = {}
+        # self.converterInfoList["sm120"] = {}
+        self.converterInfoList = {
+            "GlobalInformation": {
+                "Templates": []
+            },
+            "sm110": {},
+            "sm120": {}
+        }
 
         # 过滤
         self.dataFilter = datafilter.DataFilter()
@@ -1612,24 +1618,26 @@ class ScalesConverter():
             if isinstance(json_data2, list):
                 self.dataFilter.set_expressions([dat for dat in json_data2])
 
-        self.createMasterList["FromCSV"] = {}
-        self.createMasterList["FromCSV"]["infos"] = []
+        # self.converterInfoList["GlobalInformation"] = {}
+        # self.converterInfoList["GlobalInformation"]["infos"] = []
         for fmt in json_data:
             source_expr = fmt["source_expr"]
             target_field = fmt["target_field"]
-            sp_data = target_field.split(".")
-            fieldName = sp_data[0]
-            if len(sp_data) > 1:
-                lineNo = int(sp_data[1])
-            else:
-                lineNo = 0
+            # sp_data = target_field.split(".")
+            # fieldName = sp_data[0]
+            # if len(sp_data) > 1:
+            #     lineNo = int(sp_data[1])
+            # else:
+            #     lineNo = 0
+            ignored_scale_type = fmt.get("ignored_scale_type", "").split(',')
 
-            self.createMasterList["FromCSV"]["infos"].append(
+            self.converterInfoList["GlobalInformation"]["Templates"].append(
                 {
                     "source_expression": source_expr,
-                    "full_field_name": target_field,
-                    "field_name": fieldName,
-                    "line_no": lineNo,
+                    # "field_name": fieldName,
+                    "field_name": target_field,
+                    # "line_no": lineNo,
+                    "ignored_scale_type": ignored_scale_type,
                 }
             )
 
@@ -1663,26 +1671,33 @@ class ScalesConverter():
 
             for sm120_data in lst_data:
                 if not scale.send_file(sm120_data[0], sm120_data[1]):
-                    common.log_err("Failed To Download %s To %s ..." % (sm120_data[1], scale.ip))
-                    common.log2_err("Failed To Download %s To %s ..." % (sm120_data[1], scale.ip))
+                    common.log_err("Failed To Download %s To %s ..." % (sm120_data[0].name, scale.ip))
+                    common.log2_err("Failed To Download %s To %s ..." % (sm120_data[0].name, scale.ip))
                     has_error = True
-
-            if isinstance(result, list) and len(result) > 0:
-                if not has_error:
-                    result[0] = 0
                 else:
-                    result[0] = 1
+                    result['sent_list'].append("%s" % sm120_data[0].name)
+
+            # if isinstance(result, list) and len(result) > 0:
+            if not has_error:
+                result['send_result'] = True
+            else:
+                result['send_result'] = False
 
         sm120_results = []
         for scale_ip in self.lst_sm120:
             list_sm120_data = []
             scale = libsm120.digiscale.DigiSm120(scale_ip)
-            for clsName, template_infos in self.createMasterList["sm120"].items():
+            for clsName, template_infos in self.converterInfoList["sm120"].items():
                 created_csv_file = scale.create_csv(template_infos["Master"])
                 if created_csv_file:
                     list_sm120_data.append((template_infos["Master"], created_csv_file))
 
-            result = [-1]
+            # result = [-1]
+            result = {
+                'send_result': False,
+                'scale_type': '',
+                'sent_list': []
+            }
             scl_thd = Thread(target=send_to_scale_sm120, args=(scale, list_sm120_data, result))
             sm120_results.append((scl_thd, scale_ip, result))
             scl_thd.start()
@@ -1690,13 +1705,18 @@ class ScalesConverter():
         for sm120_entry in sm120_results:
             sm120_entry[0].join()
             scale_ip = sm120_entry[1]
-            if sm120_entry[2][0] == 0:  # send is ok
-                allMasters = ",".join([clsName for clsName in self.createMasterList["sm120"]])
+            # if sm120_entry[2][0] == 0:  # send is ok
+            if sm120_entry[2].get('send_result'):  # send is ok
+                # allMasters = ",".join([clsName for clsName in self.converterInfoList["sm120"]])
+                allMasters = ",".join(sm120_entry[2].get('sent_list'))
                 common.log_info("Downloading %s To %s Successfully..." % (allMasters, scale_ip))
                 common.log2_info("Downloading %s To %s Successfully..." % (allMasters, scale_ip))
                 success_scale_list.append(scale_ip)
             else:
                 failed_scale_list.append(scale_ip)
+
+
+
 
         def send_to_scale_sm110(scale, result):
             has_error = False
@@ -1727,7 +1747,7 @@ class ScalesConverter():
             #################################################################
 
             if not has_error:
-                for clsName, template_infos in self.createMasterList["sm110"].items():
+                for clsName, template_infos in self.converterInfoList["sm110"].items():
                     # 如果不是Sm110则不发二维码
                     if result.get('scale_type') != 'sm110' and clsName == 'Tbt':
                         continue
@@ -1765,7 +1785,7 @@ class ScalesConverter():
             scale_ip = sm110_entry[1]
             # if sm110_entry[2][0] == 0:  # send is ok
             if sm110_entry[2].get('send_result'):  # send is ok
-                # allMasters = ",".join([clsName for clsName in self.createMasterList["sm110"]])
+                # allMasters = ",".join([clsName for clsName in self.converterInfoList["sm110"]])
                 allMasters = ",".join(sm110_entry[2].get('sent_list'))
                 common.log_info("Downloading %s To %s Successfully..." % (allMasters, scale_ip))
                 common.log2_info("Downloading %s To %s Successfully..." % (allMasters, scale_ip))
@@ -1787,7 +1807,7 @@ class ScalesConverter():
 		for scale_ip in self.lst_sm120:
 			list_sm120_data = []
 			scale = libsm120.digiscale.DigiSm120(scale_ip)
-			for clsName, template_infos in self.createMasterList["sm120"].items():
+			for clsName, template_infos in self.converterInfoList["sm120"].items():
 				created_csv_file = scale.create_csv(template_infos["Master"])
 				if created_csv_file:
 					list_sm120_data.append((template_infos["Master"], created_csv_file))
@@ -1805,7 +1825,7 @@ class ScalesConverter():
 					common.log2_err( "Failed To Download %s To %s ..." % (sm120_data[1],scale_ip))
 					has_error = True
 			if not has_error:
-				allMasters = ",".join([clsName for clsName in self.createMasterList["sm120"]])
+				allMasters = ",".join([clsName for clsName in self.converterInfoList["sm120"]])
 				common.log_info( "Downloading %s To %s Successfully..." % (allMasters, scale_ip) )
 				common.log2_info( "Downloading %s To %s Successfully..." % (allMasters, scale_ip) )
 				success_scale_list.append( scale_ip )
@@ -1813,13 +1833,13 @@ class ScalesConverter():
 		for scale_ip in self.lst_sm110:
 			has_error = False
 			scale = libsm110.smtws.smtws(scale_ip)
-			for clsName, template_infos in self.createMasterList["sm110"].items():
+			for clsName, template_infos in self.converterInfoList["sm110"].items():
 				if not scale.upload_master(template_infos["Master"]):
 					common.log_err( "Downloading %s To %s Failed..." % (clsName,scale_ip))
 					common.log2_err( "Downloading %s To %s Failed..." % (clsName,scale_ip))
 					has_error = True
 			if not has_error:
-				allMasters = ",".join([clsName for clsName in self.createMasterList["sm110"]])
+				allMasters = ",".join([clsName for clsName in self.converterInfoList["sm110"]])
 				common.log_info( "Downloading %s To %s Successfully..." % (allMasters, scale_ip) )
 				common.log2_info( "Downloading %s To %s Successfully..." % (allMasters, scale_ip) )
 				success_scale_list.append( scale_ip )
@@ -1827,11 +1847,11 @@ class ScalesConverter():
 		"""
 
         # 		if len(self.lst_sm110) > 0:
-        # 			for scalefile in self.createMasterList["sm110"]:
-        # 				del self.createMasterList["sm110"][scalefile]["Master"]
+        # 			for scalefile in self.converterInfoList["sm110"]:
+        # 				del self.converterInfoList["sm110"][scalefile]["Master"]
         # 		if len(self.lst_sm120) > 0:
-        # 			for scalefile in self.createMasterList["sm120"]:
-        # 				del self.createMasterList["sm120"][scalefile]["Master"]
+        # 			for scalefile in self.converterInfoList["sm120"]:
+        # 				del self.converterInfoList["sm120"][scalefile]["Master"]
 
         if len(success_scale_list) == len(scale_list):
             return True
@@ -1845,16 +1865,17 @@ class ScalesConverter():
         # 2.解析成秤的格式
 
         self.dataFilter.set_field_list(cur_row)
-        if self.dataFilter.is_filtered(): return True
+        if self.dataFilter.is_filtered():
+            return True
         gv = {"CurLineNo": str(curLineNo + 1)}
 
         # 导入csv
-        template_infos = self.createMasterList["FromCSV"]
-        newLines = {}
-        for template_info in template_infos["infos"]:
-            iLineNo = int(template_info["line_no"])
-            if not newLines.has_key(iLineNo):
-                newLines[iLineNo] = {}
+        template_infos = self.converterInfoList["GlobalInformation"]
+        template_json_lines = {}
+        for template_info in template_infos["Templates"]:
+            # iLineNo = int(template_info["line_no"])
+            # if not template_json_lines.has_key(iLineNo):
+            #     template_json_lines[iLineNo] = {}
             result = self.strParser.eval(
                 0,
                 expr=template_info["source_expression"],
@@ -1863,17 +1884,45 @@ class ScalesConverter():
                 globalName=gv,
                 resetPos=True).decode(sys.getdefaultencoding())
 
-            if not newLines[iLineNo].has_key(template_info["field_name"]):
-                newLines[iLineNo][template_info["field_name"]] = [""]
-            newLines[iLineNo][template_info["field_name"]][0] = result
+            # if not template_json_lines[iLineNo].has_key(template_info["field_name"]):
+            #     template_json_lines[iLineNo][template_info["field_name"]] = [""]
+            # template_json_lines[iLineNo][template_info["field_name"]][0] = result
+            if not template_info["field_name"] in template_json_lines:
+                template_json_lines[template_info["field_name"]] = {
+                    "value": "",
+                    "ignored_scale_type": template_info["ignored_scale_type"]
+                }
+                template_json_lines[template_info["field_name"]]["value"] = result
 
-        dic_data = dict((key, value[0]) for key, value in newLines[0].items() if isinstance(key, (str, unicode)))
+
+        # 过滤，选出所有名称字段
+        # dic_data = dict((key, value[0]) for key, value in template_json_lines[0].items() if isinstance(key, (str, unicode)))
+
+        field_data_list = {
+            "sm110": {},
+            "sm120": {}
+        }
+
+        for key, value in template_json_lines.items():
+            if "sm110" not in value["ignored_scale_type"]:
+                field_data_list["sm110"][key] = value["value"]
+            if "sm120" not in value["ignored_scale_type"]:
+                field_data_list["sm120"][key] = value["value"]
+
         value_list = {
             "sm110": {},
             "sm120": {}
         }
 
-        def setValueList(master_factory, master_list, scale_type, master_name, field_name, value=None, line_no=0):
+        def setValueList(
+                master_factory,
+                master_list,
+                scale_type,
+                master_name,
+                field_name,
+                value=None,
+                line_no=0):
+
             if not master_list.has_key(master_name):
                 master_list[master_name] = {}
                 master_list[master_name]["Master"] = master_factory.createMaster(master_name)
@@ -1888,7 +1937,8 @@ class ScalesConverter():
                 0,
                 expr=src,
                 fieldByIndex=[],
-                fieldByName=dic_data,
+                # fieldByName=dic_data,
+                fieldByName=field_data_list[scale_type],
                 globalName=gv,
                 resetPos=True).decode(sys.getdefaultencoding())
 
@@ -1899,20 +1949,20 @@ class ScalesConverter():
             if len(tgt) > 2:
                 tgt_lineno = int(tgt[2])
 
-            # 			if not self.createMasterList[scale_type].has_key(tgt_table):
-            # 				self.createMasterList[scale_type][tgt_table] = {}
-            # 				self.createMasterList[scale_type][tgt_table]["Master"] = self.masterFactory[scale_type].createMaster(tgt_table)
+            # 			if not self.converterInfoList[scale_type].has_key(tgt_table):
+            # 				self.converterInfoList[scale_type][tgt_table] = {}
+            # 				self.converterInfoList[scale_type][tgt_table]["Master"] = self.masterFactory[scale_type].createMaster(tgt_table)
             #
             # 			if not value_list[scale_type].has_key(tgt_table):
             # 				value_list[scale_type][tgt_table] = {}
             #
             # 			if not value_list[scale_type][tgt_table].has_key(tgt_lineno):
-            # 				value_list[scale_type][tgt_table][tgt_lineno] = self.createMasterList[scale_type][tgt_table]["Master"].create_row()
+            # 				value_list[scale_type][tgt_table][tgt_lineno] = self.converterInfoList[scale_type][tgt_table]["Master"].create_row()
 
             # 			value_list[scale_type][tgt_table][tgt_lineno][tgt_field][0] = result
             setValueList(
                 master_factory=self.masterFactory[scale_type],
-                master_list=self.createMasterList[scale_type],
+                master_list=self.converterInfoList[scale_type],
                 scale_type=scale_type,
                 master_name=tgt_table,
                 field_name=tgt_field,
@@ -1920,7 +1970,7 @@ class ScalesConverter():
                 value=result)
 
         def parse_recur(curNode, scale_type):
-            master_list = self.createMasterList[scale_type]
+            master_list = self.converterInfoList[scale_type]
             master_factory = self.masterFactory[scale_type]
 
             def set_value_list(master_name, field_name, value=None, line_no=0):
@@ -1942,7 +1992,8 @@ class ScalesConverter():
                     0,
                     expr=cond,
                     fieldByIndex=[],
-                    fieldByName=dic_data,
+                    # fieldByName=dic_data,
+                    fieldByName=field_data_list[scale_type],
                     globalName=gv,
                     resetPos=True):
                 return
@@ -1956,21 +2007,21 @@ class ScalesConverter():
             if isfunction(stmtcvt):
                 stmtcvt(
                     cur_line_no=curLineNo + 1,
-                    csv_values=dic_data,
+                    # csv_values=dic_data,
+                    csv_values=field_data_list[scale_type],
                     cbSetValueList=set_value_list
                 )
 
             #  		beg = time.time(); #testonly
 
         # 统一格式分派给秤
-        ""
         if len(self.lst_sm110) > 0:
             for value in self.converter_node["sm110"]:
                 parse_recur(value, "sm110")
             for key, value in value_list["sm110"].items():
                 sorted_line_no = sorted(value)
                 for line_no in sorted_line_no:
-                    self.createMasterList["sm110"][key]["Master"].add_row(value[line_no])
+                    self.converterInfoList["sm110"][key]["Master"].add_row(value[line_no])
 
         if len(self.lst_sm120) > 0:
             for value in self.converter_node["sm120"]:
@@ -1978,4 +2029,4 @@ class ScalesConverter():
             for key, value in value_list["sm120"].items():
                 sorted_line_no = sorted(value)
                 for line_no in sorted_line_no:
-                    self.createMasterList["sm120"][key]["Master"].add_row(value[line_no])
+                    self.converterInfoList["sm120"][key]["Master"].add_row(value[line_no])
