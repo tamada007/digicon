@@ -1871,7 +1871,8 @@ class ScalesConverter():
 
         # 导入csv
         template_infos = self.converterInfoList["GlobalInformation"]
-        template_json_lines = {}
+        # template_json_lines = {}
+        template_json_lines = []
         for template_info in template_infos["Templates"]:
             # iLineNo = int(template_info["line_no"])
             # if not template_json_lines.has_key(iLineNo):
@@ -1887,12 +1888,18 @@ class ScalesConverter():
             # if not template_json_lines[iLineNo].has_key(template_info["field_name"]):
             #     template_json_lines[iLineNo][template_info["field_name"]] = [""]
             # template_json_lines[iLineNo][template_info["field_name"]][0] = result
-            if not template_info["field_name"] in template_json_lines:
-                template_json_lines[template_info["field_name"]] = {
-                    "value": "",
+            # if not template_info["field_name"] in template_json_lines:
+            #     template_json_lines[template_info["field_name"]] = {
+            #         "value": "",
+            #         "ignored_scale_type": template_info["ignored_scale_type"]
+            #     }
+            #     template_json_lines[template_info["field_name"]]["value"] = result
+            template_json_lines.append({
+                    "key": template_info["field_name"],
+                    "value": result,
                     "ignored_scale_type": template_info["ignored_scale_type"]
                 }
-                template_json_lines[template_info["field_name"]]["value"] = result
+            )
 
 
         # 过滤，选出所有名称字段
@@ -1903,11 +1910,14 @@ class ScalesConverter():
             "sm120": {}
         }
 
-        for key, value in template_json_lines.items():
+        # for key, value in template_json_lines.items():
+        for value in template_json_lines:
             if "sm110" not in value["ignored_scale_type"]:
-                field_data_list["sm110"][key] = value["value"]
+                # field_data_list["sm110"][key] = value["value"]
+                field_data_list["sm110"][value["key"]] = value["value"]
             if "sm120" not in value["ignored_scale_type"]:
-                field_data_list["sm120"][key] = value["value"]
+                # field_data_list["sm120"][key] = value["value"]
+                field_data_list["sm120"][value["key"]] = value["value"]
 
         value_list = {
             "sm110": {},
