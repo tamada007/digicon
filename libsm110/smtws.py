@@ -175,15 +175,29 @@ class smtws:
         request_data = ReqData().create_request_data(ReqData.Write_File, file_no, 0)
         # tmpline = ""
         try:
-            socket.setdefaulttimeout(10)
+            # socket.setdefaulttimeout(10)
+            socket.setdefaulttimeout(6)
             conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             conn.connect((self.hostaddr, self.port))
             with open(file_name, "r") as fp:
                 for line in fp:
                     data_send = request_data + line.rstrip()
                     data_send = data_send.decode("hex")
-                    conn.send(data_send)
-                    ack_data = conn.recv(1)
+                    # conn.send(data_send)
+                    # ack_data = conn.recv(1)
+                    # if not ack_data:
+                    #     raise TwsException("No Ack")
+                    # ack = ord(ack_data[0])
+                    ack_data = None
+                    from socket import error as socket_error
+                    for i in range(3):
+                        try:
+                            conn.send(data_send)
+                            ack_data = conn.recv(1)
+                        except socket_error, e:
+                            common.log_err(self.hostname + ' - ' + str(e))
+
+                        if ack_data: break
                     if not ack_data:
                         raise TwsException("No Ack")
                     ack = ord(ack_data[0])
