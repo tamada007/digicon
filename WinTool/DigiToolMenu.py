@@ -43,7 +43,8 @@ class Ui_DigiToolDialog(object):
         # self.Dialog.setModal(True)
         # self.Dialog.show()
         ui1.setupUi(self.Dialog)
-        self.Dialog.show()
+        # self.Dialog.show()
+        self.Dialog.exec_()
 
     def on_btn_copytool(self):
         self.Dialog = MyDialog(self.main_dialog)
@@ -53,7 +54,8 @@ class Ui_DigiToolDialog(object):
         # self.Dialog.show()
         # self.Dialog.setModal(True)
         ui1.setupUi(self.Dialog)
-        self.Dialog.show()
+        # self.Dialog.show()
+        self.Dialog.exec_()
 
     def setupUi(self, dialog):
 

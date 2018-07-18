@@ -303,8 +303,12 @@ class Ui_TextToolDialog(object):
             str(font_map.get(scale_data_item.font_other, 0)),
         )
         file_name_created = "%s.38.csv" % scale_data_item.scale_ip
-        with open(file_name_created, "w") as fp1:
-            fp1.write(unicode(str_data).encode('gbk'))
+        try:
+            with open(file_name_created, "w") as fp1:
+                # fp1.write(unicode(str_data).encode('gbk'))
+                fp1.write(unicode(str_data).encode(sys.getdefaultencoding()))
+        except Exception, ex:
+            common.log_err(ex)
         return file_name_created
 
     def on_btn_send(self):
@@ -743,7 +747,7 @@ class Ui_TextToolDialog(object):
         self.edt_scaleno.setEnabled(False)
         # self.comboBox.setEnabled(False)
 
-        common.log_init()
+        # common.log_init()
 
     def setFontComboBox(self, combo_box):
         combo_box.setItemText(0, _translate("Dialog", "S1", None))

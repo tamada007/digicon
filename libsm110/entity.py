@@ -33,6 +33,11 @@ class KasMaster(Master):
         super(KasMaster, self).__init__("Kas", 0x41, const.kas_struct)
 
 
+class ImaMaster(Master):
+    def __init__(self):
+        super(ImaMaster, self).__init__("Ima", 0x37, const.ima_struct)
+
+
 class PrfMaster(Master):
     def __init__(self):
         # Master.__init__(self, "Prf", 0x34, const.prf_struct)
@@ -123,6 +128,7 @@ class MasterFactory:
             "Pla": lambda: PlaMaster(),
             # 			"Dep": lambda : DepMaster(),
             "Kas": lambda: KasMaster(),
+            "Ima": lambda: ImaMaster(),
             "Trg": lambda: TrgMaster(),
             "Trb": lambda: TrbMaster(),
             # 			"Trt": lambda : TrtMaster(),

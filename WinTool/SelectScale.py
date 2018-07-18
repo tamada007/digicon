@@ -10,6 +10,8 @@ from PyQt4 import QtCore, QtGui
 from Ip4 import MyDialog, MyFont, resource_path
 from DigiToolMenu import Ui_DigiToolDialog
 
+from common import common
+
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -32,7 +34,8 @@ class Ui_Dialog_Choose_Scale_Type(object):
         global ui1
         ui1 = Ui_DigiToolDialog()
         ui1.setupUi(self.Dialog)
-        self.Dialog.show()
+        # self.Dialog.show()
+        self.Dialog.exec_()
 
     def on_btn_sm120(self):
         self.Dialog = MyDialog(self.main_dialog)
@@ -40,7 +43,8 @@ class Ui_Dialog_Choose_Scale_Type(object):
         global ui1
         ui1 = Ui_DigiToolDialog()
         ui1.setupUi(self.Dialog)
-        self.Dialog.show()
+        # self.Dialog.show()
+        self.Dialog.exec_()
 
     def setupUi(self, Dialog_Choose_Scale_Type):
 
@@ -100,6 +104,8 @@ class Ui_Dialog_Choose_Scale_Type(object):
 
 if __name__ == "__main__":
     import sys
+
+    common.log_init()
     app = QtGui.QApplication(sys.argv)
     Dialog_Choose_Scale_Type = QtGui.QDialog()
     ui = Ui_Dialog_Choose_Scale_Type()

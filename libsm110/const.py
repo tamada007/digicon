@@ -614,6 +614,32 @@ tbt_struct = [
     }
 ]
 
+# Image
+ima_struct = [
+    {
+        "Name": "Code",
+        "Key": 1,
+        "Type": "BCD",
+        "Length": 4
+    },
+    {
+        "Name": "RecordSize",
+        "Type": "HEX",
+        "Length": 2,
+        "IsSize": 1
+    },
+    {
+        "Name": "ImageBytesPerHorizontalLine",
+        "Type": "HEX",
+        "Length": 1
+    },
+    {
+        "Name": "Data",
+        "Type": "ASCII",
+        "Length": 10197
+    }
+]
+
 # Preset Key
 kas_struct = [
     {

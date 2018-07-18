@@ -115,6 +115,17 @@ class TbtMaster(Master):
             super(TbtMaster, self).__init__(file_abbr, file_struct)
 
 
+class ImaMaster(Master):
+    def __init__(self):
+        file_struct = const.ima_struct
+        file_abbr = self.__class__.__name__.lower()[:3]
+        scale_file = file_abbr + '.json'
+        if os.path.isfile(scale_file):
+            super(ImaMaster, self).__init__(file_abbr, common.common.get_json_from_file(scale_file))
+        else:
+            super(ImaMaster, self).__init__(file_abbr, file_struct)
+
+
 class PrfMaster(Master):
     def __init__(self):
         file_struct = const.prf_struct
@@ -292,7 +303,6 @@ class SpeMaster(Master):
             super(SpeMaster, self).__init__(file_abbr, file_struct)
 
 
-
 class MasterFactory:
     def __init__(self):
         pass
@@ -311,6 +321,7 @@ class MasterFactory:
             "Trb": lambda: TrbMaster(),
             "Trt": lambda: TrtMaster(),
             "Tbt": lambda: TbtMaster(),
+            "Ima": lambda: ImaMaster(),
             "Prf": lambda: PrfMaster(),
             "Pff": lambda: PffMaster(),
             "Flb": lambda: FlbMaster(),

@@ -20,12 +20,17 @@ sys.path.append('..')
 import libsm110.easy
 import libsm120.easy
 
+from common import common
+
 g_scale_file_table_sm110 = {
     'Prf': u'标签格式',
     'Plu': u'商品信息',
     'Tex': u'文本信息',
     'Flb': u'自定义条码',
     'Kas': u'预置键',
+    'Ima': u'图片',
+    'Tbt': u'二维码',
+    'Spe': u'Specs',
 }
 
 g_scale_file_table_sm120 = {
@@ -37,6 +42,9 @@ g_scale_file_table_sm120 = {
     'Tex': u'文本信息',
     'Flb': u'自定义条码',
     'Kas': u'预置键',
+    'Ima': u'图片',
+    'Tbt': u'二维码',
+    'Spe': u'Specs',
 }
 
 g_scale_file_table = {}
@@ -196,9 +204,13 @@ class Ui_CopyToolDialog(object):
                         temp_file_data = fp.read()
                     os.remove(temp_file_name)
 
-                    for line_data in temp_file_data.split("\n"):
-                        if line_data.strip(' \r'):
-                            file_list.append(selected_scale_file + ":" + line_data.rstrip(" \r"))
+                    try:
+                        for line_data in temp_file_data.split("\n"):
+                            if line_data.strip(' \r'):
+                                file_list.append(selected_scale_file + ":" + line_data.rstrip(" \r"))
+                    except Exception, ex:
+                        common.log_err(ex)
+
 
             # temp_file_name = "temp1_" + cur_scale + "_" + scale_file + "_.dat"
             # result = ease.easyReceiveFile(scale_file, temp_file_name)

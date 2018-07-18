@@ -2625,6 +2625,36 @@ mub_struct = {
 mub_file = 'mub'
 ##################################################
 
+# Image File
+ima_struct = {
+    "Code":
+        {
+            "Key": 1,
+            "ColumnIndex": 1,
+            "Type": "SMInt",
+            "MaxLength": 6
+        },
+    "DeleteFlag":
+        {
+            "ColumnIndex": 2,
+            "Type": "SMText",
+            "MaxLength": 1
+        },
+    "ImageBytesPerHorizontalLine":
+        {
+            "ColumnIndex": 3,
+            "Type": "SMInt",
+            "MaxLength": 3
+        },
+    "Data":
+        {
+            "ColumnIndex": 4,
+            "Type": "SMText",
+            "MaxLength": 4032
+        }
+
+}
+
 
 # 2D Barcode Text File
 ##################################################
