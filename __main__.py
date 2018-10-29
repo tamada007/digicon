@@ -5,7 +5,7 @@ import getopt
 import datetime
 from threading import Thread
 
-VERSION = "5.2"
+VERSION = "5.3"
 
 # 默认为gbk,在encode.txt可设置编码
 current_encoding = 'gbk'
@@ -58,6 +58,10 @@ Options:
     -o Csv File              Export Csv File
     
     --check_connection       Check Connection to the Scales
+    --syncdate               Synchronizing datetime to Scale
+    --noverifytype           no verify scale type of sm100/sm110
+    
+    
 """ % sys.argv[0]
 
 
@@ -98,6 +102,7 @@ if __name__ == '__main__':
     file_read = None
     access_file_name = ""
 
+
     # init log module
     common.log_init()
 
@@ -113,6 +118,7 @@ if __name__ == '__main__':
                 "check_connection",
                 "check_type",
                 "syncdate",
+                "noverifytype",
                 "help"])
 
         if not opts:
@@ -130,6 +136,9 @@ if __name__ == '__main__':
                 file_read = v
             elif o == "--access_file_name":
                 access_file_name = v
+            elif o == '--noverifytype':
+                from common import globalspec
+                globalspec.setVerifyScaleType(False)
             elif o == "--check_connection":
                 optCheckConnection = True
             # elif o =="--check_type":

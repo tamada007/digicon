@@ -1721,35 +1721,48 @@ class ScalesConverter():
         def send_to_scale_sm110(scale, result):
             has_error = False
 
-            #################################################################
-            # 检查是否是SM110
-            #################################################################
-            # scd = libsm110.entity.MasterFactory().createMaster('Scd')
-            # 多线程取秤的类型时，会有冲突，最后决定分别放各自的内存数据库中处理
-            mst_scd = libsm110.entity.ScdMaster(scale.hostname+'.sqlite')
-            if scale.download_master(mst_scd):
-                all_rows = mst_scd.get_all_data()
-                # scd.clear()
-                if len(all_rows) > 0:
-                    main_board_type = all_rows[0]["scale_mainboard_type"][0]
-                    if int(main_board_type) == 11:
-                        result['scale_type'] = 'sm110'
+            from . import globalspec
+            bVerifyScaleType = globalspec.getVerifyScaleType()
+            if bVerifyScaleType:
+                #################################################################
+                # 检查是否是SM110
+                #################################################################
+                # scd = libsm110.entity.MasterFactory().createMaster('Scd')
+                # 多线程取秤的类型时，会有冲突，最后决定分别放各自的内存数据库中处理
+                mst_scd = libsm110.entity.ScdMaster(scale.hostname+'.sqlite')
+                if scale.download_master(mst_scd):
+                    all_rows = mst_scd.get_all_data()
+                    # scd.clear()
+                    if len(all_rows) > 0:
+                        main_board_type = all_rows[0]["scale_mainboard_type"][0]
+                        i_board_type = int(main_board_type)
+                        if i_board_type == 11:
+                            result['scale_type'] = 'sm110'
+                        elif i_board_type == 10:
+                            result['scale_type'] = 'sm100'
+                        else:
+                            result['scale_type'] = 'unknown'
+                    else:
+                        has_error = True
                 else:
                     has_error = True
-            else:
-                has_error = True
+
+            if not bVerifyScaleType:
+                common.log_info("Skip Verifying Scale Type of %s" % scale.hostname)
+            elif not has_error:
+                common.log_info("Scale type of %s is %s" % (scale.hostname, result['scale_type']))
 
             if has_error:
-                common.log_err("Checking Scale Type of %s Failed..." % scale.hostname)
-                common.log2_err("Checking Scale Type of %s Failed..." % scale.hostname)
+                common.log_err("Verifying Scale Type of %s Failed..." % scale.hostname)
+                common.log2_err("Verifying Scale Type of %s Failed..." % scale.hostname)
             #################################################################
             #################################################################
             #################################################################
 
-            if not has_error:
+            if not bVerifyScaleType or not has_error:
                 for clsName, template_infos in self.converterInfoList["sm110"].items():
                     # 如果不是Sm110则不发二维码
-                    if result.get('scale_type') != 'sm110' and clsName == 'Tbt':
+                    if bVerifyScaleType and result.get('scale_type') != 'sm110' and clsName == 'Tbt':
                         continue
                     if not scale.upload_master(template_infos["Master"]):
                         common.log_err("Downloading %s To %s Failed..." % (clsName, scale.hostname))
