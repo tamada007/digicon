@@ -47,6 +47,24 @@ g_scale_file_table_sm120 = {
     'Spe': u'Specs',
 }
 
+g_scale_sm120_delete_flag = {
+    'Prf': True,
+    'Pff': True,
+    'Plu': True,
+    'Spm': True,
+    'Ing': True,
+    'Tex': True,
+    'Flb': True,
+    'Kas': True,
+    'Ima': True,
+    'Tbt': True,
+    'Spe': False,
+}
+
+g_delete_flag_asked = False
+g_delete_flag = False
+
+
 g_scale_file_table = {}
 
 try:
@@ -260,6 +278,33 @@ class Ui_CopyToolDialog(object):
 
                         cur_item_text = g_scale_file_table.get(scale_file)
 
+                        global g_delete_flag
+                        global g_delete_flag_asked
+
+                        # sm120时，询问是否清除之前的记录
+                        if self.getCurrentScaleType() == "sm120":
+                            # 没有询问过时出框询问
+                            if not g_delete_flag_asked:
+                                g_delete_flag_asked = True
+                                msgBox = QtGui.QMessageBox()
+                                msgBox.setWindowTitle(_fromUtf8("询问"))
+                                # msgBox.setText(_fromUtf8("询问"))
+                                msgBox.setInformativeText(_fromUtf8("是否清除秤上的记录再发送?"))
+                                msgBox.setStandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+                                msgBox.setDefaultButton(QtGui.QMessageBox.Yes)
+                                ret = msgBox.exec_()
+
+                                if ret == QtGui.QMessageBox.Yes:
+                                    g_delete_flag = True
+
+                            if g_delete_flag and g_scale_sm120_delete_flag.get(scale_file):
+                                common.log_info("clearing %s on %s" % (scale_file, cur_scale))
+                                if not ease.easyDeleteFile(scale_file):
+                                    QtGui.QMessageBox.critical(
+                                        None,
+                                        _fromUtf8("失败"),
+                                        _fromUtf8(u"清除%s到%s失败" % (cur_item_text, cur_scale)))
+
                         with open(temp_file_name, 'w') as fp2:
                             fp2.write(scale_file_data)
                         if ease.easySendFile(scale_file, temp_file_name):
@@ -313,6 +358,9 @@ class Ui_CopyToolDialog(object):
             self.edt_target_file.setEnabled(False)
             self.lv_target_scale.setEnabled(True)
 
+    def getCurrentScaleType(self):
+        return self.main_dialog.getParams()["scaleType"]
+
     def setupUi(self, Dialog):
         Dialog.setObjectName(_fromUtf8("Dialog"))
         Dialog.resize(678, 391)
@@ -321,9 +369,10 @@ class Ui_CopyToolDialog(object):
         self.main_dialog = Dialog
         global g_scale_file_table
 
+        # if self.main_dialog.getParams()["scaleType"] == "sm110" \
         g_scale_file_table = \
             g_scale_file_table_sm110 \
-                if self.main_dialog.getParams()["scaleType"] == "sm110" \
+                if self.getCurrentScaleType() == "sm110" \
                 else g_scale_file_table_sm120
 
         icon_file_path = resource_path("as.png")

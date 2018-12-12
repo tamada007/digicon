@@ -128,6 +128,34 @@ class ToolsView(QtGui.QTableView):
     #     super(ToolsView, self).mousePressEvent(event)
 
 
+# [20181112]
+class QTableWidgetDisabledItem(QtGui.QItemDelegate):
+    """
+    Create a readOnly QTableWidgetItem
+    """
+
+    def __init__(self, parent):
+        QtGui.QItemDelegate.__init__(self, parent)
+
+    def createEditor(self, parent, option, index):
+        item = QtGui.QLineEdit(parent)
+        item.setReadOnly(True)
+        # item.setEnabled(False)
+        return item
+
+    def setEditorData(self, editor, index):
+        editor.blockSignals(True)
+        editor.setText(index.model().data(index).toString())
+        editor.blockSignals(False)
+
+    def setModelData(self, editor, model, index):
+        model.setData(index, editor.text())
+
+
+# [20181112]
+
+
+
 class ScaleIPDelegate(QItemDelegate):
     # def __init__(self, comboModel, parent=None):
     def __init__(self, parent=None):
@@ -292,15 +320,21 @@ class Ui_TextToolDialog(object):
             fp1.write(str)
 
     def create_text(self, scale_data_item):
-        str_data = "1,%s,%s\r\n2,%s,%s\r\n3,%s,%s\r\n4,%s,%s" % (
+        # str_data = "1,%s,%s\r\n2,%s,%s\r\n3,%s,%s\r\n4,%s,%s" % (
+        #     scale_data_item.scale_no,
+        #     str(font_map.get(scale_data_item.font_scale_no, 0)),
+        #     scale_data_item.store_no,
+        #     str(font_map.get(scale_data_item.font_store_no, 0)),
+        #     scale_data_item.store_name,
+        #     str(font_map.get(scale_data_item.font_store_name, 0)),
+        #     scale_data_item.other,
+        #     str(font_map.get(scale_data_item.font_other, 0)),
+        # )
+        str_data = "1,%s,%s\r\n3,%s,%s" % (
             scale_data_item.scale_no,
             str(font_map.get(scale_data_item.font_scale_no, 0)),
-            scale_data_item.store_no,
-            str(font_map.get(scale_data_item.font_store_no, 0)),
             scale_data_item.store_name,
             str(font_map.get(scale_data_item.font_store_name, 0)),
-            scale_data_item.other,
-            str(font_map.get(scale_data_item.font_other, 0)),
         )
         file_name_created = "%s.38.csv" % scale_data_item.scale_ip
         try:
@@ -507,6 +541,9 @@ class Ui_TextToolDialog(object):
         self.label_4.setObjectName(_fromUtf8("label_4"))
         self.horizontalLayout.addWidget(self.label_4)
         self.edt_storeno = QtGui.QLineEdit(self.horizontalLayoutWidget)
+
+        self.edt_storeno.setReadOnly(True) # [20181112]
+
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Arial"))
         font.setPointSize(10)
@@ -594,6 +631,9 @@ class Ui_TextToolDialog(object):
         self.label_9.setObjectName(_fromUtf8("label_9"))
         self.horizontalLayout_3.addWidget(self.label_9)
         self.edt_other = QtGui.QLineEdit(self.horizontalLayoutWidget_2)
+
+        self.edt_other.setReadOnly(True) # [20181112]
+
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Arial"))
         font.setPointSize(10)
@@ -691,6 +731,13 @@ class Ui_TextToolDialog(object):
         self.tbl_scale.setItemDelegateForColumn(6, FontDelegate(comboModel, self.tbl_scale))
         self.tbl_scale.setItemDelegateForColumn(8, FontDelegate(comboModel, self.tbl_scale))
 
+        # [20181112]=>
+        self.tbl_scale.setItemDelegateForColumn(3, QTableWidgetDisabledItem(self.tbl_scale))
+        self.tbl_scale.setItemDelegateForColumn(7, QTableWidgetDisabledItem(self.tbl_scale))
+        # [20181112]<=
+
+
+
         # model.appendRow([
         #     QStandardItem('192.168.1.1'),
         #     QStandardItem('1'),
@@ -745,6 +792,11 @@ class Ui_TextToolDialog(object):
         self.tbl_scale.setItemDelegateForColumn(0, ScaleIPDelegate(self))
 
         self.edt_scaleno.setEnabled(False)
+
+        self.edt_storeno.setEnabled(False)
+        self.edt_other.setEnabled(False)
+
+
         # self.comboBox.setEnabled(False)
 
         # common.log_init()

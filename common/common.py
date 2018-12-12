@@ -140,7 +140,7 @@ def log_init():
     # logging.getLogger('').addHandler(console)
 
     # formatter = logging.Formatter('%(asctime)s : %(message)s', datefmt='%a, %d %b %Y %H:%M:%S')
-    formatter = logging.Formatter('%(asctime)s : %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    formatter = logging.Formatter('%(asctime)s [%(levelname)s]: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
     # detail log
     detail_handler = \
@@ -149,7 +149,7 @@ def log_init():
     detail_handler.setFormatter(formatter)
     logger_detail.addHandler(detail_handler)
 
-    console_handler = logging.StreamHandler()
+    console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(formatter)
     # console_handler.setLevel(logging.DEBUG)
     logger_detail.addHandler(console_handler)
