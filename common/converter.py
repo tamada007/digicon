@@ -262,9 +262,11 @@ class StatementConvert:
             cbSetValueList(tableNameMUB, "Data", line_no=1, value=csv_values.get("Multibarcode1"))
 
         # MultiBarcode 2
+        tmp_mubcode2 = csv_values.get("MubCode2") or str(cur_line_no)
+        cbSetValueList(tableNamePLU, "Multibarcode2No", tmp_mubcode2)
         if csv_values.get("Multibarcode2"):
-            tmp_mubcode2 = csv_values.get("MubCode2") or str(cur_line_no)
-            cbSetValueList(tableNamePLU, "Multibarcode2No", tmp_mubcode2)
+            # tmp_mubcode2 = csv_values.get("MubCode2") or str(cur_line_no)
+            # cbSetValueList(tableNamePLU, "Multibarcode2No", tmp_mubcode2)
 
             cbSetValueList(tableNameTBT, "Code", line_no=-1, value=tmp_mubcode2)
             cbSetValueList(tableNameTBT, "LineNo", line_no=-1, value="1")
@@ -291,6 +293,17 @@ class StatementConvert:
                         cbSetValueList(tableNameTBT, "TextFlag", line_no=mul2_index + 1, value=str(99))
                 except Exception:
                     pass
+
+        cbSetValueList(tableNamePLU, "ImageNo1",  csv_values.get("ImageNo1") or "0")
+        cbSetValueList(tableNamePLU, "ImageNo2",  csv_values.get("ImageNo2") or "0")
+        cbSetValueList(tableNamePLU, "ImageNo3",  csv_values.get("ImageNo3") or "0")
+        cbSetValueList(tableNamePLU, "ImageNo4",  csv_values.get("ImageNo4") or "0")
+        cbSetValueList(tableNamePLU, "ImageNo5",  csv_values.get("ImageNo5") or "0")
+        cbSetValueList(tableNamePLU, "ImageNo6",  csv_values.get("ImageNo6") or "0")
+        cbSetValueList(tableNamePLU, "ImageNo7",  csv_values.get("ImageNo7") or "0")
+        cbSetValueList(tableNamePLU, "ImageNo8",  csv_values.get("ImageNo8") or "0")
+        cbSetValueList(tableNamePLU, "ImageNo9",  csv_values.get("ImageNo9") or "0")
+        cbSetValueList(tableNamePLU, "ImageNo10",  csv_values.get("ImageNo10") or "0")
 
         # Extra Processing
         try:
@@ -373,10 +386,12 @@ class StatementConvert:
                 cbSetValueList(tableNameTBT, "Code", csv_values.get("MubCode2") or str(cur_line_no))
                 try:
                     cbSetValueList(tableNameTBT, "Data", "\n".join(['99,"%s"' % ent.replace('"', '""') for ent in
-                                                                    csv.reader(StringIO.StringIO(
-                                                                        csv_values.get("Multibarcode2"))).next()]))
+                                                                csv.reader(StringIO.StringIO(
+                                                                    csv_values.get("Multibarcode2"))).next()]))
                 except:
                     pass
+        else:
+            cbSetValueList(tableNamePLU, "MultiBarcode2", "5,%s,3" % csv_values.get("MubCode2") or str(cur_line_no))
 
         # Text1
         if csv_values.get("Text1"):
@@ -548,6 +563,28 @@ class StatementConvert:
                 valIngName = csv_values.get(ingName) or ""
                 ing_array_data.append('%d,"%s"' % (cur_font, valIngName.replace('"', '""')))
             cbSetValueList(tableNamePLU, "Ingredient", "\n".join(ing_array_data))
+
+        imageNo1 = csv_values.get("ImageNo1")
+        imageNo2 = csv_values.get("ImageNo2")
+        imageNo3 = csv_values.get("ImageNo3")
+        imageNo4 = csv_values.get("ImageNo4")
+        imageNo5 = csv_values.get("ImageNo5")
+        imageNo6 = csv_values.get("ImageNo6")
+        imageNo7 = csv_values.get("ImageNo7")
+        imageNo8 = csv_values.get("ImageNo8")
+        imageNo9 = csv_values.get("ImageNo9")
+        imageNo10 = csv_values.get("ImageNo10")
+        if imageNo1 or imageNo2 or imageNo3 or imageNo4 or imageNo5 or imageNo6 or imageNo7 or imageNo8 or imageNo9 or imageNo10:
+            cbSetValueList(tableNamePLU, "Image1",  imageNo1 or "0")
+            cbSetValueList(tableNamePLU, "Image2",  imageNo2 or "0")
+            cbSetValueList(tableNamePLU, "Image3",  imageNo3 or "0")
+            cbSetValueList(tableNamePLU, "Image4",  imageNo4 or "0")
+            cbSetValueList(tableNamePLU, "Image5",  imageNo5 or "0")
+            cbSetValueList(tableNamePLU, "Image6",  imageNo6 or "0")
+            cbSetValueList(tableNamePLU, "Image7",  imageNo7 or "0")
+            cbSetValueList(tableNamePLU, "Image8",  imageNo8 or "0")
+            cbSetValueList(tableNamePLU, "Image9",  imageNo9 or "0")
+            cbSetValueList(tableNamePLU, "Image10", imageNo10 or "0")
 
         # Extra Processing
         try:

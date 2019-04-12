@@ -5,7 +5,7 @@ import getopt
 import datetime
 from threading import Thread
 
-VERSION = "5.5.1"
+VERSION = "5.5.3"
 
 # 默认为gbk,在encode.txt可设置编码
 current_encoding = 'gbk'
