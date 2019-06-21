@@ -1060,6 +1060,12 @@ plu_struct = {
             "ColumnIndex": 117,
             "Type": "SMInt",
             "MaxLength": 4
+        },
+    "UsageCode":
+        {
+            "ColumnIndex": 118,
+            "Type": "SMInt",
+            "MaxLength": 4
         }
 }
 
@@ -3043,6 +3049,44 @@ ing_struct = {
 ing_file = 'ing'
 ##################################################
 
+# usage
+##################################################
+usa_struct = {
+    "Code":
+        {
+            "Key": 1,
+            "ColumnIndex": 1,
+            "Type": "SMInt",
+            "MaxLength": 6
+        },
+    "LineNo":
+        {
+            "ColumnIndex": 2,
+            "Type": "SMInt",
+            "MaxLength": 2
+        },
+    "DeleteFlag":
+        {
+            "ColumnIndex": 3,
+            "Type": "SMInt",
+            "MaxLength": 1
+        },
+    "Flag":
+        {
+            "ColumnIndex": 4,
+            "Type": "SMInt",
+            "MaxLength": 2
+        },
+    "Data":
+        {
+            "ColumnIndex": 5,
+            "Type": "SMText",
+            "MaxLength": 100
+        }
+}
+
+usa_file = 'usa'
+##################################################
 
 # Text
 ##################################################

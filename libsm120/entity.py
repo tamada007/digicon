@@ -204,6 +204,17 @@ class TexMaster(Master):
             super(TexMaster, self).__init__(file_abbr, file_struct)
 
 
+class UsaMaster(Master):
+    def __init__(self):
+        file_struct = const.usa_struct
+        file_abbr = self.__class__.__name__.lower()[:3]
+        scale_file = file_abbr + '.json'
+        if os.path.isfile(scale_file):
+            super(UsaMaster, self).__init__(file_abbr, common.common.get_json_from_file(scale_file))
+        else:
+            super(UsaMaster, self).__init__(file_abbr, file_struct)
+
+
 class PltMaster(Master):
     def __init__(self):
         file_struct = const.plt_struct
@@ -336,6 +347,7 @@ class MasterFactory:
             "Rtb": lambda: RtbMaster(),
             "Rtt": lambda: RttMaster(),
             "Pas": lambda: PasMaster(),
+            "Usa": lambda: UsaMaster(),
         }
         if master_name in master_list:
             return master_list[master_name]()

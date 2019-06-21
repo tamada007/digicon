@@ -25,7 +25,8 @@ class SmCsvReader:
                 cr.next()
 
             for i, cur_row in enumerate(cr):
-                if callback is not None:
+                # if callback is not None:
+                if callback is not None and len(cur_row) > 0:
                     callback(i, cur_row)
 
     def read_all_lines(self, file_path, callback, encoding=sys.getdefaultencoding()):

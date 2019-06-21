@@ -50,24 +50,41 @@ class StatementConvert:
         # Plu Tare
         cbSetValueList(tableNamePLU, "PLUTare", csv_values.get("PLUTare") or "0")
 
+        # Usage
+        tmp_usage_code = csv_values.get("UsaCode")
+        if tmp_usage_code:
+            # UsageNo
+            cbSetValueList(tableNamePLU, "UsageCode", tmp_usage_code)
+
+            tmp_usage_name = csv_values.get("UsaName")
+            if tmp_usage_name:
+                cbSetValueList("Usa", "Code", line_no=-1, value=tmp_usage_code)
+                cbSetValueList("Usa", "LineNo", line_no=-1, value="1")
+                cbSetValueList("Usa", "DeleteFlag", line_no=-1, value="2")
+                cbSetValueList("Usa", "Flag", line_no=-1, value="0")
+
+                cbSetValueList("Usa", "Code", line_no=1, value=tmp_usage_code)
+                cbSetValueList("Usa", "LineNo", line_no=1, value="1")
+                cbSetValueList("Usa", "Flag", line_no=1, value=csv_values.get("UsaFont") or "21")
+                cbSetValueList("Usa", "Data", line_no=1, value=tmp_usage_name)
 
         # 产地
-        tmp_placecode = csv_values.get("PlaCode")
-        if tmp_placecode:
+        tmp_place_code = csv_values.get("PlaCode")
+        if tmp_place_code:
             # PlaceNo
-            cbSetValueList(tableNamePLU, "PlaceNo", tmp_placecode)
+            cbSetValueList(tableNamePLU, "PlaceNo", tmp_place_code)
 
-            tmp_placename = csv_values.get("PlaceName")
-            if tmp_placename:
-                cbSetValueList(tableNamePLA, "Code", line_no=-1, value=tmp_placecode)
+            tmp_place_name = csv_values.get("PlaceName")
+            if tmp_place_name:
+                cbSetValueList(tableNamePLA, "Code", line_no=-1, value=tmp_place_code)
                 cbSetValueList(tableNamePLA, "LineNo", line_no=-1, value="1")
                 cbSetValueList(tableNamePLA, "DeleteFlag", line_no=-1, value="2")
                 cbSetValueList(tableNamePLA, "PlaceFlag", line_no=-1, value="0")
 
-                cbSetValueList(tableNamePLA, "Code", line_no=1, value=tmp_placecode)
+                cbSetValueList(tableNamePLA, "Code", line_no=1, value=tmp_place_code)
                 cbSetValueList(tableNamePLA, "LineNo", line_no=1, value="1")
                 cbSetValueList(tableNamePLA, "PlaceFlag", line_no=1, value=csv_values.get("PlaceFont") or "21")
-                cbSetValueList(tableNamePLA, "PlaceName", line_no=1, value=tmp_placename)
+                cbSetValueList(tableNamePLA, "PlaceName", line_no=1, value=tmp_place_name)
 
         # 品名
         if csv_values.get("Commodity"):
@@ -113,7 +130,6 @@ class StatementConvert:
         # 标签格式
         cbSetValueList(tableNamePLU, "LabelFormat1", csv_values.get("LabelFormat1") or '17')
         cbSetValueList(tableNamePLU, "LabelFormat2", csv_values.get("LabelFormat2") or '')
-
 
         # 保质期
         if csv_values.get("UsedByDate"):
@@ -235,22 +251,28 @@ class StatementConvert:
                     cbSetValueList(tableNameING, "Data", line_no=index + 1,
                                    value=csv_values.get("Ingredient%d" % (index + 1)).replace('"', '""'))
 
-        # 文本
-        for index in xrange(10):
-            if csv_values.get("Text%d" % (index + 1)):
+        #  文本
+        for index in xrange(16):
+            # if csv_values.get("Text%d" % (index + 1)):
+            if csv_values.get("TexCode%d" % (index + 1)):
                 cbSetValueList(tableNamePLU, "TextNo%d" % (index + 1),
                                csv_values.get("TexCode%d" % (index + 1)) or str(cur_line_no))
-                cbSetValueList(tableNameTEX, "Code", line_no=-(index + 1),
-                               value=csv_values.get("TexCode%d" % (index + 1)) or str(cur_line_no))
-                cbSetValueList(tableNameTEX, "LineNo", line_no=-(index + 1), value="1")
-                cbSetValueList(tableNameTEX, "DeleteFlag", line_no=-(index + 1), value="2")
-                cbSetValueList(tableNameTEX, "Code", line_no=index + 1,
-                               value=csv_values.get("TexCode%d" % (index + 1)) or str(cur_line_no))
-                cbSetValueList(tableNameTEX, "LineNo", line_no=index + 1, value="1")
-                cbSetValueList(tableNameTEX, "Flag", line_no=index + 1,
-                               value=csv_values.get("Text%dFont" % (index + 1)) or "0")
-                cbSetValueList(tableNameTEX, "Data", line_no=index + 1,
-                               value=csv_values.get("Text%d" % (index + 1)).replace('"', '""'))
+                if csv_values.get("Text%d" % (index + 1)):  # 有文本内容，就写文件
+
+                    # 删除
+                    cbSetValueList(tableNameTEX, "Code", line_no=-(index + 1),
+                                   value=csv_values.get("TexCode%d" % (index + 1)) or str(cur_line_no))
+                    cbSetValueList(tableNameTEX, "LineNo", line_no=-(index + 1), value="1")
+                    cbSetValueList(tableNameTEX, "DeleteFlag", line_no=-(index + 1), value="2")
+
+                    # 添加
+                    cbSetValueList(tableNameTEX, "Code", line_no=index + 1,
+                                   value=csv_values.get("TexCode%d" % (index + 1)) or str(cur_line_no))
+                    cbSetValueList(tableNameTEX, "LineNo", line_no=index + 1, value="1")
+                    cbSetValueList(tableNameTEX, "Flag", line_no=index + 1,
+                                   value=csv_values.get("Text%dFont" % (index + 1)) or "0")
+                    cbSetValueList(tableNameTEX, "Data", line_no=index + 1,
+                                   value=csv_values.get("Text%d" % (index + 1)).replace('"', '""'))
 
         # MultiBarcode 1
         if csv_values.get("Multibarcode1"):
@@ -335,7 +357,7 @@ class StatementConvert:
             csv_values.get("BarcodeType") or 'EAN',
             csv_values.get("BarcodeX") or '0'))
 
-        #PLU Tare
+        # PLU Tare
         cbSetValueList(tableNamePLU, "PLUTare", csv_values.get("PLUTare") or "0000")
 
         # 产地
