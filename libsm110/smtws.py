@@ -90,15 +90,23 @@ class smtws:
             conn.connect((self.hostaddr, self.port))
             for record_no in records_no:
                 # print record_no
+                if isinstance(record_no, str):
+                    try:
+                        record_no = int(record_no)
+                    except ValueError as ex:
+                        record_no = 0
                 request_data = ReqData().create_request_data(ReqData.Del_Record, file_no, record_no).decode("hex")
                 conn.send(request_data)
                 ack_data = conn.recv(1)
                 if not ack_data: raise TwsException("No Ack")
                 ack = ord(ack_data[0])
                 try:
-                    if ack == 0xE1: raise TwsException("Write Error")
-                    if ack == 0xE2: raise TwsException("No Data")
-                    if ack != 0x06: raise TwsException("Unknown Error")
+                    if ack == 0xE1:
+                        raise TwsException("Write Error")
+                    if ack == 0xE2:
+                        raise TwsException("No Data")
+                    if ack != 0x06:
+                        raise TwsException("Unknown Error")
                 except TwsException, e:
                     # print e
                     # traceback.print_exc()

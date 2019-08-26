@@ -842,8 +842,8 @@ class Easy:
             common.common.log_info("%s Created" % json_file_path)
 
     def easySendPrintFormat(self, fmt_json_file_path):
-        prfJsonFilePath = self.ip + "_" + csJsonPrfFile
-        pffJsonFilePath = self.ip + "_" + csJsonPffFile
+        # prfJsonFilePath = self.ip + "_" + csJsonPrfFile
+        # pffJsonFilePath = self.ip + "_" + csJsonPffFile
         json_data = common.common.get_json_from_file(fmt_json_file_path)
         prfmt = entity.PrfMaster()
         pffmt = entity.PffMaster()
@@ -933,6 +933,7 @@ class Easy:
                 "Real Time Buffer": "Rtb"
             }
             if report_file_name not in trans_table:
+                common.common.log_err("%s is not supported", report_file_name)
                 return False
 
             field_table = {
@@ -955,16 +956,23 @@ class Easy:
             new_delete_row = rep_master.create_row()
             from common import strparser
             for key_line in key_lines:
-                key_array = csv.reader(StringIO.StringIO(key_line.rstrip("\n")))
+                key_array = csv.reader(StringIO.StringIO(key_line.rstrip("\n"))).next()
                 for key, value in field_table[report_file_name].items():
                     new_delete_row[key] = strparser.StrParser(value, key_array, {}, {}).eval(0)
-                rep_master.add_row(new_delete_row)
+                rep_master.add_row(new_delete_row, False)
 
             with digiscale.DigiSm120(self.ip, self.port, self.usr, self.pwd) as sm120:
                 sm120.connect()
                 if not sm120.connected:
+                    common.common.log_err("Failed to Connect to %s" % self.ip)
                     return False
-                return sm120.send(rep_master)
+                # return sm120.send(rep_master)
+                send_result = sm120.send(rep_master)
+                if send_result:
+                    common.common.log_info("Deleted Report Records From %s" % self.ip)
+                else:
+                    common.common.log_err("Failed to Deleted Report Records From %s" % self.ip)
+                return send_result
 
     def exportCSV(
             self,
@@ -975,6 +983,7 @@ class Easy:
             encoding=sys.getdefaultencoding(),
             append=True):
 
+        json_data = {}
         if export_template_file:
             json_data = common.common.get_json_from_file(export_template_file)
         elif export_template_info:
@@ -984,20 +993,22 @@ class Easy:
                 json_data = export_template_info
 
         sql = json_data.get("SQL", "")
-        tableNames = json_data.get("Tables", "")
-        targetFields = json_data.get("Fields", [])
+        table_names = json_data.get("Tables", "")
+        target_fields = json_data.get("Fields", [])
 
-        table_list = tableNames.split(",")
+        table_list = table_names.split(",")
 
         sm120 = digiscale.DigiSm120(self.ip, self.port, self.usr, self.pwd)
         sm120.connect()
-        if not sm120.connected: return False
+        if not sm120.connected:
+            common.common.log_err("Failed to Connect to %s" % self.ip)
+            return False
 
         master_list = map(lambda x: entity.MasterFactory().createMaster(x.strip()), table_list)
 
         for m in master_list:
             if not sm120.recv(m):
-                common.common.log_info("Retrieving %s From %s Failed" % (m.name, self.ip))
+                common.common.log_err("Retrieving %s From %s Failed" % (m.name, self.ip))
                 return False
 
         conn = common.common.open_sqlite_db(const.db_name)
@@ -1016,14 +1027,13 @@ class Easy:
                 if append and os.path.isfile(export_csv_file) and os.path.getsize(export_csv_file) > 0:
                     pass
                 else:
-                    # fp.write(",".join(field_names) + "\n");
                     fp.write(",".join(field_names).decode('utf8').encode(encoding) + "\r\n")
 
             for row in cursor:
                 cells = [unicode(cell).encode(encoding) for cell in row]
-                if targetFields:
+                if target_fields:
                     target_cells = []
-                    for target_field in targetFields:
+                    for target_field in target_fields:
                         strpar = common.strparser.StrParser(target_field, cells)
                         target_cells.append(strpar.eval(0))
                     fp.write(",".join(target_cells) + "\r\n")

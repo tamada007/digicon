@@ -113,6 +113,9 @@ class Master(object):
         # fieldList = [self.__keyValue(f) for f in filteredFieldList]
         fieldList = [scale_encoding_converter.conv_scale_to_pc(self.__keyValue(f)) for f in filteredFieldList]
         fieldName = [self.__keyName(f) for f in filteredFieldList]
+        # 如果没有字段名时，需要和表声明的长度比较
+        if not with_head and len(fieldList) != len(self.fields_info):
+            fieldList = fieldList[:len(self.fields_info)]
         cursor = self.conn.cursor()
         sql = "INSERT INTO %s %s VALUES( %s )" % (
             self.name,
@@ -129,6 +132,9 @@ class Master(object):
             # fieldList = [self.__keyValue(f) for f in row_list]
             fieldList = [scale_encoding_converter.conv_scale_to_pc(self.__keyValue(f)) for f in row_list]
             fieldName = [self.__keyName(f) for f in row_list]
+            # 如果没有字段名时，需要和表声明的长度比较
+            if not with_head and len(fieldList) != len(self.fields_info):
+                fieldList = fieldList[:len(self.fields_info)]
             sql = "INSERT INTO %s %s VALUES( %s )" % (
                 self.name,
                 "(" + ",".join(fieldName) + ")" if with_head else "",

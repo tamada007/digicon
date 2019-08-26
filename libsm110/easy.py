@@ -31,10 +31,18 @@ class Easy:
                 "Real Time Buffer": "Rtb"
             }
             if report_file_name not in trans_table:
+                common.common.log_err("%s is not supported" % report_file_name)
                 return False
             rep_master = entity.MasterFactory().createMaster(trans_table[report_file_name])
             sm110 = smtws.smtws(self.ip)
-            return sm110.delete_records(rep_master.file_no, key_lines)
+            # return sm110.delete_records(rep_master.file_no, key_lines)
+            delete_result = sm110.delete_records(rep_master.file_no, key_lines)
+            if not delete_result:
+                common.common.log_err("Failed to delete Report records from %s" % self.ip)
+            else:
+                common.common.log_info("Deleted Report records from %s" % self.ip)
+
+            return delete_result
 
     def exportCSV(
             self,
@@ -45,6 +53,7 @@ class Easy:
             encoding=sys.getdefaultencoding(),
             append=True):
 
+        json_data = {}
         if export_template_file:
             json_data = common.common.get_json_from_file(export_template_file)
         elif export_template_info:
@@ -64,7 +73,7 @@ class Easy:
 
         for m in master_list:
             if not sm110.download_master(m):
-                common.common.log_info("Retrieving %s From %s Failed" % (m.name, self.ip))
+                common.common.log_err("Retrieving %s From %s Failed" % (m.name, self.ip))
                 return False
 
         conn = common.common.open_sqlite_db(const.db_name)

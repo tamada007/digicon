@@ -18,6 +18,9 @@ import csv, StringIO
 from inspect import isfunction
 from threading import Thread
 
+LOGFILE_ERROR = "digicon_failed_scale.log"
+LOGFILE_SUCCEED = "digicon_succeeded_scale.log"
+
 
 class StatementConvert:
     @staticmethod
@@ -1652,13 +1655,10 @@ class ScalesConverter():
 
         try:
             json_data = common.get_json_from_file(json_fmt_file_path)
-        except:
+        except Exception:
             common.log_err(traceback.format_exc())
             return False
 
-        # self.converterInfoList = {}
-        # self.converterInfoList["sm110"] = {}
-        # self.converterInfoList["sm120"] = {}
         self.converterInfoList = {
             "GlobalInformation": {
                 "Templates": []
@@ -1677,8 +1677,6 @@ class ScalesConverter():
             if isinstance(json_data2, list):
                 self.dataFilter.set_expressions([dat for dat in json_data2])
 
-        # self.converterInfoList["GlobalInformation"] = {}
-        # self.converterInfoList["GlobalInformation"]["infos"] = []
         for fmt in json_data:
             source_expr = fmt["source_expr"]
             target_field = fmt["target_field"]
@@ -1707,7 +1705,7 @@ class ScalesConverter():
                 csv_file_path,
                 self.process_line,
                 head=common.get_title_onoff())
-        except:
+        except Exception:
             common.log_err(traceback.format_exc())
             return False
 
@@ -1767,15 +1765,12 @@ class ScalesConverter():
             # if sm120_entry[2][0] == 0:  # send is ok
             if sm120_entry[2].get('send_result'):  # send is ok
                 # allMasters = ",".join([clsName for clsName in self.converterInfoList["sm120"]])
-                allMasters = ",".join(sm120_entry[2].get('sent_list'))
-                common.log_info("Downloading %s To %s Successfully..." % (allMasters, scale_ip))
-                common.log2_info("Downloading %s To %s Successfully..." % (allMasters, scale_ip))
+                all_masters = ",".join(sm120_entry[2].get('sent_list'))
+                common.log_info("Downloading %s To %s Successfully..." % (all_masters, scale_ip))
+                common.log2_info("Downloading %s To %s Successfully..." % (all_masters, scale_ip))
                 success_scale_list.append(scale_ip)
             else:
                 failed_scale_list.append(scale_ip)
-
-
-
 
         def send_to_scale_sm110(scale, result):
             has_error = False
@@ -1858,65 +1853,21 @@ class ScalesConverter():
             # if sm110_entry[2][0] == 0:  # send is ok
             if sm110_entry[2].get('send_result'):  # send is ok
                 # allMasters = ",".join([clsName for clsName in self.converterInfoList["sm110"]])
-                allMasters = ",".join(sm110_entry[2].get('sent_list'))
-                common.log_info("Downloading %s To %s Successfully..." % (allMasters, scale_ip))
-                common.log2_info("Downloading %s To %s Successfully..." % (allMasters, scale_ip))
+                all_masters = ",".join(sm110_entry[2].get('sent_list'))
+                common.log_info("Downloading %s To %s Successfully..." % (all_masters, scale_ip))
+                common.log2_info("Downloading %s To %s Successfully..." % (all_masters, scale_ip))
                 success_scale_list.append(scale_ip)
             else:
                 failed_scale_list.append(scale_ip)
 
         try:
-            with open('digicon_failed_scale.log', 'w') as fp1:
+            with open(LOGFILE_ERROR, 'w') as fp1:
                 fp1.write('\r\n'.join(failed_scale_list))
-            with open('digicon_succeeded_scale.log', 'w') as fp2:
+            with open(LOGFILE_SUCCEED, 'w') as fp2:
                 fp2.write('\r\n'.join(success_scale_list))
         except Exception, e:
             common.log_err(e)
         # 多线程方法<=========
-
-        """
-		#单线程处理==========>
-		for scale_ip in self.lst_sm120:
-			list_sm120_data = []
-			scale = libsm120.digiscale.DigiSm120(scale_ip)
-			for clsName, template_infos in self.converterInfoList["sm120"].items():
-				created_csv_file = scale.create_csv(template_infos["Master"])
-				if created_csv_file:
-					list_sm120_data.append((template_infos["Master"], created_csv_file))
-
-			common.log_info("Start to download file To %s" % scale_ip)
-			scale.connect()
-			if not scale.connected:
-				#common.log_err("Failed to Connect to Scale %s!" % scale_ip)
-				continue
-			
-			has_error = False
-			for sm120_data in list_sm120_data:
-				if not scale.send_file(sm120_data[0], sm120_data[1]):
-					common.log_err( "Failed To Download %s To %s ..." % (sm120_data[1],scale_ip))
-					common.log2_err( "Failed To Download %s To %s ..." % (sm120_data[1],scale_ip))
-					has_error = True
-			if not has_error:
-				allMasters = ",".join([clsName for clsName in self.converterInfoList["sm120"]])
-				common.log_info( "Downloading %s To %s Successfully..." % (allMasters, scale_ip) )
-				common.log2_info( "Downloading %s To %s Successfully..." % (allMasters, scale_ip) )
-				success_scale_list.append( scale_ip )
-		
-		for scale_ip in self.lst_sm110:
-			has_error = False
-			scale = libsm110.smtws.smtws(scale_ip)
-			for clsName, template_infos in self.converterInfoList["sm110"].items():
-				if not scale.upload_master(template_infos["Master"]):
-					common.log_err( "Downloading %s To %s Failed..." % (clsName,scale_ip))
-					common.log2_err( "Downloading %s To %s Failed..." % (clsName,scale_ip))
-					has_error = True
-			if not has_error:
-				allMasters = ",".join([clsName for clsName in self.converterInfoList["sm110"]])
-				common.log_info( "Downloading %s To %s Successfully..." % (allMasters, scale_ip) )
-				common.log2_info( "Downloading %s To %s Successfully..." % (allMasters, scale_ip) )
-				success_scale_list.append( scale_ip )
-		#单线程处理<==========
-		"""
 
         # 		if len(self.lst_sm110) > 0:
         # 			for scalefile in self.converterInfoList["sm110"]:
@@ -1929,7 +1880,6 @@ class ScalesConverter():
             return True
         else:
             return False
-        # return True
 
     def process_line(self, curLineNo, cur_row):
 
@@ -2031,17 +1981,6 @@ class ScalesConverter():
             if len(tgt) > 2:
                 tgt_lineno = int(tgt[2])
 
-            # 			if not self.converterInfoList[scale_type].has_key(tgt_table):
-            # 				self.converterInfoList[scale_type][tgt_table] = {}
-            # 				self.converterInfoList[scale_type][tgt_table]["Master"] = self.masterFactory[scale_type].createMaster(tgt_table)
-            #
-            # 			if not value_list[scale_type].has_key(tgt_table):
-            # 				value_list[scale_type][tgt_table] = {}
-            #
-            # 			if not value_list[scale_type][tgt_table].has_key(tgt_lineno):
-            # 				value_list[scale_type][tgt_table][tgt_lineno] = self.converterInfoList[scale_type][tgt_table]["Master"].create_row()
-
-            # 			value_list[scale_type][tgt_table][tgt_lineno][tgt_field][0] = result
             setValueList(
                 master_factory=self.masterFactory[scale_type],
                 master_list=self.converterInfoList[scale_type],

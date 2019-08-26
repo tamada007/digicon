@@ -1,11 +1,16 @@
 # encoding:utf-8
 
-import os, sys
+import os
+import sys
 import getopt
 import datetime
+import re
 from threading import Thread
 
-VERSION = "5.5.5"
+VERSION = "5.5.7"
+
+LOGFILE_ERROR = "digicon_failed_scale.log"
+LOGFILE_SUCCEED = "digicon_succeeded_scale.log"
 
 # 默认为gbk,在encode.txt可设置编码
 current_encoding = 'gbk'
@@ -21,6 +26,7 @@ sys.setdefaultencoding(current_encoding)  # @UndefinedVariable
 from common import common
 from common.converter import ScalesConverter
 from common import converter
+from common import globalspec
 
 import libsm120.easy
 import libsm110.easy
@@ -45,22 +51,24 @@ Options:
     -L                       Import Flexi-barcode (work with sm80/sm110/sm120)
     -A                       Import Password (work with sm80/sm110/sm120)
     -E                       Import Text (work with sm80/sm110/sm120)
-    -H                       Title Line In CSV
     -f Json File             Send Label Format information by Json
     -G Json File             Receive Label Format information by Json
-    -F Json File             Csv Filter File
     -m Json File             Import/Export Template Json File
     -R Report File Name      Export Pre-defined Report file
     -s Scale List            Scale List Separated by "," for example "192.168.1.2, 192.168.1.3"
     -S Scale File            File where scale list is
-    -g Scale Group List      Scale Group list File
     -i Csv File              Import Csv File
     -o Csv File              Export Csv File
-    
-    --check_connection       Check Connection to the Scales
+    --check_connection       Check Connecting to the Scales
     --syncdate               Synchronizing datetime to Scale
     --noverifytype           no verify scale type of sm100/sm110
     
+    Examples:
+        Download Plu to Scale:
+            digicon -P -s 192.168.68.197:sm110,192.168.68.215 -i plu_import.csv -m plu_template.json
+    
+        Check Connection:
+            digicon -s 192.168.68.111,192.168.68.112 --check_connection 
     
 """ % sys.argv[0]
 
@@ -96,29 +104,29 @@ if __name__ == '__main__':
     optImportForDateTime = False
     optTitling = False
     optCheckConnection = False    # 检测秤是否连接
-    optSyncDate = False     #同步本机时间到秤
+    optSyncDate = False           # 同步本机时间到秤
 
     file_write = None
     file_read = None
     access_file_name = ""
 
-
-    # init log module
+    # 日志模块功能
     common.log_init()
 
     try:
         opts, args = getopt.getopt(
             sys.argv[1:],
-            "HvEPMTKLAhvd:F:g:G:c:t:s:S:m:f:t:R:i:o:D:",
+            "vEPMTKLAhvd:G:c:t:s:S:m:f:t:R:i:o:D:",
             [
                 "dat=",
                 "read=",
                 "write=",
                 "access_file_name=",
                 "check_connection",
-                "check_type",
+                # "check_type",
                 "syncdate",
                 "noverifytype",
+                "complex"
                 "help"])
 
         if not opts:
@@ -137,7 +145,6 @@ if __name__ == '__main__':
             elif o == "--access_file_name":
                 access_file_name = v
             elif o == '--noverifytype':
-                from common import globalspec
                 globalspec.setVerifyScaleType(False)
             elif o == "--check_connection":
                 optCheckConnection = True
@@ -157,8 +164,12 @@ if __name__ == '__main__':
                 scale_file = v
             elif o == "-o":
                 out_csv_file = v
-            elif o == "-F":
-                filter_file = v
+            # elif o == "-F":
+            #     filter_file = v
+            # elif o == "-g":
+            #     group_file = v
+            # elif o == "-H":
+            #     optTitling = True
             elif o == "-i":
                 in_csv_file = v
             elif o == "-d":
@@ -169,10 +180,6 @@ if __name__ == '__main__':
                 report_file = v
             elif o == "-D":
                 delete_report_file = v
-            elif o == "-g":
-                group_file = v
-            elif o == "-H":
-                optTitling = True
             elif o == "-P":
                 optImportForPlu = True
             elif o == "-M":
@@ -198,7 +205,7 @@ if __name__ == '__main__':
                 sys.exit(1)
 
     except getopt.GetoptError as err:
-        common.log_err("Parameters Error:", err)
+        common.log_err("Parameters Error: %s" % err)
 
     file_list = []
 
@@ -391,8 +398,6 @@ if __name__ == '__main__':
         else:
             scale_type = "sm120"
 
-        # import common.common
-
         # 清除内存表中数据，以防与下次下发冲突
         if scale_type.lower() == "sm120":
             # sm120
@@ -413,16 +418,82 @@ if __name__ == '__main__':
                 list_failed_scale_connection.append(scale)
 
         if file_read:
-            if ease.easyReceiveFile(file_read, access_file_name):
-                common.log_info("Receive Master %s to %s Successfully!" % (file_read, access_file_name))
+            # if ease.easyReceiveFile(file_read, access_file_name):
+            #     common.log_info("Receive Master %s to %s Successfully!" % (file_read, access_file_name))
+            # else:
+            #     common.log_err("Receive Master Failed!")
+            try:
+                file_data_list = []
+                file_failed_list = []
+                for master_name in file_read.split(','):
+                    temp_file_name = "temp1_" + scale + "_" + master_name + "_.dat"
+                    result = ease.easyReceiveFile(master_name, temp_file_name)
+                    if result:
+                        try:
+                            temp_file_data = ""
+                            with open(temp_file_name, 'r') as fp:
+                                temp_file_data = fp.read()
+                            os.remove(temp_file_name)
+
+                            for line_data in temp_file_data.split("\n"):
+                                if line_data.strip(' \r'):
+                                    file_data_list.append(master_name + ":" + line_data.rstrip(" \r"))
+                        except Exception, ex:
+                            common.log_err(ex)
+                            file_failed_list.append(master_name)
+                file_data = "\n".join(file_data_list)
+                with open(access_file_name, "w") as fp2:
+                    fp2.write(file_data)
+
+                if len(file_failed_list) > 0:
+                    raise Exception("Receive from %s Masters %s Failed" % (scale, ",".join(file_failed_list)))
+
+            except Exception, e:
+                common.log_err(e)
+                list_failed_scale_connection.append(scale)
             else:
-                common.log_err("Receive Master Failed!")
+                common.log_info("Receive from %s Masters (%s) to %s Successfully!" % (scale, file_read, access_file_name))
+                list_success_scale_connection.append(scale)
 
         if file_write:
-            if ease.easySendFile(file_write, access_file_name):
-                common.log_info("Send Master %s to %s Successfully!" % (file_write, access_file_name))
+            # if ease.easySendFile(file_write, access_file_name):
+            #     common.log_info("Send Master %s to %s Successfully!" % (file_write, access_file_name))
+            # else:
+            #     common.log_err("Send Master Failed!")
+            file_failed_list = []
+            file_total_list = []
+            dict_data = {}
+            try:
+                with open(access_file_name, "r") as fp2:
+                    file_data = fp2.read()
+                    for line_data in file_data.split("\n"):
+                        line_data = line_data.rstrip(" \r")
+                        pat = re.compile("(\w+):(.+)")
+                        m = pat.match(line_data)
+                        if m:
+                            if not m.group(1) in dict_data:
+                                dict_data[m.group(1)] = ""
+                            dict_data[m.group(1)] += m.group(2) + "\n"
+
+                for scale_file, scale_file_data in dict_data.items():
+                    temp_file_name = "temp2_" + scale + "_" + scale_file + "_" + ".dat"
+                    with open(temp_file_name, "w") as fp2:
+                        fp2.write(scale_file_data)
+                    file_total_list.append(scale_file)
+                    if not ease.easySendFile(scale_file, temp_file_name):
+                        file_failed_list.append(scale_file)
+
+                    os.remove(temp_file_name)
+
+                if len(file_failed_list) > 0:
+                    raise Exception("Send Masters (%s) to %s failed" % (",".join(file_failed_list), scale))
+
+            except Exception, e:
+                common.log_err(e)
+                list_failed_scale_connection.append(scale)
             else:
-                common.log_err("Send Master Failed!")
+                common.log_info("Send Masters (%s) to %s Successfully!" % (",".join(file_total_list), scale))
+                list_success_scale_connection.append(scale)
 
         # if json_plu_file:
         #     ease.easySendPlu(json_plu_file)
@@ -438,49 +509,42 @@ if __name__ == '__main__':
                 common.log_err("Label Format Error:", e)
 
         # common.clear_all_tables(libsm120.const.db_name)
-        # if template_file:
-        #     if out_csv_file:
         if template_file and out_csv_file:
-            ease.exportCSV(
-                export_template_file=template_file,
-                export_template_info="",
-                export_csv_file=out_csv_file,
-                title=True)
-
-            # elif in_csv_file:
-            #     # import
-            #     if optImportForPlu or \
-            #             optImportForTrace or \
-            #             optImportFlexibarcode or \
-            #             optImportPresetKey or \
-            #             optImportPassword or \
-            #             optImportForText:
-            #         # scale_converter.easyImportMaster(in_csv_file, template_file)
-            #         pass
-            #     else:
-            #         ease.easyImportMaster(
-            #             in_csv_file,
-            #             template_file,
-            #             json_scale_group_file=group_file,
-            #             json_filter_file=filter_file)
+            if not ease.exportCSV(
+                    export_template_file=template_file,
+                    export_template_info="",
+                    export_csv_file=out_csv_file,
+                    title=True):
+                        list_failed_scale_connection.append(scale)
+            else:
+                        list_success_scale_connection.append(scale)
 
         if report_file:
             if scale_type.lower() == "sm120":
-                ease.exportCSV(
-                    export_template_file="",
-                    export_template_info=libsm120.const.report_list[report_file],
-                    export_csv_file=out_csv_file,
-                    title=True)
+                if not ease.exportCSV(
+                        export_template_file="",
+                        export_template_info=libsm120.const.report_list[report_file],
+                        export_csv_file=out_csv_file,
+                        title=True):
+                            list_failed_scale_connection.append(scale)
+                else:
+                            list_success_scale_connection.append(scale)
             else:
-                ease.exportCSV(
-                    export_template_file="",
-                    export_template_info=libsm110.const.report_list[report_file],
-                    export_csv_file=out_csv_file,
-                    title=True)
+                if not ease.exportCSV(
+                        export_template_file="",
+                        export_template_info=libsm110.const.report_list[report_file],
+                        export_csv_file=out_csv_file,
+                        title=True):
+                            list_failed_scale_connection.append(scale)
+                else:
+                            list_success_scale_connection.append(scale)
 
         if delete_report_file:
             if not ease.deleteFromCSV(delete_report_file, in_csv_file):
                 iExitCode = 9
+                list_failed_scale_connection.append(scale)
+            else:
+                list_success_scale_connection.append(scale)
 
         def check_conn(p_scale_ip, p_scale_type, p_result):
             if p_scale_type.lower() == "sm120":
@@ -515,9 +579,9 @@ if __name__ == '__main__':
                 iExitCode = 10
             else:
                 iExitCode = 0
-            with open('digicon_failed_scale.log', 'w') as fp1:
+            with open(LOGFILE_ERROR, 'w') as fp1:
                 fp1.write('\r\n'.join(list_failed_scale_connection))
-            with open('digicon_succeeded_scale.log', 'w') as fp2:
+            with open(LOGFILE_SUCCEED, 'w') as fp2:
                 fp2.write('\r\n'.join(list_success_scale_connection))
         except Exception, e:
             common.log_err(e)
@@ -541,7 +605,7 @@ if __name__ == '__main__':
         except Exception, e:
             common.log_err(e)
             iExitCode = 8
-        # print dir(e)
+            # print dir(e)
         else:
             common.log_info("Finished Sending Dat File To Scale!")
 
