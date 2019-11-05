@@ -7,7 +7,7 @@ import datetime
 import re
 from threading import Thread
 
-VERSION = "5.5.7"
+VERSION = "5.5.9.0"
 
 LOGFILE_ERROR = "digicon_failed_scale.log"
 LOGFILE_SUCCEED = "digicon_succeeded_scale.log"
@@ -17,6 +17,8 @@ current_encoding = 'gbk'
 if os.path.isfile('encode.txt'):
     with open('encode.txt') as fp:
         current_encoding = fp.readline().strip()
+
+# print("encoding: " + current_encoding)
 
 sys.getdefaultencoding()
 reload(sys)

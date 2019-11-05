@@ -1043,44 +1043,44 @@ class Easy:
         common.common.log_info("Exporting From %s To %s Successfully..." % (self.ip, export_csv_file))
         return True
 
-    def process_line(self, curLineNo, cur_row):
-
-        self.dataFilter.set_field_list(cur_row)
-        if self.dataFilter.is_filtered(): return True
-
-        gv = {"CurLineNo": str(curLineNo + 1)}
-        for clsName, template_infos in self.createMasterList.items():
-            master = template_infos.get("Master", None)
-            if master is None: continue
-            iMaxCode = master.get_max_value_of_key()
-            iMaxCode += 1
-            iFreeCode = master.get_free_value_of_key()
-            strKeyValue = clsName + ".MaxCode"
-            gv[strKeyValue] = str(iMaxCode)
-            strKeyValue = clsName + ".FreeCode"
-            gv[strKeyValue] = str(iFreeCode)
-
-        for clsName, template_infos in self.createMasterList.items():
-            # print json.dumps(row, indent=4, separators={':',','})
-            newLines = {}
-            if not template_infos.has_key("Master"): continue
-            master = template_infos["Master"]
-            for template_info in template_infos["infos"]:
-                iLineNo = int(template_info["line_no"])
-                if not newLines.has_key(iLineNo):
-                    newLines[iLineNo] = master.create_row()
-                sp = common.strparser.StrParser(template_info["source_expression"], cur_row, {}, gv)
-                # print "expr:", template_info["source_expression"]
-                result = sp.eval(0)
-                # print "result:", result
-                if newLines[iLineNo].has_key(template_info["field_name"]):
-                    newLines[iLineNo][template_info["field_name"]][0] = result
-
-                if iLineNo > 0:
-                    newLines[iLineNo][template_info["line_no_field"]][0] = iLineNo
-
-            for newLineKey, newLine in newLines.items():
-                template_infos["Master"].add_row(newLine)
+    # def process_line(self, curLineNo, cur_row):
+    #
+    #     self.dataFilter.set_field_list(cur_row)
+    #     if self.dataFilter.is_filtered(): return True
+    #
+    #     gv = {"CurLineNo": str(curLineNo + 1)}
+    #     for clsName, template_infos in self.createMasterList.items():
+    #         master = template_infos.get("Master", None)
+    #         if master is None: continue
+    #         iMaxCode = master.get_max_value_of_key()
+    #         iMaxCode += 1
+    #         iFreeCode = master.get_free_value_of_key()
+    #         strKeyValue = clsName + ".MaxCode"
+    #         gv[strKeyValue] = str(iMaxCode)
+    #         strKeyValue = clsName + ".FreeCode"
+    #         gv[strKeyValue] = str(iFreeCode)
+    #
+    #     for clsName, template_infos in self.createMasterList.items():
+    #         # print json.dumps(row, indent=4, separators={':',','})
+    #         newLines = {}
+    #         if not template_infos.has_key("Master"): continue
+    #         master = template_infos["Master"]
+    #         for template_info in template_infos["infos"]:
+    #             iLineNo = int(template_info["line_no"])
+    #             if not newLines.has_key(iLineNo):
+    #                 newLines[iLineNo] = master.create_row()
+    #             sp = common.strparser.StrParser(template_info["source_expression"], cur_row, {}, gv)
+    #             # print "expr:", template_info["source_expression"]
+    #             result = sp.eval(0)
+    #             # print "result:", result
+    #             if newLines[iLineNo].has_key(template_info["field_name"]):
+    #                 newLines[iLineNo][template_info["field_name"]][0] = result
+    #
+    #             if iLineNo > 0:
+    #                 newLines[iLineNo][template_info["line_no_field"]][0] = iLineNo
+    #
+    #         for newLineKey, newLine in newLines.items():
+    #             template_infos["Master"].add_row(newLine)
 
     def easyDeleteFile(self, mas_name):
         master_list = mas_name.split(',')

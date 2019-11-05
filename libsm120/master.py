@@ -102,27 +102,37 @@ class Master(object):
         # return val_list
         return dic_list
 
-    def add_row(self, field_dic, with_head=True):
-        if with_head:
+    def add_row(self, field_dic, is_field_name=True):
+        if is_field_name:
             # filteredFieldList = [ {k: v[0]} for k, v in field_dic.items() if type(k) is not int ]
-            filteredFieldList = [{k: v[0]} for k, v in field_dic.items() if not isinstance(k, int)]
+            # filteredFieldList = [{k: v[0]} for k, v in field_dic.items() if not isinstance(k, int)]
+            filteredFieldList = [{k: v[0] if isinstance(v, list) else v} for k, v in field_dic.items() if
+                                 not isinstance(k, int)]
         else:
             # filteredFieldList = [ {k: v[0]} for k, v in field_dic.items() if type(k) is int ]
-            filteredFieldList = [{k: v[0]} for k, v in field_dic.items() if isinstance(k, int)]
+            # filteredFieldList = [{k: v[0]} for k, v in field_dic.items() if isinstance(k, int)]
+            filteredFieldList = [{k: v[0] if isinstance(v, list) else v} for k, v in field_dic.items() if
+                                 isinstance(k, int)]
 
         # fieldList = [self.__keyValue(f) for f in filteredFieldList]
-        fieldList = [scale_encoding_converter.conv_scale_to_pc(self.__keyValue(f)) for f in filteredFieldList]
-        fieldName = [self.__keyName(f) for f in filteredFieldList]
+        # fieldList = [scale_encoding_converter.conv_scale_to_pc(str(self.__keyValue(f))) for f in filteredFieldList]
+        field_value_list = []
+        for f in filteredFieldList:
+            fv = scale_encoding_converter.conv_scale_to_pc(self.__keyValue(f))
+            if isinstance(fv, str):
+                fv = unicode(fv)
+            field_value_list.append(fv)
+        field_name = [self.__keyName(f) for f in filteredFieldList]
         # 如果没有字段名时，需要和表声明的长度比较
-        if not with_head and len(fieldList) != len(self.fields_info):
-            fieldList = fieldList[:len(self.fields_info)]
+        if not is_field_name and len(field_value_list) != len(self.fields_info):
+            field_value_list = field_value_list[:len(self.fields_info)]
         cursor = self.conn.cursor()
         sql = "INSERT INTO %s %s VALUES( %s )" % (
             self.name,
-            "(" + ",".join(fieldName) + ")" if with_head else "",
-            ",".join(["?"] * len(fieldList)))
+            "(" + ",".join(field_name) + ")" if is_field_name else "",
+            ",".join(["?"] * len(field_value_list)))
         # print sql
-        cursor.execute(sql, fieldList)
+        cursor.execute(sql, field_value_list)
         self.conn.commit()
 
     def add_rows(self, rows_list, with_head=True):
@@ -130,18 +140,25 @@ class Master(object):
         for row_list in rows_list:
             # print row_list
             # fieldList = [self.__keyValue(f) for f in row_list]
-            fieldList = [scale_encoding_converter.conv_scale_to_pc(self.__keyValue(f)) for f in row_list]
-            fieldName = [self.__keyName(f) for f in row_list]
+            # field_value_list = [scale_encoding_converter.conv_scale_to_pc(self.__keyValue(f)) for f in row_list]
+            field_value_list = []
+            for f in row_list:
+                fv = scale_encoding_converter.conv_scale_to_pc(self.__keyValue(f))
+                if isinstance(fv, str):
+                    fv = unicode(fv)
+                field_value_list.append(fv)
+
+            field_name = [self.__keyName(f) for f in row_list]
             # 如果没有字段名时，需要和表声明的长度比较
-            if not with_head and len(fieldList) != len(self.fields_info):
-                fieldList = fieldList[:len(self.fields_info)]
+            if not with_head and len(field_value_list) != len(self.fields_info):
+                field_value_list = field_value_list[:len(self.fields_info)]
             sql = "INSERT INTO %s %s VALUES( %s )" % (
                 self.name,
-                "(" + ",".join(fieldName) + ")" if with_head else "",
+                "(" + ",".join(field_name) + ")" if with_head else "",
                 ",".join(["?"] * len(row_list))
             )
             # print sql
-            cursor.execute(sql, fieldList)
+            cursor.execute(sql, field_value_list)
         self.conn.commit()
 
     def to_csv_mem(self, title=False, encoding=sys.getdefaultencoding()):
@@ -174,7 +191,21 @@ class Master(object):
             for row in cursor:
                 # for cell in row: print cell
                 # cells = [unicode(cell).encode(encoding) for cell in row]
-                cells = [scale_encoding_converter.conv_pc_to_scale(unicode(cell).encode(encoding)) for cell in row]
+                # cells = [scale_encoding_converter.conv_pc_to_scale(unicode(cell).encode(encoding)) for cell in row]
+                cells = [scale_encoding_converter.conv_pc_to_scale(str(cell)) for cell in row]
+                # cells = []
+                # indx = 0
+                # for cell in row:
+                #     print "index:", indx, "cell:", cell
+                #     indx += 1
+                #     cell_unicode = unicode(cell)
+                #     print "cell_unicode:", cell_unicode
+                #     cell_encode = cell_unicode.encode(encoding)
+                #     print "cell_encode:", cell_encode
+                #     cell_scale_data = scale_encoding_converter.conv_pc_to_scale(cell_encode)
+                #     print "cell_scale_data:", cell_scale_data
+                #     cells.append(cell_scale_data)
+
                 fp.write(",".join(cells) + "\r\n")
 
                 # 		print "2 elipsed:", time.time() - beg #testonly

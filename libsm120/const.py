@@ -22,12 +22,64 @@ report_list = {
     "Real Time Total Buffer":
         {
             "Tables": "Rtt",
-            "SQL": "SELECT * FROM rtt"
+            "SQL": "SELECT ReceiptNo,DeleteFlag,date,time,MachineCode,ClerkNo,IPaddressTail,TransactionNumber,TotalAmountOfAddOnTax,TotalAmountOfVATTax,TotalWeight,TotalQuantity,TotalAmount,TotalFinalAmount,TotalRoundingAmount,TotalEUROfinalAmount,TotalValueOfCash,TotalValueOfCredit,TotalChangeAmount,TotalEUROTender,TotalChequeAmount,TotalVoucherAmount,TotalCardAmount,TotalPayoutAmount,TotalAmountWithoutChange,MemberShipNo FROM rtt"
         },
     "Real Time Buffer":
         {
-            "Tables": "Rtb,Plu",
-            "SQL": "SELECT rtb.*,plu.CommodityName1 FROM rtb LEFT JOIN plu on plu.pluno=rtb.pluno"
+            "Tables": "Rtb",
+            #"SQL": "SELECT rtb.*,plu.CommodityName1 FROM rtb LEFT JOIN plu on plu.pluno=rtb.pluno"
+            "SQL": """SELECT 
+                        rtb.ReceiptNo,
+                        rtb.TransactionNo,
+                        rtb.DeleteFlag,
+                        rtb.FileID,
+                        rtb.IPAddressTail,
+                        rtb.TaxRateNo,
+                        rtb.PercentDiscountRate,
+                        rtb.DiscountAmount,
+                        rtb.PLUNo,
+                        rtb.WeightQuantity,
+                        rtb.Tare,
+                        rtb.UnitPriceAfterDiscount,
+                        rtb.OriginalUnitPrice,
+                        rtb.PriceBeforeSubtotalDiscount,
+                        rtb.PLUDiscountType,
+                        rtb.FlagOfDiscount,
+                        rtb.FlagOfPerDiscount,
+                        rtb.FlagOfItem,
+                        rtb.FlagOfRefundItem,
+                        rtb.FlagOfSubtotal,
+                        rtb.FlagOfCorrect,
+                        rtb.FlagofVoid,
+                        rtb.FlagofUnit,
+                        rtb.FlagofPriceBase,
+                        rtb.MemberShipNo,
+                        rtb.TraceabilityNo,
+                        rtb.ReferenceType,
+                        rtb.ReferenceDate,
+                        rtb.ReferenceCode,
+                        rtb.LotNumber,
+                        rtb.TraceLink,
+                        rtb.EatDate,
+                        rtb.Weight,
+                        rtb.BornCountryNo,
+                        rtb.FattenCountryNo,
+                        rtb.SlaughterHouseNo,
+                        rtb.SlaughterCountryNo,
+                        rtb.CuttingHallNo,
+                        rtb.CuttingCountryNo,
+                        rtb.CountryNoOfOrigin,
+                        rtb.KindNo,
+                        rtb.CategoryNo,
+                        rtb.BreedNo,
+                        rtb.GTIN,
+                        rtb.ContactRef,
+                        rtb.SupplierCode,
+                        rtb.SupplierName,
+                        rtb.SupplierAddr1,
+                        rtb.SupplierAddr2
+                    FROM rtb            
+            """
         },
 
 }

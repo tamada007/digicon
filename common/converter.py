@@ -1605,7 +1605,7 @@ ConvertDesc_PLU = {
 }
 
 
-class ScalesConverter():
+class ScalesConverter:
     def __init__(self, conv=ConvertDesc_PLU):
         if isinstance(conv, str):
             self.converter_node = common.get_json_from_string(conv)
@@ -1899,13 +1899,20 @@ class ScalesConverter():
             # iLineNo = int(template_info["line_no"])
             # if not template_json_lines.has_key(iLineNo):
             #     template_json_lines[iLineNo] = {}
+            # result = self.strParser.eval(
+            #     0,
+            #     expr=template_info["source_expression"],
+            #     fieldByIndex=cur_row,
+            #     fieldByName={},
+            #     globalName=gv,
+            #     resetPos=True).decode(sys.getdefaultencoding())
             result = self.strParser.eval(
                 0,
                 expr=template_info["source_expression"],
                 fieldByIndex=cur_row,
                 fieldByName={},
                 globalName=gv,
-                resetPos=True).decode(sys.getdefaultencoding())
+                resetPos=True)
 
             # if not template_json_lines[iLineNo].has_key(template_info["field_name"]):
             #     template_json_lines[iLineNo][template_info["field_name"]] = [""]

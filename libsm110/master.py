@@ -102,7 +102,9 @@ class BYTESReader(TWSReader):
     def csv_to_dat(self, arg0, arg1, arg2):
         try:
             # return arg0.encode(sys.getdefaultencoding()).encode("hex").ljust(arg1, '0')
-            return scale_encoding_converter.conv_pc_to_scale(arg0.encode(sys.getdefaultencoding()))\
+            # return scale_encoding_converter.conv_pc_to_scale(arg0.encode(sys.getdefaultencoding()))\
+            #     .encode("hex").ljust(arg1, '0')
+            return scale_encoding_converter.conv_pc_to_scale(str(arg0)) \
                 .encode("hex").ljust(arg1, '0')
         except:
             return "0".ljust(arg1, '0')
@@ -110,26 +112,26 @@ class BYTESReader(TWSReader):
     def dat_to_csv(self, arg0, arg1, arg2):
         try:
             # return arg0.decode("hex").rstrip('\x00').decode(sys.getdefaultencoding(), errors='ignore')
-            return \
-                scale_encoding_converter.conv_scale_to_pc(arg0.decode("hex")).rstrip('\x00')\
-                    .decode(sys.getdefaultencoding(),
-                    errors='ignore')
+            # return scale_encoding_converter.conv_scale_to_pc(arg0.decode("hex")).rstrip('\x00').decode(sys.getdefaultencoding(), errors='ignore')
+            return scale_encoding_converter.conv_scale_to_pc(str(arg0).decode("hex")).rstrip('\x00')
         except Exception, e:
             return ""
 
     def cell_to_dat(self, arg0, arg1, arg2):
         try:
             # return arg0.encode(sys.getdefaultencoding()).encode("hex").ljust(arg1, '0')
-            return scale_encoding_converter.conv_pc_to_scale(arg0.encode(sys.getdefaultencoding()))\
-                .encode("hex").ljust(arg1, '0')
+            # return scale_encoding_converter.conv_pc_to_scale(arg0.encode(sys.getdefaultencoding()))\
+            #     .encode("hex").ljust(arg1, '0')
+            return scale_encoding_converter.conv_pc_to_scale(str(arg0)).encode("hex").ljust(arg1, '0')
         except Exception, e:
             return "0".ljust(arg1, '0')
 
     def dat_to_cell(self, arg0, arg1, arg2):
         try:
             # return arg0.decode("hex").rstrip('\x00').decode(sys.getdefaultencoding(), errors='ignore')
-            return scale_encoding_converter.conv_scale_to_pc(arg0.decode("hex")).rstrip('\x00')\
-                .decode(sys.getdefaultencoding(), errors='ignore')
+            # return scale_encoding_converter.conv_scale_to_pc(arg0.decode("hex")).rstrip('\x00')\
+            #     .decode(sys.getdefaultencoding(), errors='ignore')
+            return scale_encoding_converter.conv_scale_to_pc(str(arg0).decode("hex")).rstrip('\x00')
         except:
             return ""
 
@@ -167,9 +169,9 @@ class ASCIIReader(TWSReader):
             for row in csv.reader(StringIO.StringIO(arg0)):
                 dst_oneline = []
                 # text_data = row[1].encode(sys.getdefaultencoding()).encode("hex").upper()
-                text_data = \
-                    scale_encoding_converter.conv_pc_to_scale(row[1].encode(sys.getdefaultencoding()))\
-                        .encode("hex").upper()
+                # text_data = \
+                #     scale_encoding_converter.conv_pc_to_scale(row[1].encode(sys.getdefaultencoding())).encode("hex").upper()
+                text_data = scale_encoding_converter.conv_pc_to_scale(str(row[1])).encode("hex").upper()
                 text_len = len(text_data) // 2
                 dst_oneline.append(common.int2hex(int(row[0])))
                 dst_oneline.append(common.int2hex(text_len))
@@ -186,7 +188,8 @@ class ASCIIReader(TWSReader):
             dst_data = []
             for row in csv.reader(StringIO.StringIO(arg0)):
                 dst_oneline = {}
-                text_data = row[1].decode(sys.getdefaultencoding(), errors='ignore')
+                # text_data = row[1].decode(sys.getdefaultencoding(), errors='ignore')
+                text_data = row[1]
                 text_len = len(text_data) // 2
                 dst_oneline = {
                     "font_size": int(row[0]),
@@ -206,9 +209,9 @@ class ASCIIReader(TWSReader):
                 cell_data = cell_data.lstrip("\x0d")
                 font_size = ord(cell_data[0])
                 length = ord(cell_data[1])
-                # text = cell_data[2:2 + length].decode(sys.getdefaultencoding(), errors='ignore')
-                text = scale_encoding_converter.conv_scale_to_pc(
-                    cell_data[2:2 + length].decode(sys.getdefaultencoding(), errors='ignore'))
+                # text = scale_encoding_converter.conv_scale_to_pc(
+                #     cell_data[2:2 + length].decode(sys.getdefaultencoding(), errors='ignore'))
+                text = scale_encoding_converter.conv_scale_to_pc(str(cell_data[2:2 + length]))
 
                 # dst_lines.append( ",".join([str(font_size), "\"" + text + "\""]) )
                 dst_lines.append(",".join([str(font_size), "\"" + text.replace('"', '""') + "\""]))
@@ -228,8 +231,9 @@ class ASCIIReader(TWSReader):
                 font_size = ord(cell_data[0])
                 length = ord(cell_data[1])
                 # text = cell_data[2:2 + length].decode(sys.getdefaultencoding(), errors='ignore')
-                text = scale_encoding_converter.conv_scale_to_pc(
-                    cell_data[2:2 + length].decode(sys.getdefaultencoding(), errors='ignore'))
+                # text = scale_encoding_converter.conv_scale_to_pc(
+                #     cell_data[2:2 + length].decode(sys.getdefaultencoding(), errors='ignore'))
+                text = scale_encoding_converter.conv_scale_to_pc(str(cell_data[2:2 + length]))
                 dst_lines.append({
                     "font_size": font_size,
                     "text": text
@@ -246,8 +250,9 @@ class ASCIIReader(TWSReader):
             for row in arg0:
                 dst_oneline = []
                 # text_data = row["text"].encode(sys.getdefaultencoding()).encode("hex").upper()
-                text_data = scale_encoding_converter.conv_pc_to_scale(
-                    row["text"].encode(sys.getdefaultencoding())).encode("hex").upper()
+                # text_data = scale_encoding_converter.conv_pc_to_scale(
+                #     row["text"].encode(sys.getdefaultencoding())).encode("hex").upper()
+                text_data = scale_encoding_converter.conv_pc_to_scale(str(row["text"])).encode("hex").upper()
                 text_len = len(text_data) // 2
                 dst_oneline.append(common.int2hex(row["font_size"]))
                 dst_oneline.append(common.int2hex(text_len))
@@ -274,15 +279,17 @@ class BarcodeDataReader(TWSReader):
     def csv_to_dat(self, arg0, arg1, arg2):
         try:
             # return arg0.encode(sys.getdefaultencoding()).encode("hex").upper()
-            return \
-                scale_encoding_converter.conv_pc_to_scale(arg0.encode(sys.getdefaultencoding())).encode("hex").upper()
+            # return \
+            #     scale_encoding_converter.conv_pc_to_scale(arg0.encode(sys.getdefaultencoding())).encode("hex").upper()
+            return scale_encoding_converter.conv_pc_to_scale(str(arg0)).encode("hex").upper()
         except:
             return "00"
 
     def dat_to_csv(self, arg0, arg1, arg2):
         try:
             # return arg0.decode("hex").decode(sys.getdefaultencoding())
-            return scale_encoding_converter.conv_scale_to_pc(arg0.decode("hex")).decode(sys.getdefaultencoding())
+            # return scale_encoding_converter.conv_scale_to_pc(arg0.decode("hex")).decode(sys.getdefaultencoding())
+            return scale_encoding_converter.conv_scale_to_pc(str(arg0).decode("hex"))
         except:
             return ""
 
@@ -1843,7 +1850,7 @@ class Master(object):
 			pass
 	"""
 
-    def __init__(self, name, file_no, jsonData, dbName = None):
+    def __init__(self, name, file_no, jsonData, dbName=None):
         if isinstance(jsonData, str):
             json_data = common.get_json_from_string(jsonData)
         else:
@@ -1960,9 +1967,9 @@ class Master(object):
         # field_text = [ f["text"] for f in self.fields_info ]
         self.conn.execute("DROP TABLE IF EXISTS %s" % self.name)  # does not work when multiple call
         self.conn.execute("CREATE TABLE IF NOT EXISTS %s ( %s )" % (
-                self.name, ",".join(field_text_arr)
-            )
+            self.name, ",".join(field_text_arr)
         )
+                          )
 
     def create_row(self):
         dic_list = {}
@@ -2015,9 +2022,9 @@ class Master(object):
                             else:
                                 new_row[visible_field_name][0][visible_field_byte - 1][visible_field_bit] = 0
 
-                            # if field_name == 'LinkedText1No':
-                            # print "field_value, visible_field_name:", field_value, visible_field_name, visible_field_byte, visible_field_bit
-                            # print new_row[visible_field_name][0]
+                                # if field_name == 'LinkedText1No':
+                                # print "field_value, visible_field_name:", field_value, visible_field_name, visible_field_byte, visible_field_bit
+                                # print new_row[visible_field_name][0]
                         except Exception, e:
                             common.log_err(traceback.format_exc())
 
@@ -2061,8 +2068,8 @@ class Master(object):
                 else:
                     fields_name.append(field_name)
 
-                # print "field name, field_type:", field_name, field_type
-                # fields_value.append(field_value)
+                    # print "field name, field_type:", field_name, field_type
+                    # fields_value.append(field_value)
 
             sql = "REPLACE INTO %s (%s) VALUES ( %s )" % (
                 self.name,
@@ -2072,6 +2079,8 @@ class Master(object):
 
             # print "fields_name:", fields_name
             # print "fields_value:", fields_value
+
+            fields_value = [unicode(v) if isinstance(v, str) else v for v in fields_value]
 
             self.conn.cursor().execute(sql, fields_value)
             self.conn.commit()
@@ -2223,7 +2232,8 @@ class Master(object):
     # def conv_csv_to_cell(self, new_row, force_create = False):
     def conv_csv_to_cell(self, new_row, force_create=True):
         for field_info in self.fields_info:
-            if field_info["disable"] == 1:  continue
+            if field_info["disable"] == 1:
+                continue
 
             field_name = field_info["name"]
             field_detail = field_info["detail"]
@@ -2315,7 +2325,7 @@ class Master(object):
                             share[visible_field_name][visible_field_byte][visible_field_bit] = 1
                     except Exception, e:
                         common.log_err(traceback.format_exc())
-                    # if field_type == "BIN": traceback.print_exc()
+                        # if field_type == "BIN": traceback.print_exc()
 
     def cell_to_data(self, new_row):
         try:

@@ -6,12 +6,13 @@ import threading
 
 import platform
 
+
 def if_this_is_windows():
-	return platform.system() == "Windows"
+    return platform.system() == "Windows"
 
 if if_this_is_windows():
-	import comtypes
-	from comtypes.client import CreateObject
+    import comtypes
+    from comtypes.client import CreateObject
 
 glob_converter = None
 
@@ -21,11 +22,15 @@ class BaseEncConverter(object):
         self.encoding = enc
 
     def pc_to_scale(self, pc_data):
+
         # return unicode(pc_data).encode(self.encoding)
+        # return unicode(pc_data).encode(self.encoding) if isinstance(pc_data, (str, unicode)) else pc_data
         return pc_data
 
     def scale_to_pc(self, scale_data):
         # return scale_data.decode(self.encoding)
+        # return scale_data.decode(self.encoding) if isinstance(scale_data, (str, unicode)) else scale_data
+        # return str(scale_data).decode(self.encoding) if isinstance(scale_data, (str, unicode)) else scale_data
         return scale_data
 
 
@@ -54,7 +59,7 @@ class SaudiArabicConverter(BaseEncConverter):
             return threading_dll.ArabicDll
         else:
             return None
-		#return None
+        #return None
 
 
     def pc_to_scale(self, pc_data):
