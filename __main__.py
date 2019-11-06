@@ -7,7 +7,7 @@ import datetime
 import re
 from threading import Thread
 
-VERSION = "5.5.9.0"
+VERSION = "5.5.9.2"
 
 LOGFILE_ERROR = "digicon_failed_scale.log"
 LOGFILE_SUCCEED = "digicon_succeeded_scale.log"

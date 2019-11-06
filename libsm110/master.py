@@ -2080,14 +2080,27 @@ class Master(object):
             # print "fields_name:", fields_name
             # print "fields_value:", fields_value
 
-            fields_value = [unicode(v) if isinstance(v, str) else v for v in fields_value]
+            # fields_value = [unicode(v) if isinstance(v, str) else v for v in fields_value]
+            fields_value2 = []
+            index = 0
+            for v in fields_value:
+                index += 1
+
+                # if isinstance(v, str):
+                #     val = unicode(v)
+                # else:
+                #     val = v
+                val = v
+                fields_value2.append(val)
+
+            fields_value = fields_value2
 
             self.conn.cursor().execute(sql, fields_value)
             self.conn.commit()
 
             return True
 
-        except Exception, e:
+        except Exception:
             common.log_err(traceback.format_exc())
             return False
 

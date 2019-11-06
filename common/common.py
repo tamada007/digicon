@@ -67,6 +67,7 @@ def open_sqlite_db(file_name, use_mem_db=None):
     if not use_memory_db:
         conn = sqlite3.connect(file_name, check_same_thread=False)
         conn.row_factory = sqlite3.Row
+        conn.text_factory = str
 
         g_current_thread_data.Database[file_name] = conn
         return conn
@@ -80,6 +81,7 @@ def open_mem_db(name):
     if not g_memConn.has_key(name):
         g_memConn[name] = sqlite3.connect(":memory:", check_same_thread=False)
         g_memConn[name].row_factory = sqlite3.Row
+        g_memConn[name].text_factory = str
 
     return g_memConn[name]
 

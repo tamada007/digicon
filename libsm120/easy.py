@@ -10,12 +10,11 @@ import const
 import digiscale
 import entity
 import enum
-import master
 import os
 import sys
-import json
 import traceback
-import csv,StringIO
+import csv
+import StringIO
 
 csJsonPrfFile = "prf.json"
 csJsonPffFile = "pff.json"
@@ -282,7 +281,6 @@ class Easy:
                         commNamesFontArr = [oCommodityNameFont]
 
                 if len(commNamesArr) != len(commNamesFontArr):
-                    # if type(oCommodityNameFont) in (str, unicode):
                     if isinstance(oCommodityNameFont, (str, unicode)):
                         commNamesFontArr = [const.fontMapper.get(oCommodityNameFont, 0)] * len(commNamesArr)
                     else:
@@ -455,7 +453,6 @@ class Easy:
                     ingredientLinesFontArr = [const.fontMapper.get(font, 0) for font in oIngredientFont]
 
                 if len(ingredientLinesArr) != len(ingredientLinesFontArr):
-                    # if type(oIngredientFont) in (str, unicode):
                     if isinstance(oIngredientFont, (str, unicode)):
                         ingredientLinesFontArr = [const.fontMapper.get(oIngredientFont, 0)] * len(ingredientLinesArr)
                     else:
@@ -504,7 +501,6 @@ class Easy:
                         textLinesFontArr = [const.fontMapper.get(font, 0) for font in oTextFont]
 
                     if len(textLinesArr) != len(textLinesFontArr):
-                        # if type(oTextFont) in (str, unicode):
                         if isinstance(oTextFont, (str, unicode)):
                             textLinesFontArr = [const.fontMapper.get(oTextFont, 0)] * len(textLinesArr)
                         else:
@@ -724,14 +720,12 @@ class Easy:
                 if isinstance(textLines, list):
                     traceTextLines = textLines
                 elif isinstance(textLines, (str, unicode)):
-                    # elif type(textLines) in (str, unicode):
                     traceTextLines = [textLines]
 
                 if textLinesFont:
                     traceTextLinesFont = [const.fontMapper.get(font, 0) for font in textLinesFont]
 
                 if len(traceTextLines) != len(traceTextLinesFont):
-                    # if type(traceTextLinesFont) in (str, unicode):
                     if isinstance(traceTextLinesFont, (str, unicode)):
                         traceTextLinesFont = [const.fontMapper.get(traceTextLinesFont, 0)] * len(traceTextLines)
                     else:
@@ -924,9 +918,12 @@ class Easy:
     def deleteFromCSV(
             self,
             report_file_name,
-            in_csv_file):
+            in_csv_file,
+            with_title=True):
         with open(in_csv_file) as fp1:
             key_lines = fp1.readlines()
+            if with_title:
+                key_lines = key_lines[1:]
             trans_table = {
                 "PLU Transaction": "Ptr",
                 "Real Time Total Buffer": "Rtt",
@@ -1030,7 +1027,9 @@ class Easy:
                     fp.write(",".join(field_names).decode('utf8').encode(encoding) + "\r\n")
 
             for row in cursor:
-                cells = [unicode(cell).encode(encoding) for cell in row]
+                # cells = [unicode(cell).encode(encoding) for cell in row]
+                # 20191106
+                cells = [str(cell) for cell in row]
                 if target_fields:
                     target_cells = []
                     for target_field in target_fields:

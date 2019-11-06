@@ -13,6 +13,8 @@ import entity
 import enum
 import const
 import traceback
+import csv
+import StringIO
 
 
 class Easy:
@@ -22,9 +24,21 @@ class Easy:
     def deleteFromCSV(
             self,
             report_file_name,
-            in_csv_file):
+            in_csv_file,
+            with_title=True):
         with open(in_csv_file) as fp1:
-            key_lines = [x.rstrip("\n") for x in fp1.readlines()]
+            # key_lines = [x.rstrip("\n") for x in fp1.readlines()]
+            key_lines = fp1.readlines()
+            if with_title:
+                key_lines = key_lines[1:]
+
+            key_fields = []
+            for key_line in key_lines:
+                key_array = csv.reader(StringIO.StringIO(key_line.rstrip("\n"))).next()
+                key_fields.append(key_array[0])
+
+            key_lines = key_fields
+
             trans_table = {
                 "PLU Transaction": "Ptr",
                 "Real Time Total Buffer": "Rtt",
@@ -93,10 +107,14 @@ class Easy:
                     pass
                 else:
                     # fp.write(",".join(field_names) + "\r\n")
-                    fp.write(",".join(field_names).decode('utf8').encode(encoding) + "\r\n")
+                    # fp.write(",".join(field_names).decode('utf8').encode(encoding) + "\r\n")
+                    # 20191106
+                    fp.write(",".join(field_names) + "\r\n")
             for row in cursor:
                 # print row
-                cells = [unicode(cell).encode(encoding) for cell in row]
+                # cells = [unicode(cell).encode(encoding) for cell in row]
+                # 20191106
+                cells = [str(cell) for cell in row]
 
                 target_cells = []
                 for target_field in target_fields:
@@ -517,7 +535,6 @@ class Easy:
                         commNamesFontArr = [const.fontMapper.get(oCommodityNameFont, 0)]
 
                 if len(commNamesArr) != len(commNamesFontArr):
-                    # if type(oCommodityNameFont) in (str, unicode):
                     if isinstance(oCommodityNameFont, (str, unicode)):
                         commNamesFontArr = [const.fontMapper.get(oCommodityNameFont, 0)] * len(commNamesArr)
                     else:
@@ -634,7 +651,6 @@ class Easy:
                     ingredientLinesFontArr = [const.fontMapper.get(font, 0) for font in oIngredientFont]
 
                 if len(ingredientLinesArr) != len(ingredientLinesFontArr):
-                    # if type(oIngredientFont) in (str, unicode):
                     if isinstance(oIngredientFont, (str, unicode)):
                         ingredientLinesFontArr = [const.fontMapper.get(oIngredientFont, 0)] * len(ingredientLinesArr)
                     else:
@@ -667,7 +683,6 @@ class Easy:
                         textLinesFontArr = [const.fontMapper.get(font, 0) for font in oTextFont]
 
                     if len(textLinesArr) != len(textLinesFontArr):
-                        # if type(oTextFont) in (str, unicode):
                         if isinstance(oTextFont, (str, unicode)):
                             textLinesFontArr = [const.fontMapper.get(oTextFont, 0)] * len(textLinesArr)
                         else:

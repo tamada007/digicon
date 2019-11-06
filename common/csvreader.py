@@ -1,6 +1,7 @@
 # encoding=gbk
 import os, sys, csv
 import codecs, StringIO
+from . import common
 
 class SmCsvReader:
     def read_line_by_line(
@@ -18,7 +19,23 @@ class SmCsvReader:
         # 			]
         with codecs.open(file_path, 'r', encoding) as fp:
             # dat = fp.read().replace('\x00','').decode(encoding) #去掉所有\x00
-            dat = fp.read().replace('\x00', '')  # 去掉所有\x00
+            # dat = fp.read().replace('\x00', '')  # 去掉所有\x00
+
+            dat = ""
+            lineCount = 0
+            while True:
+                lineCount += 1
+                try:
+                    line = fp.readline()
+                except Exception, ex:
+                    common.log_err("file: %s, line: %d, error: %s" % (file_path, lineCount, ex))
+                    raise ex
+                if not line:
+                    break
+                dat += line
+
+            dat = dat.replace('\x00', '')
+
             cr = csv.reader(StringIO.StringIO(dat))
             # all_data = [  [ cur_cell for cur_cell in cur_row ] for cur_row in cr ]
             if head:

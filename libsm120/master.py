@@ -119,8 +119,8 @@ class Master(object):
         field_value_list = []
         for f in filteredFieldList:
             fv = scale_encoding_converter.conv_scale_to_pc(self.__keyValue(f))
-            if isinstance(fv, str):
-                fv = unicode(fv)
+            # if isinstance(fv, str):
+            #     fv = unicode(fv)
             field_value_list.append(fv)
         field_name = [self.__keyName(f) for f in filteredFieldList]
         # 如果没有字段名时，需要和表声明的长度比较
@@ -144,8 +144,8 @@ class Master(object):
             field_value_list = []
             for f in row_list:
                 fv = scale_encoding_converter.conv_scale_to_pc(self.__keyValue(f))
-                if isinstance(fv, str):
-                    fv = unicode(fv)
+                # if isinstance(fv, str):
+                #     fv = unicode(fv)
                 field_value_list.append(fv)
 
             field_name = [self.__keyName(f) for f in row_list]
@@ -170,7 +170,8 @@ class Master(object):
         if title:
             data_to_return += ",".join(field_names) + "\r\n"
         for row in cursor:
-            cells = [unicode(cell).encode(encoding) for cell in row]
+            # cells = [unicode(cell).encode(encoding) for cell in row]
+            cells = [cell for cell in row]
             data_to_return += ",".join(cells) + "\r\n"
 
         return data_to_return
@@ -220,8 +221,8 @@ class Master(object):
         root = []
         for row in cursor:
             node = {}
-            for name in names:
-                node[name[1]] = unicode(row[name[1]]).encode(encoding)
+            # for name in names:
+            #     node[name[1]] = unicode(row[name[1]]).encode(encoding)
             root.append(node)
 
         with open(file_path, "w") as fp:
