@@ -7,7 +7,7 @@ VSVersionInfo(
     # filevers and prodvers should be always a tuple with four items: (1, 2, 3, 4)
     # Set not needed items to zero 0.
     filevers=(2019, 11, 7, 0),
-    prodvers=(5, 5, 10, 0),
+    prodvers=(5, 5, 10, 1),
     # Contains a bitmask that specifies the valid bits 'flags'r
     mask=0x3f,
     # Contains a bitmask that specifies the Boolean attributes of the file.
@@ -36,7 +36,7 @@ VSVersionInfo(
         StringStruct(u'LegalCopyright', u''),
         StringStruct(u'OriginalFilename', u'DIGICON.EXE'),
         StringStruct(u'ProductName', u'DIGICON'),
-        StringStruct(u'ProductVersion', u'5.5.10.0'),
+        StringStruct(u'ProductVersion', u'5.5.10.1'),
         StringStruct(u'040404b0', u'>CompanyName'),
         StringStruct(u'FileDescription', u''),
         StringStruct(u'FileVersion', u'2019.11.7.0'),
@@ -44,7 +44,7 @@ VSVersionInfo(
         StringStruct(u'LegalCopyright', u'www.digi-scale.com'),
         StringStruct(u'OriginalFilename', u'DIGICON.EXE'),
         StringStruct(u'ProductName', u'DIGICON'),
-        StringStruct(u'ProductVersion', u'5.5.10.0')])
+        StringStruct(u'ProductVersion', u'5.5.10.1')])
       ]), 
     VarFileInfo([VarStruct(u'Translation', [2052, 1200, 1028, 1200, 0, 1200])])
   ]

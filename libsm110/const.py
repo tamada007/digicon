@@ -2741,7 +2741,7 @@ flb_struct = [
     },
     {
         "Name": "ItemCodeDigitNum",
-        "Type": "BCD",
+        "Type": "HEX",
         "Length": 1
     },
     {
