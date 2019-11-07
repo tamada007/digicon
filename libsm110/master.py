@@ -335,7 +335,7 @@ class BINReader(TWSReader):
     def dat_to_csv(self, arg0, arg1, arg2):
         hex_data = arg0.decode("hex")
         if len(hex_data) != len(arg2["detail"]):
-            raise Exception("Wrong Data")
+            raise Exception("Incorrect Data")
 
         entire_val = []
         for indx, detail in enumerate(arg2["detail"]):

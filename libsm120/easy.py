@@ -925,15 +925,32 @@ class Easy:
             if with_title:
                 key_lines = key_lines[1:]
             trans_table = {
+                "Plu": "Plu",
+                "Ingredient": "Ing",
+                "SpecialMessage": "Spm",
                 "PLU Transaction": "Ptr",
                 "Real Time Total Buffer": "Rtt",
-                "Real Time Buffer": "Rtb"
+                "Real Time Buffer": "Rtb",
             }
             if report_file_name not in trans_table:
                 common.common.log_err("%s is not supported", report_file_name)
                 return False
 
             field_table = {
+                "Plu": {
+                    1: "$(1)",
+                    2: "1",
+                },
+                "Ingredient": {
+                    1: "$(1)",
+                    2: "",
+                    3: "2",
+                },
+                "SpecialMessage": {
+                    1: "$(1)",
+                    2: "",
+                    3: "2",
+                },
                 "PLU Transaction": {
                     1: "$(1)",
                     2: "1"
@@ -1024,7 +1041,8 @@ class Easy:
                 if append and os.path.isfile(export_csv_file) and os.path.getsize(export_csv_file) > 0:
                     pass
                 else:
-                    fp.write(",".join(field_names).decode('utf8').encode(encoding) + "\r\n")
+                    # fp.write(",".join(field_names).decode('utf8').encode(encoding) + "\r\n")
+                    fp.write(",".join(field_names) + "\r\n")
 
             for row in cursor:
                 # cells = [unicode(cell).encode(encoding) for cell in row]

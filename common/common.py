@@ -26,6 +26,7 @@ def get_title_onoff():
 
 
 def set_title_onoff(v):
+    global title_onoff
     title_onoff = v
 
 

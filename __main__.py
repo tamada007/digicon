@@ -7,7 +7,7 @@ import datetime
 import re
 from threading import Thread
 
-VERSION = "5.5.9.2"
+VERSION = "5.5.10.0"
 
 LOGFILE_ERROR = "digicon_failed_scale.log"
 LOGFILE_SUCCEED = "digicon_succeeded_scale.log"
@@ -118,7 +118,7 @@ if __name__ == '__main__':
     try:
         opts, args = getopt.getopt(
             sys.argv[1:],
-            "vEPMTKLAhvd:G:c:t:s:S:m:f:t:R:i:o:D:",
+            "vHEPMTKLAhvd:G:c:t:s:S:m:f:t:R:i:o:D:",
             [
                 "dat=",
                 "read=",
@@ -170,8 +170,8 @@ if __name__ == '__main__':
             #     filter_file = v
             # elif o == "-g":
             #     group_file = v
-            # elif o == "-H":
-            #     optTitling = True
+            elif o == "-H":
+                optTitling = True
             elif o == "-i":
                 in_csv_file = v
             elif o == "-d":
@@ -516,7 +516,8 @@ if __name__ == '__main__':
                     export_template_file=template_file,
                     export_template_info="",
                     export_csv_file=out_csv_file,
-                    title=True):
+                    # title=True):
+                    title=common.get_title_onoff()):
                         list_failed_scale_connection.append(scale)
             else:
                         list_success_scale_connection.append(scale)
@@ -527,7 +528,8 @@ if __name__ == '__main__':
                         export_template_file="",
                         export_template_info=libsm120.const.report_list[report_file],
                         export_csv_file=out_csv_file,
-                        title=True):
+                        # title=True):
+                        title=common.get_title_onoff()):
                             list_failed_scale_connection.append(scale)
                 else:
                             list_success_scale_connection.append(scale)
@@ -536,13 +538,17 @@ if __name__ == '__main__':
                         export_template_file="",
                         export_template_info=libsm110.const.report_list[report_file],
                         export_csv_file=out_csv_file,
-                        title=True):
+                        # title=True):
+                        title=common.get_title_onoff()):
                             list_failed_scale_connection.append(scale)
                 else:
                             list_success_scale_connection.append(scale)
 
         if delete_report_file:
-            if not ease.deleteFromCSV(delete_report_file, in_csv_file):
+            if not ease.deleteFromCSV(
+                    delete_report_file,
+                    in_csv_file,
+                    with_title=common.get_title_onoff()):
                 iExitCode = 9
                 list_failed_scale_connection.append(scale)
             else:

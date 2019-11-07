@@ -1219,7 +1219,8 @@ plu_struct = [
     },
     {
         "Name": "DiscountDayOfWeek",
-        "Type": "BIN",
+        # "Type": "BIN",
+        "Type": "HEX",  # 20191107
         "Visible": {
             "Name": "PLUStatus2B",
             "Byte": 1,

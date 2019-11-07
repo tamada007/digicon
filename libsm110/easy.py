@@ -21,6 +21,7 @@ class Easy:
     def __init__(self, ip):
         self.ip = ip
 
+    # 导入的csv中删除秤上数据
     def deleteFromCSV(
             self,
             report_file_name,
@@ -40,6 +41,7 @@ class Easy:
             key_lines = key_fields
 
             trans_table = {
+                "Plu": "Plu",
                 "PLU Transaction": "Ptr",
                 "Real Time Total Buffer": "Rtt",
                 "Real Time Buffer": "Rtb"
