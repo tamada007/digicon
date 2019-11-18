@@ -69,9 +69,13 @@ class DigiSm120(object):
             common.log_err(traceback.format_exc())
             return False
 
+    def get_scale_file_name_entire(self, master):
+        return self.ip + "_" + master.scale_file_name
+
     def create_csv(self, master):
         try:
-            local_file = self.ip + "_" + master.scale_file_name
+            # local_file = self.ip + "_" + master.scale_file_name
+            local_file = self.get_scale_file_name_entire(master)
             master.to_csv(local_file)
             return local_file
 
@@ -89,9 +93,20 @@ class DigiSm120(object):
             common.log_err(traceback.format_exc())
             return False
 
+    # def send_file(self, master, in_file_name):
+    #     try:
+    #         remote_file = master.scale_file_name
+    #         local_file = in_file_name
+    #         self.ftp.upload_file(local_file, remote_file)
+    #         return True
+    #     except Exception, e:
+    #         common.log_err(traceback.format_exc())
+    #         return False
+
     def send(self, master):
         try:
-            local_file = self.ip + "_" + master.scale_file_name
+            # local_file = self.ip + "_" + master.scale_file_name
+            local_file = self.get_scale_file_name_entire(master)
             remote_file = master.scale_file_name
             master.to_csv(local_file)
             # ftp = smftp(self.ip, self.usr, self.pwd)
@@ -108,7 +123,8 @@ class DigiSm120(object):
 
     def recv(self, master):
         try:
-            local_file = self.ip + "_" + master.scale_file_name
+            # local_file = self.ip + "_" + master.scale_file_name
+            local_file = self.get_scale_file_name_entire(master)
             remote_file = master.scale_file_name
             # ftp = smftp(self.ip, self.usr, self.pwd)
             # ftp.login()
@@ -120,19 +136,10 @@ class DigiSm120(object):
             common.log_err(traceback.format_exc())
             return False
 
-    def send_file(self, master, in_file_name):
-        try:
-            local_file = in_file_name
-            remote_file = master.scale_file_name
-            self.ftp.upload_file(local_file, remote_file)
-            return True
-        except Exception, e:
-            common.log_err(traceback.format_exc())
-            return False
-
     def recv_file(self, master):
         try:
-            local_file = self.ip + "_" + master.scale_file_name
+            # local_file = self.ip + "_" + master.scale_file_name
+            local_file = self.get_scale_file_name_entire(master)
             remote_file = master.scale_file_name
             self.ftp.download_file(local_file, remote_file)
             return local_file

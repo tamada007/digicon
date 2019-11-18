@@ -1714,9 +1714,11 @@ class ScalesConverter:
         success_scale_list = []
         failed_scale_list = []
 
-        # 多线程方法=======>
+        # -----------------------------------------------------------------------
+        # 处理SM120
+        # -----------------------------------------------------------------------
         def send_to_scale_sm120(scale, lst_data, result):
-            common.log_info("Start to download file To %s" % scale.ip)
+            common.log_info("Start to download file To %s(SM120)" % scale.ip)
 
             scale.connect()
             if not scale.connected:
@@ -1740,14 +1742,30 @@ class ScalesConverter:
             else:
                 result['send_result'] = False
 
+        list_data_to_send_sm120 = []
+        for clsName, template_infos in self.converterInfoList["sm120"].items():
+            try:
+                list_data_to_send_sm120.append((template_infos["Master"], template_infos["Master"].to_csv_mem()))
+            except:
+                common.log_err(traceback.format_exc())
+
         sm120_results = []
         for scale_ip in self.lst_sm120:
             list_sm120_data = []
             scale = libsm120.digiscale.DigiSm120(scale_ip)
-            for clsName, template_infos in self.converterInfoList["sm120"].items():
-                created_csv_file = scale.create_csv(template_infos["Master"])
-                if created_csv_file:
-                    list_sm120_data.append((template_infos["Master"], created_csv_file))
+            # for clsName, template_infos in self.converterInfoList["sm120"].items():
+            #     created_csv_file = scale.create_csv(template_infos["Master"])
+            #     if created_csv_file:
+            #         list_sm120_data.append((template_infos["Master"], created_csv_file))
+
+            for data in list_data_to_send_sm120:
+                mast = data[0]
+                csv_data_ready = data[1]
+                if csv_data_ready:
+                    created_csv_file = scale.get_scale_file_name_entire(mast)
+                    with open(created_csv_file, "wb") as fp2:
+                        fp2.write(csv_data_ready)
+                    list_sm120_data.append((mast, created_csv_file))
 
             # result = [-1]
             result = {
@@ -1772,7 +1790,15 @@ class ScalesConverter:
             else:
                 failed_scale_list.append(scale_ip)
 
-        def send_to_scale_sm110(scale, result):
+        # -----------------------------------------------------------------------
+        # 结束 SM120
+        # -----------------------------------------------------------------------
+
+        # -----------------------------------------------------------------------
+        # 处理 SM110
+        # -----------------------------------------------------------------------
+        def send_to_scale_sm110(scale, lst_data, result):
+            common.log_info("Start to download file To %s(SM80/SM100/SM110)" % scale.hostaddr)
             has_error = False
 
             from . import globalspec
@@ -1814,16 +1840,29 @@ class ScalesConverter:
             #################################################################
 
             if not bVerifyScaleType or not has_error:
-                for clsName, template_infos in self.converterInfoList["sm110"].items():
-                    # 如果不是Sm110则不发二维码
-                    if bVerifyScaleType and result.get('scale_type') != 'sm110' and clsName == 'Tbt':
+                # for clsName, template_infos in self.converterInfoList["sm110"].items():
+                #     # 如果不是Sm110则不发二维码
+                #     if bVerifyScaleType and result.get('scale_type') != 'sm110' and clsName == 'Tbt':
+                #         continue
+                #     if not scale.upload_master(template_infos["Master"]):
+                #         common.log_err("Downloading %s To %s Failed..." % (clsName, scale.hostname))
+                #         common.log2_err("Downloading %s To %s Failed..." % (clsName, scale.hostname))
+                #         has_error = True
+                #     else:
+                #         result['sent_list'].append(template_infos["Master"].name)
+                for data in lst_data:
+                    mast = data[0]
+                    created_dat_file = data[1]
+
+                    if bVerifyScaleType and result.get('scale_type') != 'sm110' and mast.name == 'Tbt':
                         continue
-                    if not scale.upload_master(template_infos["Master"]):
+
+                    if not scale.upload_file(mast.file_no, created_dat_file):
                         common.log_err("Downloading %s To %s Failed..." % (clsName, scale.hostname))
                         common.log2_err("Downloading %s To %s Failed..." % (clsName, scale.hostname))
                         has_error = True
                     else:
-                        result['sent_list'].append(template_infos["Master"].name)
+                        result['sent_list'].append(mast.name)
 
             # if isinstance(result, list) and len(result) > 0:
             if not has_error:
@@ -1833,9 +1872,26 @@ class ScalesConverter:
                 # result[0] = 1
                 result['send_result'] = False
 
+        list_data_to_send_sm110 = []
+        for clsName, template_infos in self.converterInfoList["sm110"].items():
+            try:
+                list_data_to_send_sm110.append((template_infos["Master"], template_infos["Master"].to_dat_mem()))
+            except:
+                common.log_err(traceback.format_exc())
+
         sm110_results = []
         for scale_ip in self.lst_sm110:
+            list_sm110_data = []
             scale = libsm110.smtws.smtws(scale_ip)
+
+            for data in list_data_to_send_sm110:
+                mast = data[0]
+                csv_data_ready = data[1]
+                if csv_data_ready:
+                    created_dat_file = scale.get_scale_file_name_entire(mast)
+                    with open(created_dat_file, "wb") as fp2:
+                        fp2.write(csv_data_ready)
+                    list_sm110_data.append((mast, created_dat_file))
 
             # result = [-1]
             result = {
@@ -1843,7 +1899,7 @@ class ScalesConverter:
                 'scale_type': '',
                 'sent_list': []
             }
-            scl_thd = Thread(target=send_to_scale_sm110, args=(scale, result))
+            scl_thd = Thread(target=send_to_scale_sm110, args=(scale, list_sm110_data, result))
             sm110_results.append((scl_thd, scale_ip, result))
             scl_thd.start()
 
@@ -1859,6 +1915,11 @@ class ScalesConverter:
                 success_scale_list.append(scale_ip)
             else:
                 failed_scale_list.append(scale_ip)
+
+        # -----------------------------------------------------------------------
+        # 结束 SM110
+        # -----------------------------------------------------------------------
+
 
         try:
             with open(LOGFILE_ERROR, 'w') as fp1:

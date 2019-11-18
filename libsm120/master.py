@@ -171,7 +171,8 @@ class Master(object):
             data_to_return += ",".join(field_names) + "\r\n"
         for row in cursor:
             # cells = [unicode(cell).encode(encoding) for cell in row]
-            cells = [cell for cell in row]
+            # cells = [cell for cell in row]
+            cells = [scale_encoding_converter.conv_pc_to_scale(str(cell)) for cell in row]
             data_to_return += ",".join(cells) + "\r\n"
 
         return data_to_return

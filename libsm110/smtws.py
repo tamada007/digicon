@@ -233,8 +233,12 @@ class smtws:
         else:
             return True
 
+    def get_scale_file_name_entire(self, master):
+        return "%s.%02x.dat" % (self.hostname, master.file_no)
+
     def upload_master(self, master):
-        file_path = "%s.%s.dat" % (self.hostname, hex(master.file_no)[2:])
+        # file_path = "%s.%s.dat" % (self.hostname, hex(master.file_no)[2:])
+        file_path = self.get_scale_file_name_entire(master)
         master.to_dat(file_path)
         return self.upload_file(master.file_no, file_path)
 

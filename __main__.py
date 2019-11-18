@@ -6,8 +6,9 @@ import getopt
 import datetime
 import re
 from threading import Thread
+from win32api import GetFileVersionInfo, LOWORD, HIWORD
 
-VERSION = "5.5.10.1"
+# VERSION = "5.5.10.2" deprecated
 
 LOGFILE_ERROR = "digicon_failed_scale.log"
 LOGFILE_SUCCEED = "digicon_succeeded_scale.log"
@@ -200,7 +201,23 @@ if __name__ == '__main__':
                 json_label_file = v
                 get_label = True
             elif o == '-v':
-                print "version: " + VERSION
+                # print "version: " + VERSION
+                info = None
+                exe_name = sys.argv[0]
+                if not exe_name.lower().endswith(".exe"):
+                    exe_name += ".exe"
+                try:
+                    info = GetFileVersionInfo(exe_name, "\\")
+                except:
+                    pass
+
+                if info:
+                    ms = info['ProductVersionMS']
+                    ls = info['ProductVersionLS']
+                    print "Version: {0}.{1}.{2}.{3} ".format(HIWORD(ms), LOWORD(ms), HIWORD(ls), LOWORD(ls))
+                else:
+                    print "unknown version"
+
                 print "Shanghai Teraoka Co,. Ltd"
                 sys.exit(0)
             else:
