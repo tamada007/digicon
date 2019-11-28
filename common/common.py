@@ -4,7 +4,38 @@ import logging.handlers
 import sqlite3
 import json
 import sys
+import os
 import threading
+
+
+g_current_directory = ""
+
+
+def set_current_directory(p):
+    global g_current_directory
+    g_current_directory = p
+
+
+def get_current_directory():
+    global g_current_directory
+    return g_current_directory
+    # return ""
+
+
+def get_errlist_scale_file_path():
+    return os.path.join(get_current_directory(), "digicon_failed_scale.log")
+
+
+def get_oklist_scale_file_path():
+    return os.path.join(get_current_directory(), "digicon_succeeded_scale.log")
+
+
+def get_result_file_path():
+    return os.path.join(get_current_directory(), "digicon_result.log")
+
+
+def get_detail_file_path():
+    return os.path.join(get_current_directory(), "digicon_detail.log")
 
 # import const
 
@@ -116,9 +147,9 @@ def clear_all_tables(db_name):
     conn.commit()
 
 
-def log2_init():
-    import os
-    os.remove('digicon.log')
+# def log2_init():
+#     import os
+#     os.remove('digicon.log')
 
 
 def log_init():
@@ -145,9 +176,12 @@ def log_init():
     # formatter = logging.Formatter('%(asctime)s : %(message)s', datefmt='%a, %d %b %Y %H:%M:%S')
     formatter = logging.Formatter('%(asctime)s [%(levelname)s]: %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
+    # print get_detail_file_path()
+
     # detail log
+    # detail_handler = logging.handlers.RotatingFileHandler('digicon_detail.log', mode='a', maxBytes=5 * 1024 * 1024, backupCount=5)
     detail_handler = \
-        logging.handlers.RotatingFileHandler('digicon_detail.log', mode='a', maxBytes=5 * 1024 * 1024, backupCount=5)
+        logging.handlers.RotatingFileHandler(get_detail_file_path(), mode='a', maxBytes=5 * 1024 * 1024, backupCount=5)
     # detail_handler.setLevel(logging.DEBUG)
     detail_handler.setFormatter(formatter)
     logger_detail.addHandler(detail_handler)
@@ -168,7 +202,8 @@ def log_init():
     # Rthandler.setLevel(logging.DEBUG)
 
     # file handler
-    result_handler = logging.FileHandler("digicon_result.log", mode="w")
+    # result_handler = logging.FileHandler("digicon_result.log", mode="w")
+    result_handler = logging.FileHandler(get_result_file_path(), mode="w")
     # result_handler.setLevel(logging.DEBUG)
     result_handler.setFormatter(formatter)
     logger_result.addHandler(result_handler)

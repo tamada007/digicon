@@ -8,15 +8,33 @@ import re
 from threading import Thread
 from win32api import GetFileVersionInfo, LOWORD, HIWORD
 
+
 # VERSION = "5.5.10.2" deprecated
 
-LOGFILE_ERROR = "digicon_failed_scale.log"
-LOGFILE_SUCCEED = "digicon_succeeded_scale.log"
+# LOGFILE_ERROR = "digicon_failed_scale.log"
+# LOGFILE_SUCCEED = "digicon_succeeded_scale.log"
+
+
+from common import common
+
+# 根据当前可执行文件取当前文件夹
+# determine if application is a script file or frozen exe
+if getattr(sys, 'frozen', False):
+    application_path = os.path.dirname(sys.executable)
+elif __file__:
+    application_path = os.path.dirname(__file__)
+# print application_path
+
+# common.set_current_directory(os.path.dirname(os.path.realpath(__file__)))
+common.set_current_directory(application_path)
+
 
 # 默认为gbk,在encode.txt可设置编码
 current_encoding = 'gbk'
-if os.path.isfile('encode.txt'):
-    with open('encode.txt') as fp:
+encoding_file_path = os.path.join(common.get_current_directory(), 'encode.txt')
+# encoding_file_path = os.path.join("", 'encode.txt')
+if os.path.isfile(encoding_file_path):
+    with open(encoding_file_path) as fp:
         current_encoding = fp.readline().strip()
 
 # print("encoding: " + current_encoding)
@@ -26,16 +44,17 @@ reload(sys)
 # sys.setdefaultencoding("utf-8")
 sys.setdefaultencoding(current_encoding)  # @UndefinedVariable
 
-from common import common
+reload(common)
 from common.converter import ScalesConverter
 from common import converter
 from common import globalspec
 
+
 import libsm120.easy
 import libsm110.easy
-# from libsm120.const import report_list
 import libsm120.const
 import libsm110.const
+
 
 
 # import argparse
@@ -203,7 +222,8 @@ if __name__ == '__main__':
             elif o == '-v':
                 # print "version: " + VERSION
                 info = None
-                exe_name = sys.argv[0]
+                paths = os.path.split(sys.argv[0])
+                exe_name = os.path.join(common.get_current_directory(), paths[1])
                 if not exe_name.lower().endswith(".exe"):
                     exe_name += ".exe"
                 try:
@@ -446,6 +466,7 @@ if __name__ == '__main__':
                 file_failed_list = []
                 for master_name in file_read.split(','):
                     temp_file_name = "temp1_" + scale + "_" + master_name + "_.dat"
+                    temp_file_name = os.path.join(common.get_current_directory(), temp_file_name)
                     result = ease.easyReceiveFile(master_name, temp_file_name)
                     if result:
                         try:
@@ -496,6 +517,7 @@ if __name__ == '__main__':
 
                 for scale_file, scale_file_data in dict_data.items():
                     temp_file_name = "temp2_" + scale + "_" + scale_file + "_" + ".dat"
+                    temp_file_name = os.path.join(common.get_current_directory(), temp_file_name)
                     with open(temp_file_name, "w") as fp2:
                         fp2.write(scale_file_data)
                     file_total_list.append(scale_file)
@@ -604,9 +626,11 @@ if __name__ == '__main__':
                 iExitCode = 10
             else:
                 iExitCode = 0
-            with open(LOGFILE_ERROR, 'w') as fp1:
+            # with open(LOGFILE_ERROR, 'w') as fp1:
+            with open(common.get_errlist_scale_file_path(), 'w') as fp1:
                 fp1.write('\r\n'.join(list_failed_scale_connection))
-            with open(LOGFILE_SUCCEED, 'w') as fp2:
+            # with open(LOGFILE_SUCCEED, 'w') as fp2:
+            with open(common.get_oklist_scale_file_path(), 'w') as fp2:
                 fp2.write('\r\n'.join(list_success_scale_connection))
         except Exception, e:
             common.log_err(e)

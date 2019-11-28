@@ -3,6 +3,7 @@ import re
 import socket
 # import traceback
 import time
+import os
 
 from common import common
 
@@ -123,6 +124,7 @@ class smtws:
 
     def download_file(self, file_no):
         file_name = "%s.%02x.dat" % (self.hostname, file_no)
+        file_name = os.path.join(common.get_current_directory(), file_name)
         try:
             socket.setdefaulttimeout(10)
             conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -234,7 +236,8 @@ class smtws:
             return True
 
     def get_scale_file_name_entire(self, master):
-        return "%s.%02x.dat" % (self.hostname, master.file_no)
+        return \
+            os.path.join(common.get_current_directory(), "%s.%02x.dat" % (self.hostname, master.file_no))
 
     def upload_master(self, master):
         # file_path = "%s.%s.dat" % (self.hostname, hex(master.file_no)[2:])

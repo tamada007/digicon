@@ -197,6 +197,7 @@ class Easy:
             flbmt.to_json(out_file_name)
             return False, maxAvailbleNo + 1, out_file_name
 
+    """
     def easySendPlu(self, plu_json_file):
         flexiBarcodeJsonFile = self.ip + "_flexibarcode.json"
         multiBarcodeJsonFile = self.ip + "_multibarcode.json"
@@ -650,7 +651,7 @@ class Easy:
 
         common.common.log_info("Downloading Plu To %s Successfully..." % self.ip)
         return True
-
+    
     def easySendTrace(self, trace_json_file):
         traceBarcodeJsonFile = self.ip + "_tracebarcode.json"
         traceTextJsonFile = self.ip + "_tracetext.json"
@@ -780,6 +781,7 @@ class Easy:
 
         common.common.log_info("Downloading Traceability To %s Successfully..." % self.ip)
         return True
+    """
 
     def easyRecvPrintFormat(self, json_file_path):
         prfmt = entity.PrfMaster()

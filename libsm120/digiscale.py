@@ -3,6 +3,7 @@ import time, traceback
 from common import common
 from smftp import smftp
 # import master
+import os
 
 import socket
 
@@ -45,6 +46,7 @@ class DigiSm120(object):
     def send_by_name(self, name, data):
         try:
             local_file = self.ip + "_" + name
+            local_file = os.path.join(common.get_current_directory(), local_file)
             remote_file = name
             with open(local_file, "wb") as fp:
                 fp.write(data)
@@ -76,6 +78,7 @@ class DigiSm120(object):
         try:
             # local_file = self.ip + "_" + master.scale_file_name
             local_file = self.get_scale_file_name_entire(master)
+            local_file = os.path.join(common.get_current_directory(), local_file)
             master.to_csv(local_file)
             return local_file
 

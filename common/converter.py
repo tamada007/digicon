@@ -1,5 +1,6 @@
 # encoding=gbk
 import sys
+import os
 
 import libsm110.smtws
 import libsm120.digiscale
@@ -18,8 +19,8 @@ import csv, StringIO
 from inspect import isfunction
 from threading import Thread
 
-LOGFILE_ERROR = "digicon_failed_scale.log"
-LOGFILE_SUCCEED = "digicon_succeeded_scale.log"
+# LOGFILE_ERROR = "digicon_failed_scale.log"
+# LOGFILE_SUCCEED = "digicon_succeeded_scale.log"
 
 
 class StatementConvert:
@@ -1763,6 +1764,7 @@ class ScalesConverter:
                 csv_data_ready = data[1]
                 if csv_data_ready:
                     created_csv_file = scale.get_scale_file_name_entire(mast)
+                    created_csv_file = os.path.join(common.get_current_directory(), created_csv_file)
                     with open(created_csv_file, "wb") as fp2:
                         fp2.write(csv_data_ready)
                     list_sm120_data.append((mast, created_csv_file))
@@ -1889,6 +1891,7 @@ class ScalesConverter:
                 csv_data_ready = data[1]
                 if csv_data_ready:
                     created_dat_file = scale.get_scale_file_name_entire(mast)
+                    created_dat_file = os.path.join(common.get_current_directory(), created_dat_file)
                     with open(created_dat_file, "wb") as fp2:
                         fp2.write(csv_data_ready)
                     list_sm110_data.append((mast, created_dat_file))
@@ -1920,11 +1923,12 @@ class ScalesConverter:
         # 结束 SM110
         # -----------------------------------------------------------------------
 
-
         try:
-            with open(LOGFILE_ERROR, 'w') as fp1:
+            # with open(LOGFILE_ERROR, 'w') as fp1:
+            with open(common.get_errlist_scale_file_path(), 'w') as fp1:
                 fp1.write('\r\n'.join(failed_scale_list))
-            with open(LOGFILE_SUCCEED, 'w') as fp2:
+            # with open(LOGFILE_SUCCEED, 'w') as fp2:
+            with open(common.get_oklist_scale_file_path(), 'w') as fp2:
                 fp2.write('\r\n'.join(success_scale_list))
         except Exception, e:
             common.log_err(e)
